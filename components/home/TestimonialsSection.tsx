@@ -5,7 +5,7 @@ export function TestimonialsSection() {
         {
             id: 1,
             name: "Sarah Johnson",
-            location: "Austin, TX",
+            location: "Phoenix, AZ",
             rating: 5,
             text: "Amazing experience! Found a fantastic contractor through NewCountertops.com. The process was smooth from quote to installation. Our new granite countertops look incredible!",
             image: "https://images.unsplash.com/photo-1494790108755-2616b612b367?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",

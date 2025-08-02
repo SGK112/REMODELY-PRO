@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Information We Collect</h2>
-            
+
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Personal Information</h3>
             <p className="text-gray-600 mb-4">
               We may collect personal information that you voluntarily provide to us when you:
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
             <p className="text-gray-600 mb-4">
               We may share your information in the following circumstances:
             </p>
-            
+
             <h3 className="text-xl font-semibold text-gray-900 mb-3">With Contractors</h3>
             <p className="text-gray-600 mb-4">
               When you request quotes, we share relevant project information with matched contractors to enable them to provide accurate estimates.
@@ -151,8 +151,8 @@ export default function PrivacyPage() {
               <p className="text-gray-700 mb-2"><strong>Email:</strong> privacy@newcountertops.com</p>
               <p className="text-gray-700 mb-2"><strong>Phone:</strong> 1-800-STONE-PRO</p>
               <p className="text-gray-700"><strong>Address:</strong> NewCountertops.com, LLC<br />
-              123 Business Ave<br />
-              Austin, TX 78701</p>
+                123 Business Ave<br />
+                Phoenix, AZ 85001</p>
             </div>
           </section>
         </div>

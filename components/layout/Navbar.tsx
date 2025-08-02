@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [location, setLocation] = useState('Austin, TX')
+  const [location, setLocation] = useState('')
   const router = useRouter()
 
   const handleSearch = (e: React.FormEvent) => {

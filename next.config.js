@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Fix deprecated images.domains - use remotePatterns instead
+  // Bulletproof build configuration
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+
+  // Fix hydration issues
+  swcMinify: true,
+  reactStrictMode: true,
+
+  // Image optimization
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',

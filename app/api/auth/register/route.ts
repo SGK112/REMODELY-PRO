@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: user.id,
           businessName: businessName || `${name} Contracting`,
-          serviceArea: JSON.stringify(serviceArea || ['Austin, TX']),
+          serviceArea: JSON.stringify(serviceArea || ['Phoenix, AZ']),
           specialties: JSON.stringify(specialties || ['General Contracting']),
           yearsExperience: yearsExperience || 1,
           phone: phone || '555-0000',

@@ -8,73 +8,74 @@ export function Footer() {
   const { getPopularLocations } = useLocation()
   const popularLocations = getPopularLocations()
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+    <footer className="bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
               {/* Enhanced Footer Logo */}
-              <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center shadow-md">
-                {/* Clean "RE" monogram to match navbar */}
-                <div className="text-white font-bold text-lg tracking-tight">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-700 rounded-xl flex items-center justify-center shadow-lg">
+                {/* Professional "RA" monogram to match navbar */}
+                <div className="text-white font-bold text-xl tracking-tight">
                   <span className="text-white">R</span>
-                  <span className="text-blue-400">E</span>
+                  <span className="text-amber-200">A</span>
                 </div>
               </div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">REMODELY.AI</span>
+                <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  REMODELY AI PRO
+                </span>
               </div>
             </div>
-            <p className="text-gray-300 mb-8 max-w-md leading-relaxed text-lg">
-              The AI-powered platform connecting homeowners with verified home remodeling professionals.
-              Intelligent matching, quality contractors, guaranteed satisfaction.
+            <p className="text-stone-300 mb-8 max-w-md leading-relaxed text-lg">
+              North America's premier AI-powered construction marketplace connecting property owners with verified professional contractors and construction specialists.
             </p>
 
             {/* Enhanced Trust Indicators */}
             <div className="grid grid-cols-3 gap-6 mb-8">
-              <div className="text-center bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700/50">
-                <div className="flex items-center justify-center text-blue-400 mb-2">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-amber-600/20">
+                <div className="flex items-center justify-center text-amber-400 mb-2">
                   <Star className="w-6 h-6 mr-1 fill-current" />
                   <span className="font-bold text-xl">4.9</span>
                 </div>
-                <div className="text-xs text-gray-400 uppercase tracking-wide">Average Rating</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">Professional Rating</div>
               </div>
-              <div className="text-center bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700/50">
-                <div className="flex items-center justify-center text-green-400 mb-2">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-emerald-600/20">
+                <div className="flex items-center justify-center text-emerald-400 mb-2">
                   <Shield className="w-6 h-6 mr-1" />
-                  <span className="font-bold text-xl">500+</span>
+                  <span className="font-bold text-xl">3200+</span>
                 </div>
-                <div className="text-xs text-gray-400 uppercase tracking-wide">Certified Pros</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">Certified Pros</div>
               </div>
-              <div className="text-center bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700/50">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-orange-600/20">
                 <div className="flex items-center justify-center text-orange-400 mb-2">
                   <Award className="w-6 h-6 mr-1" />
-                  <span className="font-bold text-xl">$2M+</span>
+                  <span className="font-bold text-xl">$15M+</span>
                 </div>
-                <div className="text-xs text-gray-400 uppercase tracking-wide">Projects Value</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">Projects Value</div>
               </div>
             </div>
 
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
+              <a href="#" className="text-stone-400 hover:text-amber-400 transition-all duration-200 hover:scale-110">
                 <Facebook size={24} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
+              <a href="#" className="text-stone-400 hover:text-orange-400 transition-all duration-200 hover:scale-110">
                 <Twitter size={24} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
+              <a href="#" className="text-stone-400 hover:text-red-400 transition-all duration-200 hover:scale-110">
                 <Instagram size={24} />
               </a>
             </div>
           </div>
 
-          {/* Services */}
+          {/* Professional Services */}
           <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">Services</h4>
+            <h4 className="text-xl font-semibold mb-6 text-white">Professional Services</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/contractors" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                <Link href="/contractors" className="text-stone-300 hover:text-amber-400 transition-colors flex items-center group">
                   <span className="group-hover:translate-x-1 transition-transform">Find Contractors</span>
                 </Link>
               </li>

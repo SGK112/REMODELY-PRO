@@ -1,317 +1,335 @@
 'use client'
 
 import Link from 'next/link'
-import { Search, Users, Star, ArrowRight, Sparkles, Shield, MapPin, CheckCircle, Phone, FileCheck, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowRight, Brain, Bot, BarChart3, Target, TrendingUp, Building2, Home, Calendar, CheckCircle } from 'lucide-react'
+import { useEffect, useState, useMemo } from 'react'
 
 export default function HomePage() {
-  const [contractorCount, setContractorCount] = useState(750)
-  const [verificationRate, setVerificationRate] = useState(95.0)
+  const [contractorCount, setContractorCount] = useState(2750)
+  const [projectsCompleted, setProjectsCompleted] = useState(15000)
+  const [aiMatchAccuracy, setAiMatchAccuracy] = useState(94.0)
+  const [scrollY, setScrollY] = useState(0)
+  const [isClient, setIsClient] = useState(false)
 
-  // Simple animation for statistics
+  // Memoized parallax transforms for performance
+  const parallaxTransforms = useMemo(() => ({
+    hero: isClient ? `translateY(${scrollY * 0.5}px)` : 'translateY(0px)',
+    services: isClient ? `translateY(${scrollY * 0.3}px)` : 'translateY(0px)',
+    cta: isClient ? `translateY(${scrollY * 0.2}px)` : 'translateY(0px)',
+  }), [scrollY, isClient])
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setContractorCount(prev => prev < 783 ? prev + 1 : 783)
-      setVerificationRate(prev => prev < 97.7 ? +(prev + 0.1).toFixed(1) : 97.7)
-    }, 100)
+    // Set client-side flag
+    setIsClient(true)
 
-    return () => clearInterval(interval)
+    // Bulletproof stats animation
+    const interval = setInterval(() => {
+      setContractorCount(prev => Math.min(prev < 3247 ? prev + 2 : 3247, 3247))
+      setProjectsCompleted(prev => Math.min(prev < 18500 ? prev + 5 : 18500, 18500))
+      setAiMatchAccuracy(prev => Math.min(prev < 97.8 ? +(prev + 0.1).toFixed(1) : 97.8, 97.8))
+    }, 80)
+
+    // Bulletproof scroll handler with throttling
+    let ticking = false
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (typeof window !== 'undefined') {
+            setScrollY(window.scrollY || 0)
+          }
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    // Safe event listener attachment
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }
   }, [])
 
   return (
-    <div className="relative">
-      {/* Hero Section with Beautiful Kitchen Background */}
-      <section className="relative min-h-screen flex items-center">
-        {/* Background Image */}
+    <div className="relative bg-gradient-to-br from-slate-50 to-stone-100 min-h-screen">
+      {/* Hero Section with Parallax */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Bulletproof Parallax Background */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 will-change-transform"
           style={{
-            backgroundImage: `url('https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/66751c475ecf56262b237e3b_cambria-surprise-granite-brittanicca-warm-quartz-kitchen-scene.webp')`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
+            transform: parallaxTransforms.hero,
           }}
         />
 
-        {/* Clean overlay */}
-        <div className="absolute inset-0 bg-white/85 z-5"></div>
+        {/* Professional Construction Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-stone-800/80 to-amber-900/75 z-5"></div>
+
+        {/* Floating Elements - Professional Tones */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-amber-500/15 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-40 left-10 w-48 h-48 bg-orange-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Clean Content */}
-            <div className="text-left space-y-8">
-              {/* Status Badge */}
-              <div className="inline-flex items-center px-4 py-2 bg-emerald-100 rounded-full">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                <span className="text-emerald-700 text-sm font-medium">{contractorCount}+ Verified Contractors</span>
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div className="text-left space-y-6 lg:space-y-8 order-2 lg:order-1">
+              {/* Professional Status Badge */}
+              <div className="inline-flex items-center px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-amber-600/20 to-orange-700/20 backdrop-blur-sm border border-amber-400/30 rounded-full">
+                <Bot className="w-4 h-4 lg:w-5 lg:h-5 text-amber-400 mr-2 lg:mr-3" />
+                <span className="text-white font-medium text-sm lg:text-base">Professional AI-Powered Matching</span>
+                <div className="ml-2 lg:ml-3 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               </div>
 
-              {/* Main Heading */}
-              <div className="space-y-4">
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900">
-                  <span className="block">Remodely</span>
-                  <span className="block text-blue-600">.AI</span>
+              <div className="space-y-4 lg:space-y-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
+                  <span className="block text-white">REMODELY</span>
+                  <span className="block bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent">AI PRO</span>
                 </h1>
-                <p className="text-xl text-gray-600 max-w-lg">
-                  Connect with verified contractors for your dream kitchen and bathroom remodels.
+                <p className="text-lg sm:text-xl lg:text-2xl text-stone-200 max-w-2xl leading-relaxed">
+                  Professional <span className="text-amber-400 font-semibold">AI-driven construction marketplace</span> connecting contractors with commercial and residential projects across North America.
                 </p>
               </div>
 
-              {/* Simple Stats */}
-              <div className="flex space-x-8">
-                <div>
-                  <div className="text-3xl font-bold text-blue-600">{contractorCount}</div>
-                  <div className="text-sm text-gray-600">Contractors</div>
+              {/* Stats Grid - Mobile Optimized */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
+                <div className="text-center p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-amber-400/20 hover:border-amber-400/40 transition-all duration-300">
+                  <div className="text-2xl lg:text-3xl font-bold text-amber-400">{contractorCount.toLocaleString()}</div>
+                  <div className="text-xs lg:text-sm text-stone-300">Verified Contractors</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-emerald-600">{verificationRate}%</div>
-                  <div className="text-sm text-gray-600">Verified</div>
+                <div className="text-center p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300">
+                  <div className="text-2xl lg:text-3xl font-bold text-emerald-400">{aiMatchAccuracy}%</div>
+                  <div className="text-xs lg:text-sm text-stone-300">Match Accuracy</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-purple-600">15+</div>
-                  <div className="text-sm text-gray-600">States</div>
+                <div className="text-center p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-orange-400/20 hover:border-orange-400/40 transition-all duration-300 sm:col-span-2 lg:col-span-1">
+                  <div className="text-2xl lg:text-3xl font-bold text-orange-400">{projectsCompleted.toLocaleString()}</div>
+                  <div className="text-xs lg:text-sm text-stone-300">Projects Completed</div>
                 </div>
               </div>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              {/* CTA Buttons - Mobile First */}
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
                 <Link
-                  href="/contractors"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                  href="/search"
+                  className="group inline-flex items-center justify-center px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-amber-600 to-orange-700 text-white font-semibold rounded-xl hover:from-amber-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm lg:text-base"
                 >
-                  <Zap className="w-5 h-5 mr-2" />
-                  Find Contractors
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <Brain className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+                  Start Professional Matching
+                  <ArrowRight className="ml-2 lg:ml-3 w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
                 <Link
                   href="/quote"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 lg:px-8 lg:py-4 bg-slate-800/60 backdrop-blur-sm text-white font-semibold rounded-xl border border-amber-400/30 hover:bg-slate-700/70 hover:border-amber-400/50 transition-all duration-300 text-sm lg:text-base"
                 >
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Get Quote
+                  <BarChart3 className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+                  Get Professional Quote
                 </Link>
               </div>
             </div>
 
-            {/* Right Side - Simple Verification Card */}
-            <div className="relative">
-              <div className="bg-white/95 rounded-2xl p-6 shadow-xl border backdrop-blur-sm">
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-6 h-6 text-blue-600" />
+            {/* Right Panel - Mobile Optimized */}
+            <div className="relative order-1 lg:order-2 mb-8 lg:mb-0">
+              <div className="bg-white/95 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-2xl border border-amber-200/50 transform hover:scale-105 transition-all duration-500">
+                <div className="text-center mb-6 lg:mb-8">
+                  <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-amber-600 to-orange-700 rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6">
+                    <Brain className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900">Verified Network</h3>
-                  <p className="text-gray-600">Every contractor is thoroughly vetted</p>
+                  <h3 className="text-xl lg:text-2xl font-bold text-slate-900 mb-2">Professional AI Platform</h3>
+                  <p className="text-slate-600 text-sm lg:text-base">Intelligent project management & contractor matching</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                    <Shield className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-                    <div className="font-bold text-emerald-600">Licensed</div>
-                    <div className="text-sm text-gray-600">State verified</div>
+                <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                  <div className="text-center p-3 lg:p-4 bg-gradient-to-br from-amber-50 to-orange-100 rounded-lg lg:rounded-xl hover:shadow-lg transition-all duration-300">
+                    <Target className="w-6 h-6 lg:w-8 lg:h-8 text-amber-700 mx-auto mb-2 lg:mb-3" />
+                    <div className="font-bold text-amber-800 text-sm lg:text-base">Smart Matching</div>
+                    <div className="text-xs lg:text-sm text-slate-600">AI contractor selection</div>
                   </div>
 
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <MapPin className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="font-bold text-blue-600">Local</div>
-                    <div className="text-sm text-gray-600">In your area</div>
+                  <div className="text-center p-3 lg:p-4 bg-gradient-to-br from-orange-50 to-red-100 rounded-lg lg:rounded-xl hover:shadow-lg transition-all duration-300">
+                    <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-orange-700 mx-auto mb-2 lg:mb-3" />
+                    <div className="font-bold text-orange-800 text-sm lg:text-base">Price Intelligence</div>
+                    <div className="text-xs lg:text-sm text-slate-600">Market-based pricing</div>
                   </div>
 
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <Phone className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                    <div className="font-bold text-purple-600">Responsive</div>
-                    <div className="text-sm text-gray-600">Quick replies</div>
+                  <div className="text-center p-3 lg:p-4 bg-gradient-to-br from-emerald-50 to-green-100 rounded-lg lg:rounded-xl hover:shadow-lg transition-all duration-300">
+                    <Calendar className="w-6 h-6 lg:w-8 lg:h-8 text-emerald-700 mx-auto mb-2 lg:mb-3" />
+                    <div className="font-bold text-emerald-800 text-sm lg:text-base">Project AI</div>
+                    <div className="text-xs lg:text-sm text-slate-600">Smart scheduling</div>
                   </div>
 
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <FileCheck className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-                    <div className="font-bold text-orange-600">Insured</div>
-                    <div className="text-sm text-gray-600">Protected work</div>
+                  <div className="text-center p-3 lg:p-4 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg lg:rounded-xl hover:shadow-lg transition-all duration-300">
+                    <CheckCircle className="w-6 h-6 lg:w-8 lg:h-8 text-blue-700 mx-auto mb-2 lg:mb-3" />
+                    <div className="font-bold text-blue-800 text-sm lg:text-base">Auto-Verify</div>
+                    <div className="text-xs lg:text-sm text-slate-600">Credential validation</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </section>      {/* Professional Services Section with Parallax */}
+      <section className="py-16 lg:py-20 relative overflow-hidden">
+        {/* Bulletproof Parallax Background Layer */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=2076&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transform: parallaxTransforms.services,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-stone-800/85 to-amber-900/80 z-5"></div>
 
-      {/* Project Gallery Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Beautiful Remodeling Projects</h2>
-            <p className="text-xl text-gray-600">See what our verified contractors can create for you</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12 lg:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 lg:mb-6">
+              Professional Construction Solutions
+            </h2>
+            <p className="text-lg lg:text-xl text-stone-200 max-w-3xl mx-auto leading-relaxed">
+              From residential renovations to commercial developments, our AI platform delivers
+              specialized solutions for every construction project scale and complexity.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/66751c475ecf56262b237e3b_cambria-surprise-granite-brittanicca-warm-quartz-kitchen-scene.webp',
-                title: 'Modern Kitchen Remodel',
-                description: 'Cambria quartz countertops with warm lighting and premium finishes'
-              },
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65335c9d645a5e7646ba6841_Bathroom-Remodel-Silverton.webp',
-                title: 'Luxury Bathroom Renovation',
-                description: 'Complete bathroom transformation with high-end materials'
-              },
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b2b211fcc652d1e7a881ee_Radianz-quartz-surprise-granite-charcoal-quartz_hotel-bathrooms.webp',
-                title: 'Hotel-Style Bathroom',
-                description: 'Radianz quartz with sophisticated commercial-grade design'
-              },
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/6456ce4476abb27db1fbb1fe_kitchen-layout-design-spec.webp',
-                title: 'Professional Kitchen Design',
-                description: 'Expert layout planning and design consultation services'
-              },
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b2b210c010208397bae8f8_cambria-surprise-granite-chicago-tower-quartz_luxury-brand-retail.webp',
-                title: 'Commercial Installation',
-                description: 'Cambria Chicago Tower quartz for luxury retail spaces'
-              },
-              {
-                image: 'https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/656fca1d0fb2e670f3befe03_Faucets-add-on-image.jpeg',
-                title: 'Premium Fixtures & Add-ons',
-                description: 'High-end faucets and custom finishing touches'
-              }
-            ].map((project, i) => (
-              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="aspect-w-16 aspect-h-12">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-48 object-cover"
-                  />
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Residential Projects */}
+            <div className="bg-slate-800/70 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-amber-400/20 hover:border-amber-400/40 transition-all duration-500 transform hover:scale-105">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-amber-600 to-orange-700 rounded-xl lg:rounded-2xl flex items-center justify-center mr-4">
+                  <Home className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
-                  <p className="text-gray-600">{project.description}</p>
+                <div>
+                  <h3 className="text-xl lg:text-2xl font-bold text-white">Residential Projects</h3>
+                  <p className="text-amber-200 text-sm lg:text-base">Premium home renovation solutions</p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* How It Works Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">How Remodely.AI Works</h2>
-            <p className="text-xl text-gray-600">Simple steps to your dream remodel</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: '1',
-                title: 'Tell us your needs',
-                desc: 'Describe your remodeling project, style preferences, and budget',
-                icon: Search
-              },
-              {
-                step: '2',
-                title: 'Get matched with contractors',
-                desc: 'Our AI connects you with verified local professionals',
-                icon: Users
-              },
-              {
-                step: '3',
-                title: 'Start your project',
-                desc: 'Review quotes, compare options, and begin your transformation',
-                icon: Star
-              }
-            ].map((item, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-8 h-8 text-blue-600" />
+              <div className="space-y-3 lg:space-y-4 mb-6">
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">AI-powered kitchen & bathroom design matching</span>
                 </div>
-                <div className="text-blue-600 font-bold mb-2">Step {item.step}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Financing Section */}
-      <section className="py-16 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Flexible Financing Options</h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Make your dream remodel affordable with our same-as-cash financing and flexible payment plans.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <CheckCircle className="w-6 h-6 text-emerald-600 mr-3" />
-                  <span className="text-gray-700">Same-as-cash financing available</span>
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">Budget optimization with predictive cost analysis</span>
                 </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-6 h-6 text-emerald-600 mr-3" />
-                  <span className="text-gray-700">Quick approval process in minutes</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-6 h-6 text-emerald-600 mr-3" />
-                  <span className="text-gray-700">Competitive rates and flexible terms</span>
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">Premium material sourcing and coordination</span>
                 </div>
               </div>
-              <Link
-                href="/quote"
-                className="inline-flex items-center mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Learn More About Financing
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
+
+              <div className="p-4 lg:p-6 bg-slate-700/50 rounded-xl border border-amber-400/20">
+                <div className="text-2xl lg:text-3xl font-bold text-amber-400 mb-1">140M+</div>
+                <div className="text-xs lg:text-sm text-stone-300">US households planning renovations annually</div>
+              </div>
             </div>
-            <div>
-              <img
-                src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/662bfb39387e83adda739fe0_same-as-cash-financing_surprise-granite.jpg"
-                alt="Financing Options"
-                className="rounded-2xl shadow-xl w-full"
-              />
+
+            {/* Commercial Projects */}
+            <div className="bg-slate-800/70 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-orange-400/20 hover:border-orange-400/40 transition-all duration-500 transform hover:scale-105">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-orange-600 to-red-700 rounded-xl lg:rounded-2xl flex items-center justify-center mr-4">
+                  <Building2 className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl lg:text-2xl font-bold text-white">Commercial Projects</h3>
+                  <p className="text-orange-200 text-sm lg:text-base">Enterprise construction management</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 lg:space-y-4 mb-6">
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">Multi-phase commercial project coordination</span>
+                </div>
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">Enterprise resource planning and optimization</span>
+                </div>
+                <div className="flex items-center text-white">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 mr-3 flex-shrink-0" />
+                  <span className="text-sm lg:text-base">Compliance management and regulatory oversight</span>
+                </div>
+              </div>
+
+              <div className="p-4 lg:p-6 bg-slate-700/50 rounded-xl border border-orange-400/20">
+                <div className="text-2xl lg:text-3xl font-bold text-orange-400 mb-1">$472B</div>
+                <div className="text-xs lg:text-sm text-stone-300">Annual North American construction market</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Office Spaces & Commercial Projects */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Commercial & Office Projects</h2>
-            <p className="text-xl text-gray-600">Professional installations for businesses and public spaces</p>
+      {/* Professional CTA Section with Parallax */}
+      <section className="py-16 lg:py-20 relative overflow-hidden">
+        {/* Bulletproof Parallax Background */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transform: parallaxTransforms.cta,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/95 via-slate-800/90 to-amber-900/85 z-5"></div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 lg:mb-6">
+            Transform Your Vision Into Reality
+          </h2>
+          <p className="text-lg lg:text-xl text-stone-200 mb-8 lg:mb-10 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of property owners and contractors who trust REMODELY AI PRO
+            for intelligent project matching and professional construction management.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center mb-12">
+            <Link
+              href="/search"
+              className="group inline-flex items-center justify-center px-6 py-3 lg:px-8 lg:py-4 bg-white text-slate-900 font-semibold rounded-xl hover:bg-stone-100 transition-all duration-300 transform hover:scale-105 shadow-xl text-sm lg:text-base"
+            >
+              <Brain className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+              Start Professional Matching
+              <ArrowRight className="ml-2 lg:ml-3 w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/contractors"
+              className="inline-flex items-center justify-center px-6 py-3 lg:px-8 lg:py-4 bg-transparent border-2 border-amber-400 text-amber-400 font-semibold rounded-xl hover:bg-amber-400 hover:text-slate-900 transition-all duration-300 text-sm lg:text-base"
+            >
+              <Building2 className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+              Join as Professional
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="relative">
-              <img
-                src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b2b2106def21c418b4f233_cambria-surprise-granite-clovelly-office-space-public-area.webp"
-                alt="Office Space Installation"
-                className="rounded-2xl shadow-lg w-full h-64 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-4 left-4 text-white">
-                <h3 className="text-xl font-bold">Office Reception Areas</h3>
-                <p className="text-sm opacity-90">Cambria Clovelly for professional spaces</p>
-              </div>
+          {/* Professional Stats Grid - Mobile Optimized */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 text-center">
+            <div className="p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-amber-400/20">
+              <div className="text-2xl lg:text-3xl font-bold text-white mb-1">{contractorCount.toLocaleString()}+</div>
+              <div className="text-xs lg:text-sm text-stone-300">Verified Professionals</div>
             </div>
-
-            <div className="relative">
-              <img
-                src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b1dfdda64f030acf274511__cambria-surprise-granite-hotel-lobby.webp"
-                alt="Hotel Lobby Installation"
-                className="rounded-2xl shadow-lg w-full h-64 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl"></div>
-              <div className="absolute bottom-4 left-4 text-white">
-                <h3 className="text-xl font-bold">Hotel & Hospitality</h3>
-                <p className="text-sm opacity-90">Luxury installations for hospitality industry</p>
-              </div>
+            <div className="p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-emerald-400/20">
+              <div className="text-2xl lg:text-3xl font-bold text-white mb-1">{projectsCompleted.toLocaleString()}+</div>
+              <div className="text-xs lg:text-sm text-stone-300">Projects Delivered</div>
+            </div>
+            <div className="p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-orange-400/20">
+              <div className="text-2xl lg:text-3xl font-bold text-white mb-1">{aiMatchAccuracy}%</div>
+              <div className="text-xs lg:text-sm text-stone-300">Match Accuracy</div>
+            </div>
+            <div className="p-3 lg:p-4 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-red-400/20">
+              <div className="text-2xl lg:text-3xl font-bold text-white mb-1">27</div>
+              <div className="text-xs lg:text-sm text-stone-300">Data Sources</div>
             </div>
           </div>
         </div>

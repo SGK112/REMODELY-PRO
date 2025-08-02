@@ -5,13 +5,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Professional industry-competitive color palette */
-  --brand-primary: #6366f1;
-  --brand-secondary: #8b5cf6;
-  --brand-accent: #0ea5e9;
+  /* REMODELY AI PRO Professional Construction Color Palette */
+  --brand-primary: #d97706;
+  /* Amber-600 */
+  --brand-secondary: #ea580c;
+  /* Orange-600 */
+  --brand-accent: #c2410c;
+  /* Orange-700 */
   --brand-success: #10b981;
   --brand-warning: #f59e0b;
   --brand-error: #ef4444;
+
+  /* Professional Construction Colors */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-200: #fed7aa;
+  --orange-300: #fdba74;
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --orange-700: #c2410c;
+  --orange-800: #9a3412;
+  --orange-900: #7c2d12;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
 
   /* Refined neutral palette */
   --neutral-50: #f8fafc;
@@ -413,15 +450,15 @@
     animation-delay: 0.8s;
   }
 
-  /* Enhanced buttons with better visibility */
+  /* Enhanced buttons with construction theme */
   .btn-primary {
-    background: var(--gradient-primary);
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
     color: white;
     font-weight: 600;
     padding: 0.875rem 1.5rem;
     border-radius: var(--radius-xl);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.3);
     position: relative;
     overflow: hidden;
     border: none;
@@ -450,8 +487,9 @@
   }
 
   .btn-primary:hover {
+    background: linear-gradient(135deg, var(--amber-700), var(--orange-700));
     transform: translateY(-2px);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 8px 25px 0 rgba(217, 119, 6, 0.4);
     filter: brightness(1.05);
   }
 
@@ -1058,4 +1096,153 @@
 
 .gradient-forest {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* REMODELY AI PRO Professional Construction Component Styles */
+
+/* Professional Construction Cards */
+.construction-card {
+  background: linear-gradient(135deg, var(--neutral-50), var(--stone-50));
+  border: 1px solid var(--stone-200);
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(41, 37, 36, 0.08);
+}
+
+.construction-card:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 8px 32px rgba(217, 119, 6, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Professional Badge Styles */
+.badge-construction {
+  background: linear-gradient(135deg, var(--amber-500), var(--orange-500));
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-certified {
+  background: linear-gradient(135deg, var(--brand-success), #059669);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.badge-premium {
+  background: linear-gradient(135deg, var(--stone-700), var(--stone-800));
+  color: var(--amber-200);
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Professional Input Styles */
+.input-construction {
+  border: 2px solid var(--stone-300);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--stone-50);
+}
+
+.input-construction:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+  background: white;
+}
+
+/* Professional Text Styles */
+.text-construction-primary {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.text-construction-heading {
+  background: linear-gradient(135deg, var(--stone-800), var(--stone-700));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.text-construction-accent {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Professional Construction Gradients */
+.gradient-construction-primary {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+}
+
+.gradient-construction-subtle {
+  background: linear-gradient(135deg, var(--stone-50), var(--amber-50));
+}
+
+.gradient-construction-hero {
+  background: linear-gradient(135deg, var(--stone-100) 0%, var(--amber-50) 30%, var(--stone-50) 100%);
+}
+
+/* Professional Animation Classes */
+.hover-lift:hover {
+  transform: translateY(-4px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Professional Shadow Classes */
+.shadow-construction {
+  box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.15);
+}
+
+.shadow-construction-lg {
+  box-shadow: 0 8px 32px rgba(217, 119, 6, 0.2);
+}
+
+/* Smart Sticky Positioning - Prevents Overlap */
+.sticky-smart {
+  position: sticky;
+  top: 1.5rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .sticky-smart {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+/* Smooth Scroll Padding for Anchors */
+html {
+  scroll-padding-top: 2rem;
+}
+
+/* Prevent Layout Shift on Mobile */
+@media (max-width: 768px) {
+  .mobile-no-sticky {
+    position: static !important;
+  }
 }

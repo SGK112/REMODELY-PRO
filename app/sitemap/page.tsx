@@ -31,7 +31,7 @@ export default function SitemapPage() {
     ],
     'Search & Discovery': [
       { name: 'Search Results', url: '/search', description: 'Advanced contractor search with filters' },
-      { name: 'Austin Contractors', url: '/contractors?location=Austin,%20TX', description: 'Find contractors in Austin, Texas' },
+      { name: 'Phoenix Contractors', url: '/contractors?location=Phoenix,%20AZ', description: 'Find contractors in Phoenix, Arizona' },
       { name: 'Phoenix Contractors', url: '/contractors?location=Phoenix,%20AZ', description: 'Find contractors in Phoenix, Arizona' },
       { name: 'Dallas Contractors', url: '/contractors?location=Dallas,%20TX', description: 'Find contractors in Dallas, Texas' },
       { name: 'Houston Contractors', url: '/contractors?location=Houston,%20TX', description: 'Find contractors in Houston, Texas' },
@@ -85,7 +85,7 @@ export default function SitemapPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                'Austin, TX', 'Dallas, TX', 'Houston, TX', 'San Antonio, TX',
+                'Phoenix, AZ', 'Scottsdale, AZ', 'Tempe, AZ', 'Mesa, AZ',
                 'Phoenix, AZ', 'Scottsdale, AZ', 'Denver, CO', 'Colorado Springs, CO',
                 'Atlanta, GA', 'Miami, FL', 'Orlando, FL', 'Tampa, FL',
                 'Las Vegas, NV', 'Reno, NV', 'Los Angeles, CA', 'San Diego, CA',

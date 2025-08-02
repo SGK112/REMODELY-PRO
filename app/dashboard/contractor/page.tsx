@@ -17,7 +17,12 @@ import {
   CheckCircle,
   XCircle,
   Eye,
-  Building
+  Building,
+  Zap,
+  Crown,
+  Calculator,
+  FileText,
+  CreditCard
 } from 'lucide-react'
 import SMSNotificationPanel from '@/components/ui/SMSNotificationPanel'
 
@@ -149,6 +154,53 @@ export default function ContractorDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Response Rate</p>
                 <p className="text-2xl font-semibold text-gray-900">{stats.responseRate}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Professional Tools Section */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl shadow-lg p-8 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Zap className="h-12 w-12 mr-4" />
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Professional Contractor Tools</h2>
+                  <p className="text-orange-100 text-lg">
+                    Manage projects, create estimates, send invoices, and grow your business with our complete toolkit
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/contractor/tools"
+                className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-colors flex items-center"
+              >
+                <Crown className="mr-2" size={20} />
+                Launch Tools
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                <Calculator className="h-8 w-8 mb-2" />
+                <h3 className="font-semibold">Smart Estimating</h3>
+                <p className="text-sm text-orange-100">AI-powered pricing & estimates</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                <FileText className="h-8 w-8 mb-2" />
+                <h3 className="font-semibold">Project Management</h3>
+                <p className="text-sm text-orange-100">Track projects & timelines</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                <CreditCard className="h-8 w-8 mb-2" />
+                <h3 className="font-semibold">Invoicing & Payments</h3>
+                <p className="text-sm text-orange-100">Professional billing system</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                <TrendingUp className="h-8 w-8 mb-2" />
+                <h3 className="font-semibold">Business Analytics</h3>
+                <p className="text-sm text-orange-100">Performance insights & reports</p>
               </div>
             </div>
           </div>

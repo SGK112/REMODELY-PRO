@@ -246,7 +246,7 @@ export default function ContractorSignUpPage() {
                     value={formData.location}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                    placeholder="Austin, TX"
+                    placeholder="Phoenix, AZ"
                   />
                 </div>
               </div>
@@ -279,8 +279,8 @@ export default function ContractorSignUpPage() {
                   <label
                     key={specialty}
                     className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${formData.specialties.includes(specialty)
-                        ? 'bg-blue-50 border-blue-300 text-blue-700'
-                        : 'bg-white/80 border-slate-300 hover:border-slate-400'
+                      ? 'bg-blue-50 border-blue-300 text-blue-700'
+                      : 'bg-white/80 border-slate-300 hover:border-slate-400'
                       }`}
                   >
                     <input

@@ -14,6 +14,9 @@ import { LocationRequestCompact } from '@/components/ui/LocationRequest'
 import { ContractorAvatar, ProfessionalImage } from '@/components/ui/ProfessionalImage'
 import { ProfessionalSearch } from '@/components/ui/ProfessionalSearch'
 import { ContractorStatus, StatusBadge, ProfessionalRating } from '@/components/ui/ProfessionalStatus'
+import { ImageService } from '@/lib/imageService'
+import { SmartSearch } from '@/components/ui/SmartSearch'
+import { searchService, SearchFilters, ContractorSearchResult } from '@/lib/searchService'
 
 interface Contractor {
   id: string
@@ -22,7 +25,11 @@ interface Contractor {
   rating: number
   reviewCount: number
   location: string
-  distance: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
+  distance?: number
   specialties: string[]
   yearsExperience: number
   profileImage: string
@@ -48,13 +55,14 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 549,
     location: 'Peoria, AZ',
-    distance: '2.1 miles',
+    coordinates: { lat: 33.5806, lng: -112.2374 },
+    distance: 2.1,
     specialties: ['Granite Fabrication', 'Quartz Installation', 'Marble Countertops'],
     yearsExperience: 15,
-    profileImage: '/contractor-profile-1.jpg',
+    profileImage: ImageService.getContractorProfileImage(0),
     portfolioImages: [
-      '/kitchen-luxury.jpg',
-      '/bathroom-modern.jpg'
+      ImageService.getProjectImage(0, 'kitchen-project'),
+      ImageService.getProjectImage(1, 'bathroom-project')
     ],
     description: 'Family business offering a wide range of natural stone fabrication products. Verified business with excellent Google reviews and professional service.',
     verified: true,
@@ -65,7 +73,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     certifications: ['Licensed', 'Insured', 'Caesarstone Certified'],
     phone: '(623) 606-7610',
     website: 'mirageaz.com',
-    priceRange: '$$$'
+    priceRange: 'Premium'
   },
   {
     id: '2',
@@ -74,13 +82,14 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 4.8,
     reviewCount: 324,
     location: 'Glendale, AZ',
-    distance: '5.3 miles',
+    coordinates: { lat: 33.5387, lng: -112.1860 },
+    distance: 5.3,
     specialties: ['Kitchen Cabinetry', 'Bathroom Remodeling', 'Countertop Installation'],
     yearsExperience: 18,
-    profileImage: '/contractor-profile-2.jpg',
+    profileImage: ImageService.getContractorProfileImage(1),
     portfolioImages: [
-      '/kitchen-modern.jpg',
-      '/bathroom-luxury.jpg'
+      ImageService.getProjectImage(2, 'kitchen-project'),
+      ImageService.getProjectImage(3, 'bathroom-project')
     ],
     description: 'Specialized in high-end kitchen and bathroom renovations with focus on quality craftsmanship and customer satisfaction.',
     verified: true,
@@ -90,7 +99,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     certifications: ['Licensed', 'Insured', 'NKBA Certified'],
     phone: '(602) 555-0123',
     website: 'diamondkb.com',
-    priceRange: '$$$$'
+    priceRange: 'Premium'
   },
   {
     id: '3',
@@ -99,18 +108,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 38,
     location: 'Phoenix, AZ',
-    distance: '8.2 miles',
+    coordinates: { lat: 33.4484, lng: -112.0740 },
+    distance: 8.2,
     specialties: ['Quartz Fabrication', 'Granite Installation', 'Custom Stone Work'],
     yearsExperience: 12,
-    profileImage: '/contractor-profile-3.jpg',
+    profileImage: ImageService.getContractorProfileImage(2),
     portfolioImages: [
-      '/bathroom-modern.jpg',
-      '/living-room-modern.jpg'
+      ImageService.getProjectImage(4, 'kitchen-project'),
+      ImageService.getProjectImage(5, 'bathroom-project')
     ],
     description: 'Specialized stone fabrication and installation with perfect 5.0 rating and quality craftsmanship. Expert in custom quartz and granite work.',
     verified: true,
     phone: '(602) 555-0038',
-    priceRange: '$$'
+    priceRange: 'Mid-Range'
   },
   {
     id: '4',
@@ -119,18 +129,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 32,
     location: 'Mesa, AZ',
-    distance: '12.1 miles',
+    coordinates: { lat: 33.4152, lng: -111.8315 },
+    distance: 12.1,
     specialties: ['Plumbing Installation', 'Pipe Repair', 'Emergency Services'],
     yearsExperience: 14,
-    profileImage: '/contractor-profile-4.jpg',
+    profileImage: ImageService.getContractorProfileImage(3),
     portfolioImages: [
-      '/bathroom-modern.jpg',
-      '/hvac-electrical.jpg'
+      ImageService.getProjectImage(6, 'flooring-project'),
+      ImageService.getProjectImage(7, 'kitchen-project')
     ],
     description: 'Professional plumbing services with perfect rating and reliable emergency response. Available 24/7 for urgent plumbing needs.',
     verified: true,
     phone: '(480) 555-0032',
-    priceRange: '$$'
+    priceRange: 'Mid-Range'
   },
   {
     id: '5',
@@ -139,18 +150,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 39,
     location: 'Chandler, AZ',
-    distance: '15.7 miles',
+    coordinates: { lat: 33.3062, lng: -111.8413 },
+    distance: 15.7,
     specialties: ['Granite Installation', 'Kitchen Remodeling', 'Stone Fabrication'],
     yearsExperience: 16,
-    profileImage: '/contractor-profile-5.jpg',
+    profileImage: ImageService.getContractorProfileImage(4),
     portfolioImages: [
-      '/kitchen-luxury.jpg',
-      '/general-contracting.jpg'
+      ImageService.getProjectImage(8, 'bathroom-project'),
+      ImageService.getProjectImage(9, 'kitchen-project')
     ],
     description: 'Complete granite and remodeling services with perfect customer satisfaction rating. Specializing in full kitchen transformations.',
     verified: true,
     phone: '(480) 555-0039',
-    priceRange: '$$'
+    priceRange: 'Mid-Range'
   },
   {
     id: '6',
@@ -159,18 +171,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 41,
     location: 'Phoenix, AZ',
-    distance: '7.4 miles',
+    coordinates: { lat: 33.4734, lng: -112.0406 },
+    distance: 7.4,
     specialties: ['Residential Plumbing', 'Commercial Services', 'Water Heater Installation'],
     yearsExperience: 22,
-    profileImage: '/contractor-profile-1.jpg',
+    profileImage: ImageService.getContractorProfileImage(5),
     portfolioImages: [
-      '/bathroom-modern.jpg',
-      '/hvac-electrical.jpg'
+      ImageService.getProjectImage(10, 'bathroom-project'),
+      ImageService.getProjectImage(11, 'hvac-project')
     ],
     description: 'Trusted plumbing services with decades of experience and perfect customer reviews. Serving both residential and commercial clients.',
     verified: true,
     phone: '(602) 555-0041',
-    priceRange: '$$'
+    priceRange: 'Mid-Range'
   },
   {
     id: '7',
@@ -179,18 +192,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 26,
     location: 'Scottsdale, AZ',
-    distance: '9.8 miles',
+    coordinates: { lat: 33.4942, lng: -111.9261 },
+    distance: 9.8,
     specialties: ['Emergency Plumbing', 'Drain Cleaning', 'Fixture Installation'],
     yearsExperience: 10,
-    profileImage: '/contractor-profile-2.jpg',
+    profileImage: ImageService.getContractorProfileImage(6),
     portfolioImages: [
-      '/bathroom-modern.jpg',
-      '/general-contracting.jpg'
+      ImageService.getProjectImage(12, 'bathroom-project'),
+      ImageService.getProjectImage(13, 'general-contracting')
     ],
     description: 'Fast, reliable plumbing services with 24/7 emergency availability and perfect rating. Quick response times guaranteed.',
     verified: true,
     phone: '(480) 555-0026',
-    priceRange: '$$'
+    priceRange: 'Mid-Range'
   },
   {
     id: '8',
@@ -199,18 +213,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 21,
     location: 'Tempe, AZ',
-    distance: '11.2 miles',
+    coordinates: { lat: 33.4255, lng: -111.9400 },
+    distance: 11.2,
     specialties: ['Stone Installation', 'Tile Work', 'Kitchen Remodeling'],
     yearsExperience: 13,
-    profileImage: '/contractor-profile-3.jpg',
+    profileImage: ImageService.getContractorProfileImage(7),
     portfolioImages: [
-      '/kitchen-luxury.jpg',
-      '/bathroom-modern.jpg'
+      ImageService.getProjectImage(14, 'kitchen-project'),
+      ImageService.getProjectImage(15, 'bathroom-project')
     ],
     description: 'Premium stone and tile installation services with meticulous attention to detail. Specializing in high-end residential projects.',
     verified: true,
     phone: '(480) 555-0021',
-    priceRange: '$$$'
+    priceRange: 'Premium'
   },
   {
     id: '9',
@@ -219,18 +234,19 @@ const MOCK_CONTRACTORS: Contractor[] = [
     rating: 5.0,
     reviewCount: 36,
     location: 'Gilbert, AZ',
-    distance: '18.5 miles',
+    coordinates: { lat: 33.3528, lng: -111.7890 },
+    distance: 18.5,
     specialties: ['Full Home Remodeling', 'Kitchen Design', 'Bathroom Renovation'],
     yearsExperience: 20,
-    profileImage: '/contractor-profile-4.jpg',
+    profileImage: ImageService.getContractorProfileImage(0), // Reuse first profile for variety
     portfolioImages: [
-      '/living-room-modern.jpg',
-      '/kitchen-luxury.jpg'
+      ImageService.getProjectImage(16, 'living-room'),
+      ImageService.getProjectImage(17, 'kitchen-project')
     ],
     description: 'Complete home remodeling services with innovative design and quality construction. Perfect rating with comprehensive project management.',
     verified: true,
     phone: '(480) 555-0036',
-    priceRange: '$$$'
+    priceRange: 'Premium'
   }
 ];
 
@@ -265,6 +281,19 @@ function ContractorsPageContent() {
   const [showFilters, setShowFilters] = useState(false)
   const [showLocationRequest, setShowLocationRequest] = useState(true)
 
+  // Enhanced search state
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    location: locationQuery,
+    radius: 25,
+    minRating: 0,
+    specialties: [],
+    priceRange: '',
+    availability: '',
+    sortBy: 'distance'
+  })
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [filteredResults, setFilteredResults] = useState<ContractorSearchResult[]>([])
+
   // State for real vs mock data
   const [contractors, setContractors] = useState<Contractor[]>([])
   const [loading, setLoading] = useState(true)
@@ -286,15 +315,15 @@ function ContractorsPageContent() {
           businessName: contractor.businessName || `${contractor.user?.name || 'Professional'} Contracting`,
           rating: contractor.rating || 4.5,
           reviewCount: contractor.reviewCount || Math.floor(Math.random() * 100) + 10,
-          location: `${contractor.city || 'Austin'}, ${contractor.state || 'TX'}`,
-          distance: '0 miles', // Calculate based on user location
+          location: `${contractor.city || 'Unknown City'}, ${contractor.state || 'Unknown State'}`,
+          distance: 0, // Calculate based on user location
           specialties: Array.isArray(contractor.specialties) ? contractor.specialties : JSON.parse(contractor.specialties || '["General Contracting"]'),
           yearsExperience: contractor.yearsExperience || Math.floor(Math.random() * 15) + 5,
-          profileImage: contractor.user?.image || `/contractor-profile-${Math.floor(Math.random() * 5) + 1}.jpg`,
+          profileImage: contractor.user?.image || ImageService.getContractorProfileImage(),
           portfolioImages: Array.isArray(contractor.portfolioImages) ? contractor.portfolioImages :
             contractor.portfolioImages ? JSON.parse(contractor.portfolioImages) : [
-              '/kitchen-luxury.jpg',
-              '/bathroom-modern.jpg'
+              ImageService.getProjectImage(0, 'kitchen-project'),
+              ImageService.getProjectImage(1, 'bathroom-project')
             ],
           description: contractor.description || 'Professional contractor services with years of experience.',
           verified: contractor.isVerified || Math.random() > 0.3,
@@ -318,11 +347,11 @@ function ContractorsPageContent() {
       // Fall back to mock data with better variety
       const enhancedMockData = MOCK_CONTRACTORS.map((contractor, index) => ({
         ...contractor,
-        profileImage: `/contractor-profile-${(index % 5) + 1}.jpg`,
+        profileImage: ImageService.getContractorProfileImage(index),
         portfolioImages: [
-          '/kitchen-luxury.jpg',
-          '/bathroom-modern.jpg',
-          '/living-room-modern.jpg'
+          ImageService.getProjectImage(index * 3, 'kitchen-project'),
+          ImageService.getProjectImage(index * 3 + 1, 'bathroom-project'),
+          ImageService.getProjectImage(index * 3 + 2, 'living-room')
         ]
       }))
       setContractors(enhancedMockData)
@@ -330,6 +359,57 @@ function ContractorsPageContent() {
       console.log('✅ Using enhanced mock data')
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Enhanced search handler
+  const handleSearch = async (filters: SearchFilters) => {
+    setSearchLoading(true)
+    setSearchFilters(filters)
+
+    try {
+      // Convert contractors to search result format
+      const contractorSearchResults: ContractorSearchResult[] = contractors.map(contractor => ({
+        id: contractor.id,
+        name: contractor.name,
+        businessName: contractor.businessName,
+        rating: contractor.rating,
+        reviewCount: contractor.reviewCount,
+        location: contractor.location,
+        coordinates: contractor.coordinates,
+        specialties: contractor.specialties,
+        yearsExperience: contractor.yearsExperience,
+        profileImage: contractor.profileImage,
+        portfolioImages: contractor.portfolioImages,
+        description: contractor.description,
+        verified: contractor.verified,
+        phone: contractor.phone,
+        website: contractor.website,
+        priceRange: contractor.priceRange,
+        premium: contractor.premium,
+        featured: contractor.featured
+      }))
+
+      // Use enhanced search service
+      const results = await searchService.searchContractors(contractorSearchResults, filters)
+      setFilteredResults(results)
+
+      // Update URL with search parameters
+      const params = new URLSearchParams()
+      if (filters.location) params.set('location', filters.location)
+      if (filters.radius !== 25) params.set('radius', filters.radius.toString())
+      if (filters.minRating > 0) params.set('rating', filters.minRating.toString())
+      if (filters.specialties.length > 0) params.set('specialties', filters.specialties.join(','))
+      if (filters.priceRange) params.set('price', filters.priceRange)
+      if (filters.sortBy !== 'distance') params.set('sort', filters.sortBy)
+
+      window.history.pushState({}, '', `/contractors?${params.toString()}`)
+
+    } catch (error) {
+      console.error('Search failed:', error)
+      setFilteredResults(contractors.map(contractor => ({ ...contractor, distance: contractor.distance || 0 })))
+    } finally {
+      setSearchLoading(false)
     }
   }
 
@@ -363,36 +443,32 @@ function ContractorsPageContent() {
   // Calculate distances and sort contractors based on user location
   const contractorsWithDistance = useMemo(() => {
     return contractors.map(contractor => {
-      let distance = contractor.distance // fallback to mock distance
-      let distanceValue = parseFloat(contractor.distance)
+      let distanceValue = contractor.distance || 0 // Use existing distance or 0
 
-      if (currentLocation) {
-        // Mock coordinates for contractors (in production, these would come from your database)
-        const contractorCoords = {
-          'Austin, TX': { lat: 30.2672, lng: -97.7431 },
-          'Cedar Park, TX': { lat: 30.5052, lng: -97.8203 },
-          'Round Rock, TX': { lat: 30.5083, lng: -97.6789 },
-          'Pflugerville, TX': { lat: 30.4394, lng: -97.6200 },
-          'Georgetown, TX': { lat: 30.6327, lng: -97.6779 }
-        }
-
-        const coords = contractorCoords[contractor.location as keyof typeof contractorCoords]
-        if (coords) {
-          distanceValue = calculateDistance(coords.lat, coords.lng)
-          distance = `${distanceValue.toFixed(1)} miles`
-        }
+      if (currentLocation && contractor.coordinates) {
+        // Calculate actual distance using coordinates
+        distanceValue = calculateDistance(
+          contractor.coordinates.lat,
+          contractor.coordinates.lng
+        )
       }
 
       return {
         ...contractor,
-        distance,
+        distance: distanceValue,
         distanceValue
       }
     }).sort((a, b) => a.distanceValue - b.distanceValue)
   }, [currentLocation, calculateDistance])
 
-  // Filter contractors based on search criteria
+  // Use filtered results from enhanced search or fall back to basic filtering
   const filteredContractors = useMemo(() => {
+    // If we have search results from enhanced search, use those
+    if (filteredResults.length > 0 || searchFilters.location || searchFilters.minRating > 0 || searchFilters.specialties.length > 0) {
+      return filteredResults
+    }
+
+    // Otherwise, use basic filtering for backward compatibility
     return contractorsWithDistance.filter(contractor => {
       const matchesSearch = contractor.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         contractor.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -409,7 +485,7 @@ function ContractorsPageContent() {
 
       return matchesSearch && matchesLocation && matchesSpecialties && matchesPriceRange && matchesRating
     })
-  }, [contractorsWithDistance, searchTerm, locationQuery, selectedSpecialties, priceRange, rating])
+  }, [filteredResults, contractorsWithDistance, searchFilters, searchTerm, locationQuery, selectedSpecialties, priceRange, rating])
 
   const toggleSpecialty = (specialty: string) => {
     setSelectedSpecialties(prev =>
@@ -430,25 +506,25 @@ function ContractorsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100">
       {/* Data Source Indicator */}
       {!loading && (
-        <div className={`${dataSource === 'database' ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} border-b`}>
+        <div className={`${dataSource === 'database' ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} border-b`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {dataSource === 'database' ? (
                   <>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-green-700 font-medium">
-                      ✅ Live Data - {contractors.length} contractors from database
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <span className="text-sm text-emerald-700 font-medium">
+                      ✅ Live Professional Data - {contractors.length} contractors from database
                     </span>
                   </>
                 ) : (
                   <>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm text-yellow-700 font-medium">
-                      🎭 Demo Data - Using sample contractors for demonstration
+                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                    <span className="text-sm text-amber-700 font-medium">
+                      🎭 Demo Data - Using sample professionals for demonstration
                     </span>
                   </>
                 )}
@@ -456,7 +532,7 @@ function ContractorsPageContent() {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={loadRealContractors}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-sm text-amber-600 hover:text-amber-700 font-medium"
                 >
                   🔄 Refresh Data
                 </button>
@@ -468,7 +544,7 @@ function ContractorsPageContent() {
                     setPriceRange('')
                     setRating(0)
                   }}
-                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 font-medium"
+                  className="text-sm bg-gradient-to-r from-amber-600 to-orange-700 text-white px-3 py-1 rounded-md hover:from-amber-700 hover:to-orange-800 font-medium"
                 >
                   🗑️ Clear Search
                 </button>
@@ -478,15 +554,15 @@ function ContractorsPageContent() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+      {/* Professional Header */}
+      <div className="bg-gradient-to-r from-white via-stone-50 to-amber-50 shadow-sm border-b border-amber-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Find Expert Home Remodeling Contractors Near You
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">
+              Find Professional Construction Contractors Near You
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Connect with verified, experienced contractors and fabricators in your area
+            <p className="text-xl text-stone-600 max-w-3xl mx-auto">
+              Connect with AI-verified, professional contractors and construction specialists in your area through REMODELY AI PRO
             </p>
           </div>
 
@@ -500,46 +576,13 @@ function ContractorsPageContent() {
             </div>
           )}
 
-          {/* Search Bar */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Search by business name or specialty..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="relative md:w-64">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
-                    placeholder="Enter city, state or zip"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={locationQuery}
-                    onChange={(e) => handleLocationSearch(e.target.value)}
-                  />
-                </div>
-                {/* Temporarily disabled LocationRequestCompact */}
-                {false && !currentLocation && (
-                  <LocationRequestCompact
-                    onLocationReceived={() => { }}
-                    className="whitespace-nowrap"
-                  />
-                )}
-              </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                <Filter size={20} />
-                <span>Filters</span>
-              </button>
-            </div>
+          {/* Enhanced Smart Search */}
+          <div className="max-w-5xl mx-auto">
+            <SmartSearch
+              onSearch={handleSearch}
+              loading={searchLoading}
+              className="mb-6"
+            />
           </div>
         </div>
       </div>

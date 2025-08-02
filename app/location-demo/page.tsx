@@ -118,7 +118,7 @@ export default function LocationDemo() {
                             <h2 className="text-xl font-semibold mb-4">Distance Calculator</h2>
                             <div className="space-y-2">
                                 <div className="flex justify-between">
-                                    <span>To Austin, TX:</span>
+                                    <span>To Phoenix, AZ:</span>
                                     <span className="font-mono">
                                         {calculateDistance(30.2672, -97.7431).toFixed(1)} miles
                                     </span>
