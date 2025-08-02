@@ -1,23 +1,49 @@
 services:
   - type: web
-    name: remodely-ai-web
-    env: node
+    name: remodely-pro
+    runtime: node
     plan: starter
-    buildCommand: npm run build:render
-    startCommand: npm run start
-    healthCheckPath: /
+    region: oregon
+    buildCommand: |
+      npm ci
+      npx prisma generate
+      npm run build
+    startCommand: npm start
+    autoDeploy: false
     envVars:
+      - key: PORT
+        value: 10000
       - key: NODE_ENV
         value: production
-      - key: NEXTAUTH_SECRET
-        value: f5dab90bb976d1bf7c8e9f4a3d2e1b6c8a5f9e2d7c4b3a1e8f6d9c2b5a8e1f4d
-      - key: NEXTAUTH_URL
-        value: https://remodely.ai
       - key: DATABASE_URL
-        fromDatabase:
-          name: remodely-ai-db
-          property: connectionString
-      - key: CSRF_SECRET
+        sync: false
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+    healthCheckPath: /api/health
+    domains:
+      - remodely.pro
+      - www.remodely.pro
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
         value: 572226ab12ee29d87f3c8b1e4a9d6f2e8c5b3a7f1d4e9c2b5a8e1f4d
       - key: PORT
         value: 10000

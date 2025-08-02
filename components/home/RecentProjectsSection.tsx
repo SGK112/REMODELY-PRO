@@ -20,7 +20,7 @@ const RECENT_PROJECTS: Project[] = [
     id: '1',
     title: 'Modern Kitchen Renovation',
     contractor: 'Rodriguez Granite Works',
-    location: 'Austin, TX',
+    location: 'Phoenix, AZ',
     image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
     beforeImage: 'https://images.unsplash.com/photo-1556909045-f3bda3dd4b3f?w=200&h=150&fit=crop',
     rating: 5.0,
@@ -95,11 +95,10 @@ export function RecentProjectsSection() {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(project.rating)
+                        className={`w-4 h-4 ${i < Math.floor(project.rating)
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
-                        }`}
+                          }`}
                       />
                     ))}
                     <span className="ml-2 text-sm font-medium text-gray-700">
@@ -128,7 +127,7 @@ export function RecentProjectsSection() {
                       {project.location}
                     </div>
                   </div>
-                  <Link 
+                  <Link
                     href={`/contractors/1`}
                     className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center"
                   >

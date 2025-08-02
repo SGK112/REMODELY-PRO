@@ -66,34 +66,48 @@ export default function QuotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gradient-construction-hero py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Professional Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Get AI-Powered Project Matches
+          <h1 className="text-5xl font-bold text-construction-heading mb-6">
+            Get Professional AI-Powered Project Matches
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Our intelligent matching system analyzes your project requirements and connects you with the perfect contractors for your home remodeling needs.
+          <p className="text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed">
+            REMODELY.AI PRO's intelligent matching system analyzes your construction requirements and connects you with verified, licensed contractors specializing in your project type.
           </p>
+          <div className="mt-6 flex items-center justify-center space-x-8 text-sm text-stone-500">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>AI-Powered Matching</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+              <span>Licensed Contractors</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>Free Quotes</span>
+            </div>
+          </div>
         </div>
 
         {/* Success/Error Messages */}
         {submitStatus !== 'idle' && (
-          <div className={`mb-8 p-4 rounded-lg flex items-center ${submitStatus === 'success'
-              ? 'bg-green-50 border border-green-200 text-green-800'
-              : 'bg-red-50 border border-red-200 text-red-800'
+          <div className={`mb-8 p-6 rounded-2xl flex items-start shadow-construction ${submitStatus === 'success'
+            ? 'bg-green-50 border border-green-200 text-green-800'
+            : 'bg-red-50 border border-red-200 text-red-800'
             }`}>
             {submitStatus === 'success' ? (
-              <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />
+              <CheckCircle className="w-6 h-6 mr-4 flex-shrink-0 mt-1" />
             ) : (
-              <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
+              <AlertCircle className="w-6 h-6 mr-4 flex-shrink-0 mt-1" />
             )}
             <div>
-              <p className="font-medium">{submitMessage}</p>
+              <p className="font-semibold text-lg">{submitMessage}</p>
               {matchedContractors.length > 0 && (
-                <p className="text-sm mt-1">
-                  We found {matchedContractors.length} highly-rated contractors in your area.
+                <p className="text-sm mt-2">
+                  We found {matchedContractors.length} highly-rated professional contractors in your area who specialize in your project type.
                 </p>
               )}
             </div>
@@ -107,17 +121,17 @@ export default function QuotePage() {
 
         {/* Success State - Show Matched Contractors */}
         {submitStatus === 'success' && matchedContractors.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Your AI-Matched Contractors</h2>
+          <div className="bg-white rounded-lg shadow-sm border border-amber-200/50 p-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Your AI-Matched Professional Contractors</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {matchedContractors.map((contractor, index) => (
-                <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div key={index} className="border border-stone-200 rounded-lg p-4 hover:shadow-md hover:border-amber-300 transition-all">
                   <div className="flex items-start">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                       {contractor.businessName.charAt(0)}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{contractor.businessName}</h3>
+                      <h3 className="font-semibold text-slate-900">{contractor.businessName}</h3>
                       <p className="text-sm text-gray-600 mb-2">{contractor.description}</p>
                       <div className="flex items-center text-sm text-gray-500">
                         <span className="mr-4">⭐ {contractor.rating.toFixed(1)}</span>

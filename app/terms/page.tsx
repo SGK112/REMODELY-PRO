@@ -30,7 +30,7 @@ export default function TermsPage() {
             <p className="text-gray-600 mb-4">
               To use certain features of our service, you must create an account. You agree to provide accurate, current, and complete information during registration.
             </p>
-            
+
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Account Security</h3>
             <p className="text-gray-600 mb-4">
               You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
@@ -65,7 +65,7 @@ export default function TermsPage() {
             <p className="text-gray-600 mb-4">
               Quote requests submitted through our platform are offers to receive estimates. Contractors may choose whether to respond to quote requests.
             </p>
-            
+
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Project Agreements</h3>
             <p className="text-gray-600 mb-4">
               Any agreements for services, including pricing, timeline, and project specifications, are solely between you and the contractor. NewCountertops.com is not a party to these agreements.
@@ -85,7 +85,7 @@ export default function TermsPage() {
             <p className="text-gray-600 mb-4">
               We strive to maintain service availability but do not guarantee uninterrupted access. The Service is provided "as is" without warranties of any kind.
             </p>
-            
+
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Third-Party Services</h3>
             <p className="text-gray-600 mb-4">
               We are not responsible for the quality, safety, or legality of services provided by contractors found through our platform.
@@ -157,8 +157,8 @@ export default function TermsPage() {
               <p className="text-gray-700 mb-2"><strong>Email:</strong> legal@newcountertops.com</p>
               <p className="text-gray-700 mb-2"><strong>Phone:</strong> 1-800-STONE-PRO</p>
               <p className="text-gray-700"><strong>Address:</strong> NewCountertops.com, LLC<br />
-              123 Business Ave<br />
-              Austin, TX 78701</p>
+                123 Business Ave<br />
+                Phoenix, AZ 85001</p>
             </div>
           </section>
         </div>

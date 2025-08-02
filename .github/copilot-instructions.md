@@ -1,118 +1,142 @@
-# Copilot Instructions for NewCountertops.com
+# Copilot Instructions for Remodely.AI
 
 ## Architecture Overview
 
-This is a **Next.js 14 App Router** marketplace connecting homeowners with granite contractors. The app uses **role-based routing** with three user types: `CUSTOMER`, `CONTRACTOR`, and `ADMIN`.
+This is a **production-ready Next.js 14 App Router** marketplace connecting homeowners with stone and surface contractors. The platform features **role-based authentication**, **automated contractor scraping system**, and **comprehensive marketplace functionality**.
 
 ### Key Data Flow
 - **Quote System**: Customer requests → Contractor responses → Bookings → Payments (Stripe)
-- **Authentication**: NextAuth.js with Prisma adapter handles multi-role users
-- **Database**: Single User model with role-specific relations (`contractor` and `customer` optional fields)
+- **Scraping Pipeline**: 27 sources → Automated data collection → Contractor verification → Database storage
+- **Authentication**: NextAuth.js with custom credentials + Prisma adapter
+- **Location Services**: Google Maps integration + geographic search
 
-## Database Schema Patterns
+## Critical Systems
 
-The **Prisma schema** uses a hub-and-spoke pattern around the `User` model:
-```prisma
-// Core pattern: User -> Role-specific profile -> Business entities
-User (userType: CUSTOMER|CONTRACTOR|ADMIN)
-├── Contractor? (business profile)
-├── Customer? (personal profile)  
-├── Quote[] (both send/receive)
-├── Booking[] (shared bookings)
-└── Message[] (bidirectional communication)
+### Contractor Scraping Architecture
+The project's **core differentiator** is its automated contractor acquisition system:
+```bash
+# Main scraping commands
+node test-scraping.js                    # Test all scrapers
+node test-single-scraper.js [scraper]    # Test specific scraper
+node populate-contractors.js             # Production data import
+./system-status-check.sh                 # Health monitoring
 ```
 
-**Critical relationships**: Always query through User → role-specific profile, never directly to business entities.
+**27 scraper sources** organized in `lib/scrapers/`:
+- Manufacturer websites (12): Caesarstone, Cambria, Silestone, etc.
+- Business directories (8): Yelp, Google, Yellow Pages, etc.
+- Professional networks (4): Houzz, Angie's List, etc.
+- Government databases (3): Arizona ROC, CLC, licensing boards
 
-## Development Workflow
+### Database Schema Pattern
+Hub-and-spoke around `User` model with **role-specific profiles**:
+```prisma
+User (userType: CUSTOMER|CONTRACTOR|ADMIN)
+├── Contractor? (business profile + scraped data)
+├── Customer? (personal profile)
+├── Quote[] (bidirectional communication)
+└── Booking[] + Payment[] + Review[]
+```
+
+## Development Workflows
 
 ### Essential Commands
 ```bash
-# Database operations (run in sequence)
-npm run db:generate  # After schema changes
-npm run db:push      # Push to development DB
-npm run db:migrate   # Create migration files
-npm run db:seed      # Populate sample data
+# Database operations (ALWAYS in sequence)
+npm run db:generate && npm run db:push && npm run db:seed
+
+# Scraping operations
+npm run seed:production        # Production contractor import
+npm run import:contractors     # Bulk contractor processing
+npm run deploy:full           # Full production deployment
 
 # Development
-npm run dev          # Development server with hot reload
-npm run build        # Production build (test before deploy)
+npm run dev                   # Development with hot reload
+npm run build:analyze         # Bundle analysis
+npm run db:studio            # Prisma database browser
 ```
+
+### Testing Patterns
+Use project's **extensive test suite** (40+ test files):
+```bash
+# Authentication & registration flow
+node test-registration-flow.js
+node test-phone-verification.js
+
+# Scraping system validation  
+node test-arizona-scrapers.js
+node test-authenticated-scraping.js
+
+# Location & maps integration
+node test-location-service.js
+node test-google-maps.js
+```
+
+## Code Patterns & Integration Points
+
+### Authentication Architecture
+- **Custom credentials provider** in `lib/auth.ts`
+- **Phone verification** via Twilio (`lib/twilio.ts`)
+- **Role-based middleware** in `middleware.ts` protecting `/dashboard`, `/admin`, `/api/*`
+- **Protected API routes** return 401 for unauthenticated requests
+
+### Service Layer Pattern
+All business logic in `lib/` with consistent patterns:
+- **Database**: `lib/prisma.ts` (singleton pattern)
+- **Validation**: `lib/validation.ts` (Zod schemas)
+- **Location**: `lib/location.ts` + `lib/maps.ts` (Google Maps integration)
+- **Images**: `lib/imageService.ts` + `lib/enhancedImageService.ts`
+- **Communication**: `lib/twilio.ts` + `lib/email.ts`
+
+### Environment Configuration
+**Three environment tiers**:
+```bash
+.env.example           # Template with all required keys
+.env.production        # Production configuration
+.env.scraping.example  # Scraping-specific credentials
+```
+
+**Required integrations**: Google Maps API, Twilio, Stripe, Cloudinary, database (PostgreSQL in production)
 
 ### File Structure Conventions
 ```
 app/
-├── page.tsx              # Landing page (public)
-├── (auth)/               # Route groups for organization  
-├── dashboard/
-│   ├── contractor/       # Role-specific dashboards
-│   └── customer/         # (implement pattern consistently)
-└── api/                  # API routes (not yet implemented)
+├── dashboard/[customer|contractor|admin]/  # Role-specific dashboards
+├── api/[user|quotes|contractors|scrape]/   # RESTful API routes
+├── auth/                                   # NextAuth pages
+└── [contractors|search|quote]/             # Public marketplace pages
 
-components/
-├── layout/               # Reusable layout components
-├── home/                 # Landing page sections
-└── ui/                   # Generic UI components
+lib/
+├── scrapers/          # 27 automated data collection modules
+├── validation.ts      # Zod schema definitions
+└── [service].ts       # Business logic layer
+
+scripts/               # Production utilities
+test-*.js             # 40+ test files for all systems
 ```
 
-## Code Patterns & Conventions
+## Production Deployment Patterns
 
-### Client Components Pattern
-Most interactive components use `'use client'` directive:
-- **Forms and user interactions**: Always client components
-- **Static content**: Server components by default
-- **Navigation components**: Client components for state management
+### Build Process
+```bash
+npm run build:render    # Render.com deployment
+npm run build:clean     # Clean build with cache clearing
+```
 
-### Styling System
-- **Primary framework**: Tailwind CSS with custom design system
-- **Color scheme**: Brand-focused palette (blue primary, slate accents)
-- **Custom CSS variables**: Defined in `globals.css` with `--brand-*` prefix
-- **Component classes**: Use consistent patterns like `btn-primary`, `card-gradient`
+### Monitoring & Health Checks
+Use built-in monitoring scripts:
+```bash
+./system-status-check.sh           # System health overview
+node check-contractors.js          # Verify contractor data
+node check-database.js             # Database connectivity
+```
 
-### State Management
-- **Global state**: React Query for server state, SessionProvider for auth
-- **Local state**: React useState for component-level state
-- **Forms**: React Hook Form with Zod validation (pattern established)
+## Development Guidelines
 
-## Integration Points
+- **Always use absolute imports** (`@/lib/`, `@/components/`)
+- **Test scraping changes** with single-scraper tests before bulk operations
+- **Follow role-based patterns** - never bypass User → profile relationships
+- **Use validation schemas** from `lib/validation.ts` for all forms
+- **Environment variables** are strictly typed - check `.env.example`
 
-### Authentication Flow
-NextAuth.js configuration:
-- Uses Prisma adapter for database sessions
-- Supports role-based routing via `userType` field
-- Session data includes user role for conditional rendering
-
-### External Services
-- **Stripe**: Payment processing (configured in package.json)
-- **Image hosting**: Unsplash for placeholder images (allowed in next.config.js)
-- **Email**: Not yet implemented (add to environment setup)
-
-## Component Development Guidelines
-
-### Navigation Components
-Two navbar variants exist: `Navbar.tsx` (complex) and `Navbar-clean.tsx` (simple). Current layout uses clean version. Follow this pattern:
-- Mobile-first responsive design
-- Search functionality with location filtering
-- Role-based menu items
-
-### Dashboard Components
-Contractor dashboard pattern in `app/dashboard/contractor/page.tsx`:
-- Mock data constants at component level
-- Stats cards with icon + metric pattern
-- Table layouts for quote management
-- Status badges for quote states
-
-### Form Components
-Follow established patterns:
-- Client components with form state
-- Tailwind styling with custom CSS variables
-- Consistent button and input styling
-
-## Development Notes
-
-- **Database**: Currently using SQLite (check DATABASE_URL in .env)
-- **Build system**: Standard Next.js build process
-- **Deployment target**: Designed for Vercel deployment
-- **Missing implementations**: API routes, actual authentication flows, Stripe integration
-
-When adding new features, maintain the role-based architecture and follow the established component patterns. Always test database changes with the migration workflow.
+The project prioritizes **automated data acquisition** and **production reliability** - maintain these patterns when adding features.

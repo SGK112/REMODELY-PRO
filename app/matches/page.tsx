@@ -32,7 +32,7 @@ const MOCK_MATCHES: Contractor[] = [
     businessName: 'Rodriguez Granite Works',
     rating: 4.9,
     reviewCount: 127,
-    location: 'Austin, TX',
+    location: 'Phoenix, AZ',
     distance: '2.3 miles',
     specialties: ['Kitchen Remodeling', 'Granite Installation', 'Quartz Countertops'],
     profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
@@ -55,7 +55,7 @@ const MOCK_MATCHES: Contractor[] = [
     businessName: 'Precision Stone Solutions',
     rating: 4.8,
     reviewCount: 89,
-    location: 'Austin, TX',
+    location: 'Phoenix, AZ',
     distance: '3.7 miles',
     specialties: ['Bathroom Remodeling', 'Custom Fabrication', 'Natural Stone'],
     profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b367?w=150&h=150&fit=crop&crop=face',
@@ -102,8 +102,8 @@ export default function MatchesPage() {
   const [savedContractors, setSavedContractors] = useState<string[]>([])
 
   const toggleSave = (contractorId: string) => {
-    setSavedContractors(prev => 
-      prev.includes(contractorId) 
+    setSavedContractors(prev =>
+      prev.includes(contractorId)
         ? prev.filter(id => id !== contractorId)
         : [...prev, contractorId]
     )
@@ -162,11 +162,10 @@ export default function MatchesPage() {
                   </div>
                   <button
                     onClick={() => toggleSave(contractor.id)}
-                    className={`p-2 rounded-full transition-colors ${
-                      savedContractors.includes(contractor.id)
+                    className={`p-2 rounded-full transition-colors ${savedContractors.includes(contractor.id)
                         ? 'bg-red-100 text-red-600'
                         : 'bg-gray-100 text-gray-400 hover:text-red-600'
-                    }`}
+                      }`}
                   >
                     <Heart className={`w-5 h-5 ${savedContractors.includes(contractor.id) ? 'fill-current' : ''}`} />
                   </button>

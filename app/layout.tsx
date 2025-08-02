@@ -7,9 +7,9 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'REMODELY.AI - AI-Powered Home Remodeling Platform',
-  description: 'Connect with verified contractors using AI-powered matching. Get quotes, compare prices, and book trusted remodeling professionals.',
-  keywords: 'home remodeling, AI contractors, kitchen remodel, bathroom renovation, countertops, flooring',
+  title: 'REMODELY AI PRO - Professional Construction Marketplace',
+  description: 'North America\'s premier AI-powered construction marketplace. Connect with verified professional contractors for commercial and residential projects. Intelligent matching, competitive pricing, guaranteed quality.',
+  keywords: 'professional contractors, construction marketplace, AI contractors, commercial construction, residential renovation, kitchen remodel, bathroom renovation, countertops, flooring, REMODELY AI PRO',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },

@@ -1,5 +1,35 @@
-// Generic images service for contractors and projects
+// Enhanced Image Service for REMODELY AI PRO with fallback handling
 export const ImageService = {
+    // Get contractor profile image with fallback
+    getContractorProfileImage: (index?: number) => {
+        const images = ImageService.contractorProfiles;
+        if (index !== undefined && images[index]) {
+            return images[index];
+        }
+        const randomIndex = Math.floor(Math.random() * images.length);
+        return images[randomIndex] || `/api/placeholder/150x150?category=contractor-profile`;
+    },
+
+    // Get project image with fallback
+    getProjectImage: (index?: number, category: string = 'kitchen-project') => {
+        const images = ImageService.projectImages;
+        if (index !== undefined && images[index]) {
+            return images[index];
+        }
+        const randomIndex = Math.floor(Math.random() * images.length);
+        return images[randomIndex] || `/api/placeholder/400x300?category=${category}`;
+    },
+
+    // Get workshop image with fallback
+    getWorkshopImage: (index?: number) => {
+        const images = ImageService.workshopImages;
+        if (index !== undefined && images[index]) {
+            return images[index];
+        }
+        const randomIndex = Math.floor(Math.random() * images.length);
+        return images[randomIndex] || `/api/placeholder/400x300?category=workshop`;
+    },
+
     // Professional contractor profile images
     contractorProfiles: [
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face', // Professional man

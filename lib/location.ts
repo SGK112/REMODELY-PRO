@@ -227,7 +227,7 @@ export class LocationService {
     // Get popular locations based on current location
     public getPopularLocations(currentLocation?: LocationData): string[] {
         const allLocations = [
-            'Austin, TX', 'Dallas, TX', 'Houston, TX', 'San Antonio, TX',
+            'Phoenix, AZ', 'Scottsdale, AZ', 'Tempe, AZ', 'Mesa, AZ',
             'Phoenix, AZ', 'Scottsdale, AZ', 'Denver, CO', 'Colorado Springs, CO',
             'Atlanta, GA', 'Miami, FL', 'Orlando, FL', 'Tampa, FL',
             'Las Vegas, NV', 'Reno, NV', 'Los Angeles, CA', 'San Diego, CA',

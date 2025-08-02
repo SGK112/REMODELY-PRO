@@ -1,306 +1,456 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, MapPin, Phone, Globe, Calendar, Award, Shield, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Star, MapPin, Phone, Globe, Calendar, Award, Shield, Image as ImageIcon, ChevronLeft, ChevronRight, Map, Navigation, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import GoogleMap from '@/components/ui/GoogleMap'
+import { ImageService } from '@/lib/imageService'
 
 interface Contractor {
-  id: string
+  id: number
   name: string
   businessName: string
-  rating: number
-  reviewCount: number
+  email: string
+  phone: string
   location: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
   specialties: string[]
   yearsExperience: number
+  rating: number
+  reviewCount: number
+  priceRange: string
+  description: string
+  fullDescription: string
+  website?: string
   profileImage: string
   portfolioImages: string[]
-  description: string
-  verified: boolean
-  phone: string
-  website?: string
-  priceRange: string
-  fullDescription: string
   services: string[]
-  certifications: string[]
-  insuranceInfo: string
-  businessHours: {
-    [key: string]: string
-  }
-  reviews: Review[]
+  serviceArea?: string[]
+  verified: boolean
+  certification?: string
+  insurance?: string
+  bonded?: boolean
 }
 
-interface Review {
-  id: string
-  customerName: string
-  rating: number
-  date: string
-  comment: string
-  projectType: string
-  images?: string[]
-}
-
-// Mock data - in a real app this would come from an API
-const MOCK_CONTRACTOR: Contractor = {
-  id: '1',
-  name: 'Michael Rodriguez',
-  businessName: 'Rodriguez Granite Works',
+// Mock data - in production this would come from your database
+const contractorData: Contractor = {
+  id: 1,
+  name: "Michael Rodriguez",
+  businessName: "Premium Stone Solutions",
+  email: "michael@premiumstone.com",
+  phone: "(480) 555-0123",
+  location: "Phoenix, AZ",
+  coordinates: { lat: 33.4484, lng: -112.0740 },
+  specialties: ["Granite Countertops", "Quartz Installation", "Marble Work", "Kitchen Remodeling", "Bathroom Renovation"],
+  yearsExperience: 15,
   rating: 4.9,
   reviewCount: 127,
-  location: 'Austin, TX',
-  specialties: ['Kitchen Remodeling', 'Granite Installation', 'Quartz Countertops'],
-  yearsExperience: 15,
-  profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+  priceRange: "Premium",
+  description: "Premium Stone Solutions has been Phoenix's trusted partner for luxury stone installation and renovation projects for over 15 years. We specialize in high-end granite, quartz, and marble installations with a focus on precision craftsmanship and exceptional customer service.",
+  fullDescription: `Premium Stone Solutions stands as Phoenix's premier destination for luxury stone installations and comprehensive renovation services. With over 15 years of dedicated experience in the industry, we have built an unparalleled reputation for delivering exceptional craftsmanship and personalized service to homeowners and businesses throughout the greater Phoenix area.
+
+Our team of certified stone fabrication specialists brings decades of combined expertise to every project, ensuring that each installation meets the highest standards of quality and durability. We work exclusively with premium materials sourced from the world's finest quarries, including exotic granites from Brazil, precision-engineered quartz from leading manufacturers, and stunning marble selections from Italy and Greece.
+
+What sets us apart is our commitment to the complete customer experience. From initial consultation and design planning to final installation and ongoing maintenance support, we guide our clients through every step of their renovation journey. Our state-of-the-art fabrication facility utilizes the latest CNC technology and water jet cutting systems to ensure perfect fits and flawless finishes.
+
+We understand that your home is your most important investment, which is why we back all of our work with comprehensive warranties and provide ongoing support long after project completion. Our dedication to excellence has earned us recognition as Phoenix's top-rated stone contractor and preferred partner for luxury home builders and interior designers throughout Arizona.`,
+  website: "premiumstone.com",
+  profileImage: "/api/placeholder/400/400",
   portfolioImages: [
-    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1556909114-f3bda3dd4b3f?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1556909114-4e4fa72bb41c?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1556909011-7309f48f79b6?w=800&h=600&fit=crop'
+    "/api/placeholder/800/600",
+    "/api/placeholder/800/600",
+    "/api/placeholder/800/600",
+    "/api/placeholder/800/600",
+    "/api/placeholder/800/600",
+    "/api/placeholder/800/600"
   ],
-  description: 'Specializing in premium granite and quartz installations with over 15 years of experience.',
-  verified: true,
-  phone: '(512) 555-0123',
-  website: 'rodriguezgranite.com',
-  priceRange: '$$$',
-  fullDescription: `Rodriguez Granite Works has been serving the Austin area for over 15 years, specializing in premium granite and quartz countertop installations. As a family-owned business, we take pride in our commitment to quality craftsmanship and exceptional customer service.
-
-Our team of experienced fabricators and installers work with the finest materials to create stunning countertops that will last a lifetime. We handle everything from initial consultation and design to fabrication and installation, ensuring your project is completed to the highest standards.
-
-Whether you're remodeling your kitchen, updating your bathroom, or working on a commercial project, Rodriguez Granite Works has the expertise and dedication to bring your vision to life.`,
   services: [
-    'Granite Countertop Installation',
-    'Quartz Countertop Installation', 
-    'Kitchen Remodeling',
-    'Bathroom Countertops',
-    'Commercial Stone Installation',
-    'Custom Edge Profiles',
-    'Stone Repair & Restoration',
-    'Free Design Consultation'
+    "Custom Granite Countertops",
+    "Quartz Island Installation",
+    "Marble Bathroom Vanities",
+    "Outdoor Kitchen Surfaces",
+    "Fireplace Surrounds",
+    "Commercial Stone Work"
   ],
-  certifications: [
-    'Licensed General Contractor',
-    'Certified Stone Installation Professional',
-    'Better Business Bureau A+ Rating',
-    'OSHA Safety Certified'
-  ],
-  insuranceInfo: 'Fully Licensed & Insured • General Liability & Workers Compensation',
-  businessHours: {
-    'Monday': '8:00 AM - 6:00 PM',
-    'Tuesday': '8:00 AM - 6:00 PM',
-    'Wednesday': '8:00 AM - 6:00 PM',
-    'Thursday': '8:00 AM - 6:00 PM',
-    'Friday': '8:00 AM - 6:00 PM',
-    'Saturday': '9:00 AM - 4:00 PM',
-    'Sunday': 'Closed'
-  },
-  reviews: [
-    {
-      id: '1',
-      customerName: 'Sarah Johnson',
-      rating: 5,
-      date: '2024-01-15',
-      comment: 'Exceptional work! Michael and his team transformed our kitchen with beautiful granite countertops. The attention to detail and professionalism was outstanding. Highly recommend!',
-      projectType: 'Kitchen Remodel',
-      images: ['https://images.unsplash.com/photo-1556909114-355b4e88f73b?w=300&h=200&fit=crop']
-    },
-    {
-      id: '2',
-      customerName: 'David Chen',
-      rating: 5,
-      date: '2024-01-08',
-      comment: 'Rodriguez Granite Works did an amazing job on our bathroom vanity. The quality of work exceeded our expectations and they completed the project on time and within budget.',
-      projectType: 'Bathroom Remodel'
-    },
-    {
-      id: '3',
-      customerName: 'Jennifer Martinez',
-      rating: 4,
-      date: '2023-12-22',
-      comment: 'Very pleased with the quartz countertops. Professional installation and great customer service throughout the process. Would definitely use them again.',
-      projectType: 'Kitchen Countertops'
-    },
-    {
-      id: '4',
-      customerName: 'Robert Taylor',
-      rating: 5,
-      date: '2023-12-10',
-      comment: 'Outstanding craftsmanship and attention to detail. The team was punctual, clean, and respectful of our home. The finished product is absolutely beautiful.',
-      projectType: 'Kitchen Remodel',
-      images: ['https://images.unsplash.com/photo-1556909114-2e6c4fb81ef3?w=300&h=200&fit=crop']
-    }
-  ]
+  serviceArea: ["Phoenix", "Scottsdale", "Tempe", "Mesa", "Chandler", "Glendale", "Peoria"],
+  verified: true,
+  certification: "Arizona ROC Licensed",
+  insurance: "Fully Insured & Bonded",
+  bonded: true
 }
 
-export default function ContractorProfilePage({ params }: { params: { id: string } }) {
+export default function ContractorDetailPage({ params }: { params: { id: string } }) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [showAllReviews, setShowAllReviews] = useState(false)
-  
-  // In a real app, you'd fetch the contractor data based on params.id
-  const contractor = MOCK_CONTRACTOR
-  
-  if (!contractor) {
-    notFound()
-  }
+  const [contractor, setContractor] = useState<Contractor | null>(null)
+
+  useEffect(() => {
+    // In production, fetch contractor data based on params.id
+    setContractor(contractorData)
+
+    // Use existing image URLs - they're already placeholder URLs
+  }, [params.id])
 
   const nextImage = () => {
-    setSelectedImageIndex((prev) => 
-      prev === contractor.portfolioImages.length - 1 ? 0 : prev + 1
-    )
+    if (contractor) {
+      setSelectedImageIndex((prev) =>
+        prev === contractor.portfolioImages.length - 1 ? 0 : prev + 1
+      )
+    }
   }
 
   const prevImage = () => {
-    setSelectedImageIndex((prev) => 
-      prev === 0 ? contractor.portfolioImages.length - 1 : prev - 1
-    )
+    if (contractor) {
+      setSelectedImageIndex((prev) =>
+        prev === 0 ? contractor.portfolioImages.length - 1 : prev - 1
+      )
+    }
   }
 
-  const displayedReviews = showAllReviews ? contractor.reviews : contractor.reviews.slice(0, 3)
+  if (!contractor) {
+    return <div className="min-h-screen bg-gradient-construction-hero flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-amber-600 mx-auto"></div>
+        <p className="mt-4 text-stone-600">Loading contractor details...</p>
+      </div>
+    </div>
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-construction-hero">
+      {/* Navigation Breadcrumb */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-stone-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between">
+            <nav className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-stone-600 hover:text-amber-600">Home</Link>
+              <span className="text-stone-400">/</span>
+              <Link href="/contractors" className="text-stone-600 hover:text-amber-600">Contractors</Link>
+              <span className="text-stone-400">/</span>
+              <span className="text-stone-900 font-medium">{contractor.businessName}</span>
+            </nav>
+            <Link
+              href="/contractors"
+              className="btn-outline text-sm py-2 px-4 flex items-center space-x-2 hover:transform hover:scale-105 transition-transform"
+            >
+              <ChevronLeft size={16} />
+              <span>Back to Directory</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Header */}
+      <div className="bg-white shadow-lg border-b-2 border-amber-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="flex-shrink-0">
-              <img
-                src={contractor.profileImage}
-                alt={contractor.name}
-                className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
-              />
-            </div>
-            
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                <div>
-                  <div className="flex items-center justify-center md:justify-start space-x-2 mb-2">
-                    <h1 className="text-3xl font-bold text-gray-900">{contractor.businessName}</h1>
+          <div className="grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-8">
+            {/* Profile Image & Contact Actions */}
+            <div className="xl:col-span-1 lg:col-span-1">
+              <div className="sticky top-24">
+                <div className="flex flex-col items-center">
+                  <div className="relative mb-6">
+                    <img
+                      src={contractor.profileImage}
+                      alt={contractor.name}
+                      className="w-48 h-48 rounded-2xl object-cover shadow-construction border-4 border-white"
+                    />
                     {contractor.verified && (
-                      <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                        <Shield size={16} />
-                        <span className="text-sm font-medium">Verified</span>
+                      <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-2 shadow-lg">
+                        <Shield size={20} />
                       </div>
                     )}
                   </div>
-                  <p className="text-xl text-gray-600 mb-2">{contractor.name}</p>
-                  <div className="flex items-center justify-center md:justify-start space-x-4 text-gray-500 mb-4">
-                    <div className="flex items-center space-x-1">
-                      <MapPin size={16} />
-                      <span>{contractor.location}</span>
+
+                  {/* Contact Actions - Fixed spacing and z-index */}
+                  <div className="space-y-4 w-full max-w-sm">
+                    <button
+                      onClick={() => window.location.href = '/quote'}
+                      className="w-full btn-primary text-base py-3 px-4 flex items-center justify-center space-x-2 relative z-10 hover:transform hover:scale-105 transition-transform"
+                    >
+                      <DollarSign size={18} />
+                      <span>Get Free Quote</span>
+                    </button>
+                    <a
+                      href={`tel:${contractor.phone}`}
+                      className="w-full btn-outline text-base py-3 px-4 flex items-center justify-center space-x-2 hover:transform hover:scale-105 transition-transform"
+                    >
+                      <Phone size={18} />
+                      <span>{contractor.phone}</span>
+                    </a>
+                    {contractor.website && (
+                      <a
+                        href={`https://${contractor.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full btn-outline text-base py-3 px-4 flex items-center justify-center space-x-2 hover:transform hover:scale-105 transition-transform"
+                      >
+                        <Globe size={16} />
+                        <span>Visit Website</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Business Information */}
+            <div className="xl:col-span-3 lg:col-span-2">
+              <div className="bg-gradient-construction-subtle rounded-2xl p-8 shadow-construction">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                  {/* Business Info */}
+                  <div className="lg:col-span-2">
+                    <h1 className="text-4xl font-bold text-construction-heading mb-2">
+                      {contractor.businessName}
+                    </h1>
+                    <p className="text-xl text-stone-700 mb-6">{contractor.name}</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 text-stone-600">
+                      <div className="flex items-center space-x-2">
+                        <MapPin size={18} className="text-amber-600 flex-shrink-0" />
+                        <span className="font-medium">{contractor.location}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Calendar size={18} className="text-amber-600 flex-shrink-0" />
+                        <span>{contractor.yearsExperience} years experience</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Award size={18} className="text-amber-600 flex-shrink-0" />
+                        <span className="badge-construction">{contractor.priceRange} Pricing</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <Calendar size={16} />
-                      <span>{contractor.yearsExperience} years experience</span>
+                  </div>
+
+                  {/* Rating Display */}
+                  <div className="lg:col-span-1 flex justify-center lg:justify-end">
+                    <div className="text-center bg-white rounded-xl px-6 py-4 shadow-lg">
+                      <div className="flex items-center justify-center space-x-1 mb-2">
+                        <Star className="text-yellow-400 fill-current" size={24} />
+                        <span className="text-3xl font-bold text-stone-900">{contractor.rating}</span>
+                      </div>
+                      <div className="text-sm text-stone-600">{contractor.reviewCount} reviews</div>
+                      <div className="text-xs text-green-600 font-medium mt-1">Excellent Rating</div>
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex flex-col items-center md:items-end space-y-2">
-                  <div className="flex items-center space-x-1">
-                    <Star className="text-yellow-400 fill-current" size={20} />
-                    <span className="text-2xl font-bold">{contractor.rating}</span>
-                    <span className="text-gray-500">({contractor.reviewCount} reviews)</span>
+
+                {/* Specialties */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-stone-900 mb-3">Specialties</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {contractor.specialties.map(specialty => (
+                      <span
+                        key={specialty}
+                        className="badge-construction text-sm px-4 py-2"
+                      >
+                        {specialty}
+                      </span>
+                    ))}
                   </div>
-                  <div className="text-lg font-semibold text-gray-900">{contractor.priceRange}</div>
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-                {contractor.specialties.map(specialty => (
-                  <span
-                    key={specialty}
-                    className="bg-primary-100 text-primary-800 font-medium px-3 py-1 rounded-full"
-                  >
-                    {specialty}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <button className="btn-primary flex items-center space-x-2">
-                  <span>Get Free Quote</span>
-                </button>
-                <a 
-                  href={`tel:${contractor.phone}`}
-                  className="btn-outline flex items-center space-x-2"
-                >
-                  <Phone size={18} />
-                  <span>{contractor.phone}</span>
-                </a>
-                {contractor.website && (
-                  <a 
-                    href={`https://${contractor.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-outline flex items-center space-x-2"
-                  >
-                    <Globe size={18} />
-                    <span>Website</span>
-                  </a>
+
+                {/* Service Areas */}
+                {contractor.serviceArea && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-stone-900 mb-3">Service Areas</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {contractor.serviceArea.map(area => (
+                        <span
+                          key={area}
+                          className="bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full border border-amber-200"
+                        >
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 )}
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-lg font-semibold text-stone-900 mb-3">About</h3>
+                  <p className="text-stone-700 leading-relaxed">{contractor.description}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Content Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Portfolio Gallery */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <ImageIcon size={24} />
-                  <span>Portfolio</span>
+            {/* Location & Service Area */}
+            <div className="bg-white rounded-2xl shadow-construction border border-stone-200">
+              <div className="bg-gradient-construction-subtle px-8 py-6 border-b border-stone-200">
+                <h2 className="text-2xl font-bold text-construction-heading flex items-center space-x-3">
+                  <MapPin size={28} className="text-amber-600" />
+                  <span>Location & Service Area</span>
                 </h2>
-                
+                <p className="text-stone-600 mt-2">Find us and see where we serve</p>
+              </div>
+
+              <div className="p-8">
+                {/* Business Address */}
+                <div className="mb-8">
+                  <div className="bg-amber-50 rounded-xl p-6 border border-amber-100">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-center w-12 h-12 bg-amber-500 rounded-full">
+                        <MapPin size={24} className="text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-stone-900 mb-1">Business Location</h3>
+                        <p className="text-stone-700 text-base font-medium">{contractor.location}</p>
+                        <p className="text-stone-600 text-sm">Professional stone installation services</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Interactive Map */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center space-x-2">
+                    <Map size={20} className="text-amber-600" />
+                    <span>Interactive Map</span>
+                  </h3>
+                  {contractor.coordinates ? (
+                    <div className="h-72 rounded-xl overflow-hidden shadow-lg border-2 border-stone-200">
+                      <GoogleMap
+                        contractors={[{
+                          id: contractor.id.toString(),
+                          name: contractor.businessName,
+                          address: contractor.location,
+                          coordinates: contractor.coordinates,
+                          phone: contractor.phone
+                        }]}
+                        center={contractor.coordinates}
+                        zoom={13}
+                        onContractorClick={() => { }}
+                        className="w-full h-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-72 rounded-xl bg-gradient-to-br from-stone-50 to-stone-100 border-2 border-dashed border-stone-300 flex items-center justify-center">
+                      <div className="text-center text-stone-500">
+                        <MapPin size={48} className="mx-auto mb-4 text-stone-400" />
+                        <p className="font-semibold text-lg">Interactive Map</p>
+                        <p className="text-sm">Map will load with business location</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Service Areas */}
+                {contractor.serviceArea && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center space-x-2">
+                      <Award size={20} className="text-amber-600" />
+                      <span>Service Coverage Areas</span>
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {contractor.serviceArea.map(area => (
+                        <div
+                          key={area}
+                          className="bg-white border-2 border-amber-200 text-amber-800 text-sm font-semibold px-4 py-3 rounded-lg text-center hover:bg-amber-50 hover:border-amber-300 transition-all duration-200 shadow-sm"
+                        >
+                          {area}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-stone-500 text-sm mt-4 text-center">
+                      Serving {contractor.serviceArea.length} cities in the greater Phoenix metropolitan area
+                    </p>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <button
+                    onClick={() => {
+                      if (contractor.coordinates) {
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${contractor.coordinates.lat},${contractor.coordinates.lng}`;
+                        window.open(url, '_blank');
+                      }
+                    }}
+                    className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                  >
+                    <Navigation size={20} />
+                    <span>Get Directions</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const url = `https://maps.google.com/?q=${encodeURIComponent(contractor.businessName + ' ' + contractor.location)}`;
+                      window.open(url, '_blank');
+                    }}
+                    className="bg-stone-600 hover:bg-stone-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                  >
+                    <Map size={20} />
+                    <span>View on Google Maps</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Portfolio Gallery */}
+            <div className="bg-white rounded-2xl shadow-construction overflow-hidden border border-stone-200">
+              <div className="bg-gradient-construction-subtle px-8 py-6 border-b border-stone-200">
+                <h2 className="text-2xl font-bold text-construction-heading flex items-center space-x-3">
+                  <ImageIcon size={28} className="text-amber-600" />
+                  <span>Our Work Portfolio</span>
+                </h2>
+                <p className="text-stone-600 mt-2">Browse through our recent projects and craftsmanship</p>
+              </div>
+
+              <div className="p-8">
                 <div className="relative">
                   <img
                     src={contractor.portfolioImages[selectedImageIndex]}
                     alt="Portfolio"
-                    className="w-full h-96 object-cover rounded-lg"
+                    className="w-full h-96 object-cover rounded-xl shadow-lg"
                   />
-                  
+
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-construction-primary bg-opacity-90 text-white p-3 rounded-full hover:bg-opacity-100 transition-all shadow-lg"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={24} />
                   </button>
-                  
+
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-construction-primary bg-opacity-90 text-white p-3 rounded-full hover:bg-opacity-100 transition-all shadow-lg"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={24} />
                   </button>
-                  
+
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
                     {contractor.portfolioImages.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setSelectedImageIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-colors ${
-                          index === selectedImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-all ${index === selectedImageIndex
+                          ? 'bg-amber-500 shadow-lg'
+                          : 'bg-white bg-opacity-60 hover:bg-opacity-80'
+                          }`}
                       />
                     ))}
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-6 gap-2 mt-4">
+
+                {/* Thumbnail Gallery */}
+                <div className="flex space-x-3 mt-6 overflow-x-auto pb-2">
                   {contractor.portfolioImages.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`aspect-square rounded overflow-hidden border-2 transition-colors ${
-                        index === selectedImageIndex ? 'border-primary-500' : 'border-transparent'
-                      }`}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${index === selectedImageIndex
+                        ? 'border-amber-500 shadow-lg'
+                        : 'border-stone-200 hover:border-stone-300'
+                        }`}
                     >
                       <img
                         src={image}
@@ -313,190 +463,122 @@ export default function ContractorProfilePage({ params }: { params: { id: string
               </div>
             </div>
 
-            {/* About */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">About</h2>
-              <div className="prose prose-gray max-w-none">
-                {contractor.fullDescription.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-gray-700 mb-4">{paragraph}</p>
-                ))}
+            {/* Services & Expertise */}
+            <div className="bg-white rounded-2xl shadow-construction overflow-hidden border border-stone-200">
+              <div className="bg-gradient-construction-subtle px-8 py-6 border-b border-stone-200">
+                <h2 className="text-2xl font-bold text-construction-heading">Services & Expertise</h2>
+                <p className="text-stone-600 mt-2">Professional services we provide</p>
               </div>
-            </div>
 
-            {/* Services */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Services</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {contractor.services.map(service => (
-                  <div key={service} className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                    <span className="text-gray-700">{service}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Reviews */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 flex items-center space-x-2">
-                  <Star className="text-yellow-400 fill-current" size={24} />
-                  <span>Reviews ({contractor.reviewCount})</span>
-                </h2>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{contractor.rating}</div>
-                  <div className="text-sm text-gray-500">out of 5</div>
-                </div>
-              </div>
-              
-              <div className="space-y-6">
-                {displayedReviews.map(review => (
-                  <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <div className="font-semibold text-gray-900">{review.customerName}</div>
-                        <div className="text-sm text-gray-500">{review.projectType}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center space-x-1 mb-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={16}
-                              className={i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
-                            />
-                          ))}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {new Date(review.date).toLocaleDateString()}
-                        </div>
-                      </div>
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {contractor.services.map((service, index) => (
+                    <div key={service} className="flex items-center space-x-3 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <span className="text-stone-700 font-medium">{service}</span>
                     </div>
-                    <p className="text-gray-700 mb-3">{review.comment}</p>
-                    {review.images && (
-                      <div className="flex space-x-2">
-                        {review.images.map((image, idx) => (
-                          <img
-                            key={idx}
-                            src={image}
-                            alt="Review"
-                            className="w-20 h-20 rounded object-cover"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              
-              {contractor.reviews.length > 3 && (
-                <div className="text-center mt-6">
-                  <button
-                    onClick={() => setShowAllReviews(!showAllReviews)}
-                    className="btn-outline"
-                  >
-                    {showAllReviews ? 'Show Less' : `Show All ${contractor.reviewCount} Reviews`}
-                  </button>
+                  ))}
                 </div>
-              )}
+              </div>
+            </div>
+
+            {/* About Section */}
+            <div className="bg-white rounded-2xl shadow-construction overflow-hidden border border-stone-200">
+              <div className="bg-gradient-construction-subtle px-8 py-6 border-b border-stone-200">
+                <h2 className="text-2xl font-bold text-construction-heading">About Our Company</h2>
+              </div>
+
+              <div className="p-8">
+                <div className="prose prose-stone max-w-none">
+                  {contractor.fullDescription.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="text-stone-700 leading-relaxed mb-4">{paragraph}</p>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-stone-200">
+                  <div className="text-center">
+                    <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Calendar size={24} className="text-amber-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-construction-heading">{contractor.yearsExperience}</div>
+                    <div className="text-stone-600">Years Experience</div>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Star size={24} className="text-amber-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-construction-heading">{contractor.rating}</div>
+                    <div className="text-stone-600">Star Rating</div>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Award size={24} className="text-amber-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-construction-heading">Premium</div>
+                    <div className="text-stone-600">Service Quality</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Contact Card */}
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Get a Quote</h3>
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Project Type
-                  </label>
-                  <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <option>Kitchen Remodel</option>
-                    <option>Bathroom Remodel</option>
-                    <option>Countertop Installation</option>
-                    <option>Commercial Project</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Project Details
-                  </label>
-                  <textarea
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Tell us about your project..."
-                  />
-                </div>
-                <button type="submit" className="w-full btn-primary">
-                  Request Quote
-                </button>
-              </form>
-            </div>
-
-            {/* Business Info */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Information</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Certifications</h4>
-                  <div className="space-y-1">
-                    {contractor.certifications.map(cert => (
-                      <div key={cert} className="flex items-center space-x-2 text-sm">
-                        <Award size={16} className="text-primary-500" />
-                        <span className="text-gray-700">{cert}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Insurance</h4>
-                  <p className="text-sm text-gray-700">{contractor.insuranceInfo}</p>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Business Hours</h4>
-                  <div className="space-y-1">
-                    {Object.entries(contractor.businessHours).map(([day, hours]) => (
-                      <div key={day} className="flex justify-between text-sm">
-                        <span className="font-medium text-gray-900">{day}</span>
-                        <span className="text-gray-700">{hours}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          <div className="space-y-8">
+            {/* Contact Form - Smart sticky positioning */}
+            <div className="bg-white rounded-2xl shadow-construction border border-stone-200 sticky-smart mobile-no-sticky">
+              <div className="bg-gradient-construction-subtle px-6 py-4 border-b border-stone-200">
+                <h3 className="text-xl font-bold text-construction-heading">Get Free Quote</h3>
+                <p className="text-stone-600 text-sm mt-1">Request a personalized estimate</p>
               </div>
-            </div>
 
-            {/* Back to Directory */}
-            <div className="text-center">
-              <Link href="/contractors" className="btn-outline">
-                ← Back to Directory
-              </Link>
+              <div className="p-6">
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Project Type</label>
+                    <select className="w-full border border-stone-300 rounded-lg px-3 py-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
+                      <option>Kitchen Countertops</option>
+                      <option>Bathroom Vanity</option>
+                      <option>Outdoor Kitchen</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Budget Range</label>
+                    <select className="w-full border border-stone-300 rounded-lg px-3 py-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
+                      <option>$5,000 - $10,000</option>
+                      <option>$10,000 - $20,000</option>
+                      <option>$20,000 - $30,000</option>
+                      <option>$30,000+</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Timeline</label>
+                    <select className="w-full border border-stone-300 rounded-lg px-3 py-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
+                      <option>ASAP</option>
+                      <option>Within 1 month</option>
+                      <option>1-3 months</option>
+                      <option>3+ months</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Project Details</label>
+                    <textarea
+                      rows={4}
+                      className="w-full border border-stone-300 rounded-lg px-3 py-2 focus:ring-amber-500 focus:border-amber-500"
+                      placeholder="Describe your project..."
+                    ></textarea>
+                  </div>
+
+                  <button type="submit" className="w-full btn-primary py-3">
+                    Request Free Quote
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
