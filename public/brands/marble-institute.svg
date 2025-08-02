@@ -1,0 +1,12 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="marble" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="50%" style="stop-color:#e2e8f0"/>
+      <stop offset="100%" style="stop-color:#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="12" width="25" height="16" rx="3" fill="url(#marble)" stroke="#94a3b8" stroke-width="1"/>
+  <text x="35" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1f2937">MARBLE</text>
+  <text x="35" y="35" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">INSTITUTE</text>
+</svg>

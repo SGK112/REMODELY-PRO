@@ -1,0 +1,15 @@
+<svg width="140" height="50" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cambriaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#059669"/>
+      <stop offset="100%" style="stop-color:#047857"/>
+    </linearGradient>
+    <pattern id="marble" patternUnits="objectBoundingBox" width="0.1" height="0.1">
+      <rect width="1" height="1" fill="#f8fafc"/>
+      <path d="M0,0.5 Q0.5,0.2 1,0.5 Q0.5,0.8 0,0.5" stroke="#e2e8f0" stroke-width="0.02" fill="none"/>
+    </pattern>
+  </defs>
+  <rect x="5" y="12" width="28" height="26" rx="4" fill="url(#marble)" stroke="url(#cambriaGrad)" stroke-width="2"/>
+  <text x="40" y="28" font-family="Georgia, serif" font-size="17" font-weight="bold" fill="#1f2937">Cambria</text>
+  <text x="40" y="40" font-family="Arial, sans-serif" font-size="9" fill="#6b7280">NATURAL QUARTZ</text>
+</svg>

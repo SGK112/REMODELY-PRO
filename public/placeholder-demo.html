@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Placeholder System - New Countertops</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2d3748;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .card h3 {
+            margin: 0 0 15px 0;
+            color: #2d3748;
+            font-size: 18px;
+        }
+        .image-container {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .size-info {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 10px;
+        }
+        .avatar-section {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .avatar {
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Professional Placeholder System</h1>
+            <p>Showcasing enhanced image placeholders with category-specific designs</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>👤 Contractor Profiles</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x200?category=contractor-profile" alt="Contractor Profile" />
+                </div>
+                <div class="avatar-section">
+                    <img src="/api/placeholder/80x80?category=contractor-profile" alt="Avatar" class="avatar" width="80" height="80" />
+                    <img src="/api/placeholder/60x60?category=contractor-profile" alt="Avatar" class="avatar" width="60" height="60" />
+                    <img src="/api/placeholder/40x40?category=contractor-profile" alt="Avatar" class="avatar" width="40" height="40" />
+                </div>
+                <div class="size-info">Professional contractor avatars and profiles</div>
+            </div>
+
+            <div class="card">
+                <h3>🏢 Business Photos</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x180?category=contractor-business" alt="Business" />
+                </div>
+                <div class="size-info">Showroom and business location placeholders</div>
+            </div>
+
+            <div class="card">
+                <h3>🪨 Granite Samples</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x160?category=granite-countertop" alt="Granite" />
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                    <img src="/api/placeholder/80x80?category=granite-countertop" alt="Sample" style="border-radius: 8px;" />
+                    <img src="/api/placeholder/80x80?category=granite-countertop" alt="Sample" style="border-radius: 8px;" />
+                    <img src="/api/placeholder/80x80?category=granite-countertop" alt="Sample" style="border-radius: 8px;" />
+                </div>
+                <div class="size-info">Natural stone texture patterns</div>
+            </div>
+
+            <div class="card">
+                <h3>✨ Quartz Samples</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x160?category=quartz-countertop" alt="Quartz" />
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                    <img src="/api/placeholder/80x80?category=quartz-countertop" alt="Sample" style="border-radius: 8px;" />
+                    <img src="/api/placeholder/80x80?category=quartz-countertop" alt="Sample" style="border-radius: 8px;" />
+                    <img src="/api/placeholder/80x80?category=quartz-countertop" alt="Sample" style="border-radius: 8px;" />
+                </div>
+                <div class="size-info">Engineered stone with clean aesthetics</div>
+            </div>
+
+            <div class="card">
+                <h3>🏠 Kitchen Projects</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x200?category=kitchen-project" alt="Kitchen" />
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0;">
+                    <img src="/api/placeholder/60x60?category=kitchen-project" alt="Project" style="border-radius: 6px;" />
+                    <img src="/api/placeholder/60x60?category=kitchen-project" alt="Project" style="border-radius: 6px;" />
+                    <img src="/api/placeholder/60x60?category=kitchen-project" alt="Project" style="border-radius: 6px;" />
+                    <img src="/api/placeholder/60x60?category=kitchen-project" alt="Project" style="border-radius: 6px;" />
+                </div>
+                <div class="size-info">Completed renovation portfolios</div>
+            </div>
+
+            <div class="card">
+                <h3>🏷️ Brand Logos</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x140?category=manufacturer-logo" alt="Logo" />
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: center; margin: 15px 0;">
+                    <img src="/api/placeholder/100x60?category=manufacturer-logo" alt="Brand" style="border-radius: 8px;" />
+                    <img src="/api/placeholder/100x60?category=manufacturer-logo" alt="Brand" style="border-radius: 8px;" />
+                </div>
+                <div class="size-info">Manufacturer and brand representations</div>
+            </div>
+
+            <div class="card">
+                <h3>🖼️ Default Placeholders</h3>
+                <div class="image-container">
+                    <img src="/api/placeholder/280x180?category=default" alt="Default" />
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                    <img src="/api/placeholder/60x60?category=default" alt="Default" style="border-radius: 6px;" />
+                    <img src="/api/placeholder/80x80?category=default" alt="Default" style="border-radius: 6px;" />
+                    <img src="/api/placeholder/100x60?category=default" alt="Default" style="border-radius: 6px;" />
+                </div>
+                <div class="size-info">Professional fallback images</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h2>🚀 Enhanced Features</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; text-align: left;">
+                <div>
+                    <h4>🎨 Category-Specific Design</h4>
+                    <p>Each category has unique colors, gradients, and icons</p>
+                </div>
+                <div>
+                    <h4>📐 Professional SVG</h4>
+                    <p>Scalable vector graphics with crisp rendering</p>
+                </div>
+                <div>
+                    <h4>⚡ Optimized Performance</h4>
+                    <p>Cached responses with efficient generation</p>
+                </div>
+                <div>
+                    <h4>🎯 Smart Fallbacks</h4>
+                    <p>Graceful degradation for missing images</p>
+                </div>
+            </div>
+            <p style="color: #718096; margin-top: 20px;">
+                Visit <strong>localhost:3001/contractors</strong> to see the system in action!
+            </p>
+        </div>
+    </div>
+</body>
+</html>

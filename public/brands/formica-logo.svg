@@ -1,0 +1,10 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="formica" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626"/>
+      <stop offset="100%" style="stop-color:#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="15" cy="20" r="8" fill="url(#formica)"/>
+  <text x="30" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1f2937">Formica</text>
+</svg>
