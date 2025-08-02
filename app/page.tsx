@@ -83,7 +83,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="text-left space-y-6 lg:space-y-8 order-1 lg:order-1">
               {/* Professional Status Badge */}
-              <div className="inline-flex items-center px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-amber-600/20 to-orange-700/20 backdrop-blur-sm border border-amber-400/30 rounded-full">
+              <div className="inline-flex items-center px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-amber-600/20 to-orange-700/20 backdrop-blur-sm border border-amber-400/30 rounded-full mt-4 lg:mt-6">
                 <Bot className="w-4 h-4 lg:w-5 lg:h-5 text-amber-400 mr-2 lg:mr-3" />
                 <span className="text-white font-medium text-sm lg:text-base">Professional AI-Powered Matching</span>
                 <div className="ml-2 lg:ml-3 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
