@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { User, Mail, Lock, Eye, EyeOff, Phone, Building, MapPin, ArrowRight, Construction, ArrowLeft } from 'lucide-react'
+import { useScrollNavigation } from '@/hooks/useScrollNavigation'
 
 interface FormData {
   firstName: string
@@ -35,6 +36,7 @@ export default function ContractorSignUpPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const router = useRouter()
+  const { navigateTo } = useScrollNavigation()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -103,7 +105,7 @@ export default function ContractorSignUpPage() {
       if (response.ok) {
         setSuccess('PRO account created successfully! Redirecting to login...')
         setTimeout(() => {
-          router.push('/auth/signin?message=PRO account created successfully')
+          navigateTo('/auth/signin?message=PRO account created successfully')
         }, 2000)
       } else {
         setError(data.error || 'Failed to create account')

@@ -6,30 +6,32 @@ export const dynamic = 'force-dynamic'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useScrollNavigation } from '@/hooks/useScrollNavigation'
 
 export default function DashboardRedirect() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const { navigateTo } = useScrollNavigation()
 
     useEffect(() => {
         if (status === 'loading') return // Still loading
 
         if (!session) {
-            router.push('/auth/signin')
+            navigateTo('/auth/signin')
             return
         }
 
         // Redirect based on user type
         if (session.user.userType === 'CONTRACTOR') {
-            router.push('/dashboard/contractor')
+            navigateTo('/dashboard/contractor')
         } else if (session.user.userType === 'CUSTOMER') {
-            router.push('/dashboard/customer')
+            navigateTo('/dashboard/customer')
         } else if (session.user.userType === 'ADMIN') {
-            router.push('/dashboard/admin')
+            navigateTo('/dashboard/admin')
         } else {
-            router.push('/dashboard/customer') // Default fallback
+            navigateTo('/dashboard/customer') // Default fallback
         }
-    }, [session, status, router])
+    }, [session, status, navigateTo])
 
     if (status === 'loading') {
         return (
