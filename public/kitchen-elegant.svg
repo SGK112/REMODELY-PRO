@@ -1,0 +1,146 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Professional kitchen gradients -->
+    <linearGradient id="kitchenBackground" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f1f5f9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="cabinetGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6" />
+      <stop offset="100%" style="stop-color:#7c3aed" />
+    </linearGradient>
+    
+    <linearGradient id="countertopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f3f4f6" />
+      <stop offset="100%" style="stop-color:#e5e7eb" />
+    </linearGradient>
+    
+    <linearGradient id="backsplashGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ddd6fe" />
+      <stop offset="100%" style="stop-color:#c4b5fd" />
+    </linearGradient>
+    
+    <!-- Subtle tech connection lines -->
+    <linearGradient id="techLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
+    </linearGradient>
+    
+    <!-- Soft shadows -->
+    <filter id="softShadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="rgba(0,0,0,0.1)"/>
+    </filter>
+    
+    <filter id="techGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Light professional background -->
+  <rect width="100%" height="100%" fill="url(#kitchenBackground)"/>
+  
+  <!-- Beautiful Modern Kitchen -->
+  <g transform="translate(100, 80)">
+    <!-- Kitchen island with beautiful countertop -->
+    <rect x="200" y="300" width="300" height="80" fill="url(#countertopGradient)" stroke="#d1d5db" stroke-width="1" rx="8" filter="url(#softShadow)"/>
+    
+    <!-- Island base -->
+    <rect x="210" y="320" width="280" height="120" fill="url(#cabinetGradient)" stroke="#7c3aed" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    
+    <!-- Cabinet handles -->
+    <rect x="280" y="375" width="20" height="4" fill="#475569" rx="2"/>
+    <rect x="380" y="375" width="20" height="4" fill="#475569" rx="2"/>
+    
+    <!-- Upper cabinets -->
+    <rect x="0" y="150" width="180" height="100" fill="url(#cabinetGradient)" stroke="#7c3aed" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    <rect x="400" y="150" width="200" height="100" fill="url(#cabinetGradient)" stroke="#7c3aed" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    
+    <!-- Lower cabinets -->
+    <rect x="0" y="280" width="180" height="120" fill="url(#cabinetGradient)" stroke="#7c3aed" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    <rect x="520" y="280" width="80" height="120" fill="url(#cabinetGradient)" stroke="#7c3aed" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    
+    <!-- Countertops -->
+    <rect x="-5" y="270" width="190" height="15" fill="url(#countertopGradient)" stroke="#d1d5db" stroke-width="1" rx="4"/>
+    <rect x="515" y="270" width="90" height="15" fill="url(#countertopGradient)" stroke="#d1d5db" stroke-width="1" rx="4"/>
+    
+    <!-- Beautiful backsplash -->
+    <rect x="0" y="250" width="600" height="30" fill="url(#backsplashGradient)" stroke="#c4b5fd" stroke-width="1" rx="2"/>
+    
+    <!-- Appliances -->
+    <!-- Refrigerator -->
+    <rect x="520" y="160" width="80" height="200" fill="#f9fafb" stroke="#e5e7eb" stroke-width="2" rx="8" filter="url(#softShadow)"/>
+    <rect x="530" y="200" width="8" height="40" fill="#9ca3af" rx="4"/>
+    
+    <!-- Range/Cooktop -->
+    <rect x="250" y="270" width="120" height="15" fill="#1f2937" stroke="#374151" stroke-width="1" rx="4"/>
+    <circle cx="270" cy="277" r="8" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <circle cx="310" cy="277" r="8" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    <circle cx="350" cy="277" r="8" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+    
+    <!-- Range hood -->
+    <rect x="230" y="120" width="160" height="40" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1" rx="6" filter="url(#softShadow)"/>
+    
+    <!-- Kitchen window -->
+    <rect x="50" y="100" width="100" height="80" fill="#dbeafe" stroke="#93c5fd" stroke-width="2" rx="6"/>
+    <line x1="100" y1="100" x2="100" y2="180" stroke="#93c5fd" stroke-width="1"/>
+    <line x1="50" y1="140" x2="150" y2="140" stroke="#93c5fd" stroke-width="1"/>
+  </g>
+  
+  <!-- Subtle floating geometric shapes connecting traditional to tech -->
+  <g filter="url(#techGlow)" opacity="0.4">
+    <!-- Floating connecting squares -->
+    <rect x="120" y="100" width="8" height="8" fill="#6366f1" rx="1">
+      <animate attributeName="y" values="100;80;100" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    
+    <rect x="680" y="150" width="6" height="6" fill="#8b5cf6" rx="1">
+      <animate attributeName="y" values="150;130;150" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.8;0.4" dur="5s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- Subtle triangular connection points -->
+    <polygon points="200,80 205,90 195,90" fill="#6366f1" opacity="0.5">
+      <animate attributeName="transform" values="translate(0,0);translate(0,-10);translate(0,0)" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+    
+    <polygon points="600,120 605,130 595,130" fill="#8b5cf6" opacity="0.5">
+      <animate attributeName="transform" values="translate(0,0);translate(0,-10);translate(0,0)" dur="4s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+  
+  <!-- Subtle connection lines between traditional and tech -->
+  <g stroke="url(#techLine)" stroke-width="1" fill="none" opacity="0.3">
+    <path d="M150 200 Q400 150 650 200">
+      <animate attributeName="stroke-dasharray" values="0,300;150,150;300,0;0,300" dur="8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M100 400 Q400 350 700 400">
+      <animate attributeName="stroke-dasharray" values="0,300;150,150;300,0;0,300" dur="10s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Minimal tech indicators -->
+  <g opacity="0.6">
+    <circle cx="150" cy="500" r="3" fill="#6366f1">
+      <animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="650" cy="480" r="2" fill="#8b5cf6">
+      <animate attributeName="r" values="2;4;2" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Subtle brand elements -->
+  <g fill="#6366f1" font-family="Arial, sans-serif" font-weight="300" opacity="0.2">
+    <text x="50" y="580" font-size="10">TRADITIONAL</text>
+    <text x="720" y="580" font-size="10">TECH</text>
+  </g>
+</svg>

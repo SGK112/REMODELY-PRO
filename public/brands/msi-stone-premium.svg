@@ -1,0 +1,65 @@
+<svg viewBox="0 0 240 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="msiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#374151"/>
+      <stop offset="30%" style="stop-color:#1a1a1a"/>
+      <stop offset="70%" style="stop-color:#404040"/>
+      <stop offset="100%" style="stop-color:#6b7280"/>
+    </linearGradient>
+    <linearGradient id="msiAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b4513"/>
+      <stop offset="50%" style="stop-color:#cd853f"/>
+      <stop offset="100%" style="stop-color:#cd7f32"/>
+    </linearGradient>
+    <linearGradient id="msiBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f3f0"/>
+      <stop offset="100%" style="stop-color:#e6d7c8"/>
+    </linearGradient>
+    <filter id="msiShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#1a1a1a" flood-opacity="0.25"/>
+    </filter>
+    <pattern id="stoneTexture" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="0.5" fill="url(#msiAccent)" opacity="0.1"/>
+      <circle cx="1" cy="1" r="0.3" fill="url(#msiGradient)" opacity="0.05"/>
+      <circle cx="7" cy="2" r="0.2" fill="url(#msiAccent)" opacity="0.08"/>
+    </pattern>
+  </defs>
+  
+  <!-- Premium stone texture background -->
+  <rect x="6" y="18" width="228" height="44" rx="8" fill="url(#msiBg)" opacity="0.4"/>
+  <rect x="8" y="20" width="224" height="40" rx="6" fill="url(#stoneTexture)"/>
+  
+  <!-- MSI with bold professional styling -->
+  <text x="20" y="35" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="900" 
+        fill="url(#msiGradient)" filter="url(#msiShadow)" letter-spacing="2px">MSI</text>
+  
+  <!-- STONE with refined weight -->
+  <text x="85" y="35" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" 
+        fill="url(#msiAccent)" filter="url(#msiShadow)" letter-spacing="1px">STONE</text>
+  
+  <!-- Professional tagline -->
+  <text x="20" y="50" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="500" 
+        fill="url(#msiGradient)" opacity="0.8">Surfaces & Tile Solutions</text>
+  
+  <!-- Sophisticated stone stack logo -->
+  <g transform="translate(170, 25)">
+    <!-- Multiple stone layers -->
+    <rect x="0" y="8" width="32" height="4" rx="2" fill="url(#msiBg)" stroke="url(#msiGradient)" stroke-width="0.8"/>
+    <rect x="2" y="12" width="28" height="4" rx="2" fill="url(#msiAccent)" opacity="0.3"/>
+    <rect x="4" y="16" width="24" height="4" rx="2" fill="url(#msiGradient)" opacity="0.6"/>
+    
+    <!-- Premium stone veining -->
+    <path d="M4 10 Q16 9 28 10" stroke="url(#msiAccent)" stroke-width="0.5" opacity="0.8" fill="none"/>
+    <path d="M6 14 Q18 13 26 14" stroke="url(#msiGradient)" stroke-width="0.4" opacity="0.6" fill="none"/>
+    
+    <!-- Quality accent -->
+    <circle cx="28" cy="10" r="2" fill="url(#msiAccent)" opacity="0.9"/>
+    <circle cx="28" cy="10" r="1.2" fill="#cd7f32" opacity="0.8"/>
+  </g>
+  
+  <!-- Professional texture elements -->
+  <circle cx="155" cy="30" r="1" fill="url(#msiAccent)" opacity="0.4"/>
+  <circle cx="160" cy="42" r="0.8" fill="url(#msiGradient)" opacity="0.3"/>
+  <circle cx="150" cy="38" r="1.2" fill="url(#msiAccent)" opacity="0.5"/>
+  <circle cx="165" cy="35" r="0.6" fill="#cd853f" opacity="0.6"/>
+</svg>
