@@ -19,6 +19,7 @@ import {
   DollarSign,
   User
 } from 'lucide-react'
+import { useScrollNavigation } from '@/hooks/useScrollNavigation'
 
 interface Quote {
   id: string
@@ -39,6 +40,7 @@ interface Quote {
 export default function CustomerDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { navigateTo } = useScrollNavigation()
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -46,7 +48,7 @@ export default function CustomerDashboard() {
     if (status === 'loading') return
 
     if (!session) {
-      router.push('/auth/signin')
+      navigateTo('/auth/signin')
       return
     }
 

@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Construction } from 'lucide-react'
+import { useScrollNavigation } from '@/hooks/useScrollNavigation'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -13,6 +14,7 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const { navigateTo } = useScrollNavigation()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +31,7 @@ export default function SignInPage() {
       if (result?.error) {
         setError('Invalid email or password')
       } else if (result?.ok) {
-        router.push('/dashboard')
+        navigateTo('/dashboard')
       }
     } catch (error) {
       setError('Something went wrong. Please try again.')

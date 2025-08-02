@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Navbar } from '@/components/layout/Navbar-clean'
 import { Footer } from '@/components/layout/Footer'
 import { Providers } from './providers'
+import ScrollToTop from '@/components/ScrollToTop'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
+          <ScrollToTop />
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
