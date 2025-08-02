@@ -3,7 +3,7 @@
 RemodelyPro is a comprehensive platform connecting homeowners with verified contractors for home remodeling projects. Built with Next.js 14, it features advanced location-based search, professional contractor tools, and intelligent project matching.
 
 ## 🚀 Live Demo
-- **Production**: [Coming Soon - Render Deployment]
+- **Production**: https://remodely.ai
 - **Development**: http://localhost:3001
 
 ## 🏗️ Platform Overview
@@ -430,7 +430,7 @@ npm run db:seed        # Populate with sample data
 4. **Launch Platform**
 ```bash
 npm run dev            # Development server
-# Open http://localhost:3000
+# Open http://localhost:3001
 ```
 
 ## 📁 Project Structure
