@@ -7,18 +7,21 @@ services:
     buildCommand: |
       npm ci
       npx prisma generate
-      npm run build
+      npm run build:render
     startCommand: npm start
     autoDeploy: false
+    healthCheckPath: /api/health
     envVars:
       - key: PORT
         value: 10000
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: remodely-ai-db
+          property: connectionString
       - key: NEXTAUTH_URL
-        sync: false
+        value: https://remodely.ai
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -58,4 +61,6 @@ services:
 
 databases:
   - name: remodely-ai-db
+    databaseName: remodely_ai_production
+    user: remodely_user
     plan: starter
