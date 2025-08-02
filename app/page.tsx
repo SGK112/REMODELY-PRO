@@ -81,7 +81,7 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <div className="text-left space-y-6 lg:space-y-8 order-2 lg:order-1">
+            <div className="text-left space-y-6 lg:space-y-8 order-1 lg:order-1">
               {/* Professional Status Badge */}
               <div className="inline-flex items-center px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-amber-600/20 to-orange-700/20 backdrop-blur-sm border border-amber-400/30 rounded-full">
                 <Bot className="w-4 h-4 lg:w-5 lg:h-5 text-amber-400 mr-2 lg:mr-3" />
@@ -137,7 +137,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Panel - Mobile Optimized */}
-            <div className="relative order-1 lg:order-2 mb-8 lg:mb-0">
+            <div className="relative order-2 lg:order-2 mb-8 lg:mb-0">
               <div className="bg-white/95 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-2xl border border-amber-200/50 transform hover:scale-105 transition-all duration-500">
                 <div className="text-center mb-6 lg:mb-8">
                   <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-amber-600 to-orange-700 rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6">
