@@ -1,63 +1,79 @@
 'use client'
 
-// Contractor signup page - force deployment
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { User, Mail, Lock, Eye, EyeOff, Building, Phone, MapPin, Star, Hammer, Award } from 'lucide-react'
+import { User, Mail, Lock, Eye, EyeOff, Phone, Building, MapPin, ArrowRight, Construction, ArrowLeft } from 'lucide-react'
+
+interface FormData {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  confirmPassword: string
+  phone: string
+  businessName: string
+  serviceArea: string
+  yearsExperience: string
+}
 
 export default function ContractorSignUpPage() {
-  const [formData, setFormData] = useState({
-    name: '',
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    businessName: '',
     phone: '',
-    location: '',
-    yearsExperience: '',
-    specialties: [] as string[]
+    businessName: '',
+    serviceArea: '',
+    yearsExperience: ''
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const router = useRouter()
 
-  const specialtyOptions = [
-    'Kitchen Remodeling',
-    'Bathroom Renovation',
-    'Home Additions',
-    'Basement Finishing',
-    'Flooring Installation',
-    'Custom Cabinetry',
-    'Countertop Installation',
-    'Tile & Backsplash',
-    'Painting & Finishing',
-    'General Contracting'
-  ]
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
 
-  const handleSpecialtyChange = (specialty: string) => {
-    setFormData(prev => ({
-      ...prev,
-      specialties: prev.specialties.includes(specialty)
-        ? prev.specialties.filter(s => s !== specialty)
-        : [...prev.specialties, specialty]
-    }))
+  const validateForm = () => {
+    const requiredFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'phone', 'businessName', 'serviceArea']
+    for (const field of requiredFields) {
+      if (!formData[field as keyof FormData]) {
+        setError('All fields are required')
+        return false
+      }
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return false
+    }
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return false
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address')
+      return false
+    }
+    return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
-      return
-    }
-
-    if (formData.specialties.length === 0) {
-      setError('Please select at least one specialty')
+    if (!validateForm()) {
       setLoading(false)
       return
     }
@@ -69,301 +85,326 @@ export default function ContractorSignUpPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
+          name: `${formData.firstName} ${formData.lastName}`,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
+          phone: formData.phone,
           userType: 'CONTRACTOR',
           businessName: formData.businessName,
-          serviceArea: [formData.location],
-          yearsExperience: parseInt(formData.yearsExperience) || 0,
-          specialties: formData.specialties,
-          phone: formData.phone
+          serviceArea: formData.serviceArea,
+          yearsExperience: parseInt(formData.yearsExperience) || 0
         }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        router.push('/auth/signin?message=Contractor account created successfully! Please sign in to complete your profile.')
+        setSuccess('PRO account created successfully! Redirecting to login...')
+        setTimeout(() => {
+          router.push('/auth/signin?message=PRO account created successfully')
+        }, 2000)
       } else {
-        setError(data.error || 'Something went wrong')
+        setError(data.error || 'Failed to create account')
       }
     } catch (error) {
-      setError('Network error. Please try again.')
+      setError('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg mb-6">
-            <Hammer className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center text-slate-600 hover:text-slate-800 mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to home
+          </Link>
+          <div className="flex items-center justify-center mb-4">
+            <Construction className="w-10 h-10 text-amber-600 mr-3" />
+            <h1 className="text-3xl font-bold text-slate-900">
+              REMODELY<span className="text-amber-600">.AI</span>
+            </h1>
           </div>
-          <h2 className="text-4xl font-bold text-slate-900 mb-3">
-            Join as a Contractor
-          </h2>
-          <p className="text-lg text-slate-600 max-w-md mx-auto">
-            Connect with homeowners and grow your remodeling business with AI-powered leads
-          </p>
+          <h2 className="text-2xl font-bold text-slate-900">Join as a PRO</h2>
+          <p className="mt-2 text-slate-600">Connect with homeowners and grow your business</p>
         </div>
+      </div>
 
-        {/* Benefits Banner */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-2">
-                <Star className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="text-sm font-semibold text-slate-700">Quality Leads</div>
-              <div className="text-xs text-slate-500">Pre-qualified customers</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-2">
-                <Award className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="text-sm font-semibold text-slate-700">Build Reputation</div>
-              <div className="text-xs text-slate-500">Reviews & portfolio</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-2">
-                <Building className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="text-sm font-semibold text-slate-700">Grow Business</div>
-              <div className="text-xs text-slate-500">More projects</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Form */}
-        <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-slate-200">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
+            
+            {success && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                {success}
+              </div>
+            )}
 
-            {/* Personal Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Full Name *
+                <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-2">
+                  First name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-slate-400" />
+                  </div>
                   <input
+                    id="firstName"
+                    name="firstName"
                     type="text"
-                    name="name"
                     required
-                    value={formData.name}
+                    value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                    placeholder="John Smith"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                    placeholder="First name"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email Address *
+                <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-2">
+                  Last name
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                    placeholder="john@example.com"
-                  />
-                </div>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  required
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  className="block w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="Last name"
+                />
               </div>
             </div>
 
-            {/* Business Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Business Name *
-                </label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    name="businessName"
-                    required
-                    value={formData.businessName}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                    placeholder="Smith Stone Works"
-                  />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                Email address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-slate-400" />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Phone Number *
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="Enter your email"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+                Phone number
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="businessName" className="block text-sm font-medium text-slate-700 mb-2">
+                Business name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Building className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  id="businessName"
+                  name="businessName"
+                  type="text"
+                  required
+                  value={formData.businessName}
+                  onChange={handleInputChange}
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="Your business name"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Service Location *
+                <label htmlFor="serviceArea" className="block text-sm font-medium text-slate-700 mb-2">
+                  Service area
                 </label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPin className="h-5 w-5 text-slate-400" />
+                  </div>
                   <input
+                    id="serviceArea"
+                    name="serviceArea"
                     type="text"
-                    name="location"
                     required
-                    value={formData.location}
+                    value={formData.serviceArea}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
                     placeholder="Phoenix, AZ"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Years of Experience *
+                <label htmlFor="yearsExperience" className="block text-sm font-medium text-slate-700 mb-2">
+                  Years of Experience
                 </label>
-                <input
-                  type="number"
+                <select
+                  id="yearsExperience"
                   name="yearsExperience"
-                  required
-                  min="0"
-                  max="50"
                   value={formData.yearsExperience}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                  placeholder="5"
-                />
+                  className="block w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900"
+                >
+                  <option value="">Select years</option>
+                  <option value="1">1-2 years</option>
+                  <option value="3">3-5 years</option>
+                  <option value="6">6-10 years</option>
+                  <option value="11">11-15 years</option>
+                  <option value="16">16+ years</option>
+                </select>
               </div>
             </div>
 
-            {/* Specialties */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-3">
-                Specialties * (Select all that apply)
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                Password
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {specialtyOptions.map((specialty) => (
-                  <label
-                    key={specialty}
-                    className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${formData.specialties.includes(specialty)
-                      ? 'bg-blue-50 border-blue-300 text-blue-700'
-                      : 'bg-white/80 border-slate-300 hover:border-slate-400'
-                      }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.specialties.includes(specialty)}
-                      onChange={() => handleSpecialtyChange(specialty)}
-                      className="sr-only"
-                    />
-                    <span className="text-sm font-medium">{specialty}</span>
-                  </label>
-                ))}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="block w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="Create a password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Password */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password *
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    required
-                    minLength={6}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-12 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                Confirm password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-slate-400" />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Confirm Password *
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80"
-                  />
-                </div>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="block w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Creating Account...' : 'Create Contractor Account'}
-            </button>
-
-            <div className="text-center pt-4">
-              <p className="text-slate-600">
-                Already have an account?{' '}
-                <Link href="/auth/signin" className="text-blue-600 hover:text-blue-700 font-medium">
-                  Sign in
-                </Link>
-              </p>
-              <p className="text-slate-500 mt-2">
-                Looking for a contractor?{' '}
-                <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-                  Customer signup
-                </Link>
-              </p>
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    Join as PRO
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
             </div>
           </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-slate-500">Already have an account?</span>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Link
+                href="/auth/signin"
+                className="font-medium text-amber-600 hover:text-amber-500"
+              >
+                Sign in to your account
+              </Link>
+            </div>
+
+            <div className="mt-4 text-center">
+              <Link
+                href="/signup"
+                className="text-sm text-slate-600 hover:text-slate-800"
+              >
+                Are you a homeowner? <span className="font-medium text-amber-600">Sign up as customer</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
