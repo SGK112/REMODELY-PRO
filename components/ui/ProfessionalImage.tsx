@@ -56,7 +56,7 @@ export function ProfessionalImage({
         <div className={`relative overflow-hidden ${className}`}>
             {/* Loading skeleton */}
             {isLoading && (
-                <div 
+                <div
                     className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 rounded-lg"
                     style={{ width, height }}
                 >
@@ -154,7 +154,7 @@ export function ContractorAvatar({
                 className="rounded-full border-2 border-white shadow-lg"
                 priority
             />
-            
+
             {/* Online status indicator (can be made dynamic) */}
             <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
         </div>
@@ -175,11 +175,11 @@ export function MaterialSample({
     size?: number
     className?: string
 }) {
-    const category = materialType === 'granite' 
-        ? 'granite-countertop' 
-        : materialType === 'quartz' 
-        ? 'quartz-countertop' 
-        : 'default'
+    const category = materialType === 'granite'
+        ? 'granite-countertop'
+        : materialType === 'quartz'
+            ? 'quartz-countertop'
+            : 'default'
 
     return (
         <div className={`relative group ${className}`}>
@@ -191,7 +191,7 @@ export function MaterialSample({
                 category={category}
                 className="rounded-lg border border-gray-200 group-hover:border-primary/20 transition-colors"
             />
-            
+
             {/* Material info overlay */}
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-2 rounded-b-lg">
                 <p className="text-white text-xs font-medium truncate">{materialName}</p>

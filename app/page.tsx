@@ -14,7 +14,7 @@ export default function HomePage() {
       setContractorCount(prev => prev < 783 ? prev + 1 : 783)
       setVerificationRate(prev => prev < 97.7 ? +(prev + 0.1).toFixed(1) : 97.7)
     }, 100)
-    
+
     return () => clearInterval(interval)
   }, [])
 
@@ -23,7 +23,7 @@ export default function HomePage() {
       {/* Hero Section with Beautiful Kitchen Background */}
       <section className="relative min-h-screen flex items-center">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 z-0"
           style={{
             backgroundImage: `url('https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/66751c475ecf56262b237e3b_cambria-surprise-granite-brittanicca-warm-quartz-kitchen-scene.webp')`,
@@ -32,10 +32,10 @@ export default function HomePage() {
             backgroundRepeat: 'no-repeat'
           }}
         />
-        
+
         {/* Clean overlay */}
         <div className="absolute inset-0 bg-white/85 z-5"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Side - Clean Content */}
@@ -75,17 +75,17 @@ export default function HomePage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/contractors" 
+                <Link
+                  href="/contractors"
                   className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Zap className="w-5 h-5 mr-2" />
                   Find Contractors
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
-                
-                <Link 
-                  href="/quote" 
+
+                <Link
+                  href="/quote"
                   className="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-colors"
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
@@ -111,19 +111,19 @@ export default function HomePage() {
                     <div className="font-bold text-emerald-600">Licensed</div>
                     <div className="text-sm text-gray-600">State verified</div>
                   </div>
-                  
+
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <MapPin className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                     <div className="font-bold text-blue-600">Local</div>
                     <div className="text-sm text-gray-600">In your area</div>
                   </div>
-                  
+
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <Phone className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                     <div className="font-bold text-purple-600">Responsive</div>
                     <div className="text-sm text-gray-600">Quick replies</div>
                   </div>
-                  
+
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <FileCheck className="w-8 h-8 text-orange-600 mx-auto mb-2" />
                     <div className="font-bold text-orange-600">Insured</div>
@@ -143,7 +143,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Beautiful Remodeling Projects</h2>
             <p className="text-xl text-gray-600">See what our verified contractors can create for you</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
@@ -179,8 +179,8 @@ export default function HomePage() {
             ].map((project, i) => (
               <div key={i} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <div className="aspect-w-16 aspect-h-12">
-                  <img 
-                    src={project.image} 
+                  <img
+                    src={project.image}
                     alt={project.title}
                     className="w-full h-48 object-cover"
                   />
@@ -202,26 +202,26 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">How Remodely.AI Works</h2>
             <p className="text-xl text-gray-600">Simple steps to your dream remodel</p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { 
-                step: '1', 
-                title: 'Tell us your needs', 
+              {
+                step: '1',
+                title: 'Tell us your needs',
                 desc: 'Describe your remodeling project, style preferences, and budget',
-                icon: Search 
+                icon: Search
               },
-              { 
-                step: '2', 
-                title: 'Get matched with contractors', 
+              {
+                step: '2',
+                title: 'Get matched with contractors',
                 desc: 'Our AI connects you with verified local professionals',
-                icon: Users 
+                icon: Users
               },
-              { 
-                step: '3', 
-                title: 'Start your project', 
+              {
+                step: '3',
+                title: 'Start your project',
                 desc: 'Review quotes, compare options, and begin your transformation',
-                icon: Star 
+                icon: Star
               }
             ].map((item, i) => (
               <div key={i} className="text-center">
@@ -269,7 +269,7 @@ export default function HomePage() {
               </Link>
             </div>
             <div>
-              <img 
+              <img
                 src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/662bfb39387e83adda739fe0_same-as-cash-financing_surprise-granite.jpg"
                 alt="Financing Options"
                 className="rounded-2xl shadow-xl w-full"
@@ -286,10 +286,10 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Commercial & Office Projects</h2>
             <p className="text-xl text-gray-600">Professional installations for businesses and public spaces</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             <div className="relative">
-              <img 
+              <img
                 src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b2b2106def21c418b4f233_cambria-surprise-granite-clovelly-office-space-public-area.webp"
                 alt="Office Space Installation"
                 className="rounded-2xl shadow-lg w-full h-64 object-cover"
@@ -300,9 +300,9 @@ export default function HomePage() {
                 <p className="text-sm opacity-90">Cambria Clovelly for professional spaces</p>
               </div>
             </div>
-            
+
             <div className="relative">
-              <img 
+              <img
                 src="https://cdn.prod.website-files.com/6456ce4476abb25581fbad0c/65b1dfdda64f030acf274511__cambria-surprise-granite-hotel-lobby.webp"
                 alt="Hotel Lobby Installation"
                 className="rounded-2xl shadow-lg w-full h-64 object-cover"

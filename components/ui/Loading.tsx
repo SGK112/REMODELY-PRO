@@ -8,34 +8,34 @@ interface LoadingSkeletonProps {
     count?: number
 }
 
-export function LoadingSkeleton({ 
-    className = '', 
+export function LoadingSkeleton({
+    className = '',
     variant = 'card',
-    count = 1 
+    count = 1
 }: LoadingSkeletonProps) {
     const getSkeletonElement = () => {
         switch (variant) {
             case 'avatar':
                 return (
-                    <div className={`bg-gray-200 rounded-full animate-pulse ${className}`} 
-                         style={{ width: '48px', height: '48px' }} />
+                    <div className={`bg-gray-200 rounded-full animate-pulse ${className}`}
+                        style={{ width: '48px', height: '48px' }} />
                 )
-            
+
             case 'text':
                 return (
                     <div className={`bg-gray-200 h-4 rounded animate-pulse ${className}`} />
                 )
-            
+
             case 'image':
                 return (
                     <div className={`bg-gray-200 rounded-lg animate-pulse ${className}`} />
                 )
-            
+
             case 'button':
                 return (
                     <div className={`bg-gray-200 h-10 rounded-md animate-pulse ${className}`} />
                 )
-            
+
             case 'card':
             default:
                 return (
@@ -78,12 +78,12 @@ export function LoadingSkeleton({
 }
 
 // Professional loading spinner
-export function LoadingSpinner({ 
-    size = 'md', 
-    className = '' 
-}: { 
+export function LoadingSpinner({
+    size = 'md',
+    className = ''
+}: {
     size?: 'sm' | 'md' | 'lg'
-    className?: string 
+    className?: string
 }) {
     const sizeClasses = {
         sm: 'w-4 h-4',
