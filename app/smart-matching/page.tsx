@@ -1,8 +1,8 @@
-export default function SmartMatchingPage() {
-    return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Smart Matching</h1>
-            <p className="text-gray-600">Smart matching features coming soon...</p>
-        </div>
-    )
+export default function PagePage() {
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold">Page</h1>
+      <p className="mt-4">Coming soon...</p>
+    </div>
+  )
 }

@@ -14,20 +14,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the voice call method
-    const success = await TwilioService.makeVoiceCall({
+    const result = await TwilioService.makeVoiceCall({
       to,
       message,
       type: 'reminder'
     })
 
-    if (success) {
+    if (result.success) {
       return NextResponse.json({ 
         success: true, 
-        message: 'Voice call initiated successfully'
+        message: 'Voice call initiated successfully',
+        callSid: result.callSid
       })
     } else {
       return NextResponse.json(
-        { error: 'Failed to initiate voice call' },
+        { error: result.error || 'Failed to initiate voice call' },
         { status: 500 }
       )
     }

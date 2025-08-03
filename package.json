@@ -27,7 +27,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:integration": "node test-location-service.js && node test-google-maps.js",
-    "health-check": "curl -f http://localhost:${PORT:-3001}/api/health || exit 1"
+    "health-check": "curl -f http://localhost:${PORT:-3001}/api/health || exit 1",
+    "roc:convert": "node dev-scripts/fast-roc-converter.js",
+    "roc:sample": "node dev-scripts/roc-sample-generator.js",
+    "roc:seed": "node dev-scripts/roc-sample-generator.js seed 1000",
+    "roc:stats": "node dev-scripts/roc-sample-generator.js stats",
+    "roc:clear": "node dev-scripts/roc-sample-generator.js clear"
   },
   "dependencies": {
     "@11labs/react": "^0.1.4",
@@ -81,6 +86,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "better-sqlite3": "^12.2.0",
+    "csv-parser": "^3.2.0",
     "eslint": "^8.55.0",
     "eslint-config-next": "^14.0.4",
     "prisma": "^5.7.0",

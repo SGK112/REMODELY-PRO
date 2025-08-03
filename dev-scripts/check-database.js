@@ -39,7 +39,7 @@ async function checkStatus() {
         contractors.forEach((contractor, i) => {
             const specialties = JSON.parse(contractor.specialties || '[]')
             console.log(`  ${i + 1}. ${contractor.businessName}`)
-            console.log(`     📧 ${contractor.user.email}`)
+            console.log(`     📧 ${contractor.user?.email || 'No email'}`)
             console.log(`     📞 ${contractor.phone || 'No phone'}`)
             console.log(`     📍 ${contractor.city}, ${contractor.state}`)
             console.log(`     🛠️  ${specialties.join(', ')}`)
