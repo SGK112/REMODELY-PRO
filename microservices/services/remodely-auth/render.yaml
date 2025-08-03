@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: remodely-auth
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      npm ci --production
+      npx prisma generate
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: remodely-auth-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "24h"
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: SERVICE_API_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "https://remodely.pro,https://admin.remodely.pro"
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: "1; mode=block"
+
+databases:
+  - name: remodely-auth-db
+    databaseName: remodely_auth
+    user: auth_user
+    plan: starter

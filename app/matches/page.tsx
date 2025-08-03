@@ -163,8 +163,8 @@ export default function MatchesPage() {
                   <button
                     onClick={() => toggleSave(contractor.id)}
                     className={`p-2 rounded-full transition-colors ${savedContractors.includes(contractor.id)
-                        ? 'bg-red-100 text-red-600'
-                        : 'bg-gray-100 text-gray-400 hover:text-red-600'
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-gray-100 text-gray-400 hover:text-red-600'
                       }`}
                   >
                     <Heart className={`w-5 h-5 ${savedContractors.includes(contractor.id) ? 'fill-current' : ''}`} />

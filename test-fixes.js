@@ -20,7 +20,7 @@ async function testFixes() {
             console.log(`   📧 Email: ${admin.email}`);
             console.log(`   👤 Name: ${admin.name}`);
             console.log(`   🛡️  Role: ${admin.userType}`);
-            
+
             // Test password
             const passwordValid = await bcrypt.compare('admin123', admin.password);
             console.log(`   🔑 Password valid: ${passwordValid ? '✅' : '❌'}`);
@@ -47,7 +47,7 @@ async function testFixes() {
         console.log('\n3. Testing Database Connection:');
         const userCount = await prisma.user.count();
         const contractorCount = await prisma.contractor.count();
-        
+
         console.log(`   👥 Total users: ${userCount}`);
         console.log(`   🏗️  Total contractors: ${contractorCount}`);
 

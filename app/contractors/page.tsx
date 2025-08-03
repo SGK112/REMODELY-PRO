@@ -86,7 +86,7 @@ export default function ContractorsPage() {
     try {
       const position = await locationService.getCurrentLocation()
       const locationDetails = await locationService.reverseGeocode(position)
-      
+
       setUserLocation({
         lat: position.lat,
         lng: position.lng,
@@ -151,7 +151,7 @@ export default function ContractorsPage() {
     setLocationLoading(true)
     try {
       const locationData = await locationService.geocodeAddress(address)
-      
+
       setUserLocation({
         lat: locationData.coordinates.lat,
         lng: locationData.coordinates.lng,
@@ -211,38 +211,38 @@ export default function ContractorsPage() {
       // Search term filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase()
-        const matchesSearch = 
+        const matchesSearch =
           contractor.companyName?.toLowerCase().includes(searchLower) ||
           contractor.contactName?.toLowerCase().includes(searchLower) ||
-          (Array.isArray(contractor.specialties) 
+          (Array.isArray(contractor.specialties)
             ? contractor.specialties.some(s => s.toLowerCase().includes(searchLower))
             : contractor.specialties?.toLowerCase().includes(searchLower)) ||
           contractor.city?.toLowerCase().includes(searchLower)
-        
+
         if (!matchesSearch) return false
       }
 
       // Specialty filter
       if (selectedSpecialty !== 'all') {
-        const specialties = Array.isArray(contractor.specialties) 
-          ? contractor.specialties 
+        const specialties = Array.isArray(contractor.specialties)
+          ? contractor.specialties
           : JSON.parse(contractor.specialties || '[]')
-        
-        const hasSpecialty = specialties.some((s: string) => 
+
+        const hasSpecialty = specialties.some((s: string) =>
           s.toLowerCase().includes(selectedSpecialty.toLowerCase())
         )
-        
+
         if (!hasSpecialty) return false
       }
 
       // Location filter
       if (locationFilter) {
         const locationLower = locationFilter.toLowerCase()
-        const matchesLocation = 
+        const matchesLocation =
           contractor.city?.toLowerCase().includes(locationLower) ||
           contractor.state?.toLowerCase().includes(locationLower) ||
           contractor.address?.toLowerCase().includes(locationLower)
-        
+
         if (!matchesLocation) return false
       }
 
@@ -278,9 +278,9 @@ export default function ContractorsPage() {
 
   // Get unique specialties for filter
   const allSpecialties = Array.from(new Set(
-    (contractors || []).flatMap(contractor => 
-      Array.isArray(contractor.specialties) 
-        ? contractor.specialties 
+    (contractors || []).flatMap(contractor =>
+      Array.isArray(contractor.specialties)
+        ? contractor.specialties
         : JSON.parse(contractor.specialties || '[]')
     )
   )).sort()
@@ -345,7 +345,7 @@ export default function ContractorsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* AI Contractor Tools Demo */}
         <div className="mb-8">
-          <ContractorTools 
+          <ContractorTools
             contractorId="demo-contractor-1"
             contractorName="Demo Contractor"
             contractorPhone="+15125551234"
@@ -455,16 +455,16 @@ export default function ContractorsPage() {
               <div className="flex rounded-lg border border-gray-300">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' 
-                    ? 'bg-blue-50 text-blue-600' 
+                  className={`p-2 ${viewMode === 'grid'
+                    ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-400 hover:text-gray-600'}`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' 
-                    ? 'bg-blue-50 text-blue-600' 
+                  className={`p-2 ${viewMode === 'list'
+                    ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-400 hover:text-gray-600'}`}
                 >
                   <List className="w-4 h-4" />
@@ -482,16 +482,15 @@ export default function ContractorsPage() {
                 <p className="text-gray-500">Try adjusting your search criteria or location</p>
               </div>
             ) : (
-              <div className={viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' 
+              <div className={viewMode === 'grid'
+                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
                 : 'space-y-4'
               }>
                 {filteredContractors.map((contractor) => (
                   <div
                     key={contractor.id}
-                    className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${
-                      viewMode === 'list' ? 'flex p-4' : 'p-6'
-                    }`}
+                    className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${viewMode === 'list' ? 'flex p-4' : 'p-6'
+                      }`}
                   >
                     {/* Profile Image */}
                     <div className={viewMode === 'list' ? 'flex-shrink-0 mr-4' : 'mb-4'}>
@@ -530,11 +529,10 @@ export default function ContractorsPage() {
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`w-4 h-4 ${
-                                    i < Math.floor(contractor.rating)
+                                  className={`w-4 h-4 ${i < Math.floor(contractor.rating)
                                       ? 'text-yellow-400 fill-current'
                                       : 'text-gray-300'
-                                  }`}
+                                    }`}
                                 />
                               ))}
                             </div>
@@ -563,7 +561,7 @@ export default function ContractorsPage() {
                           {/* Specialties */}
                           <div className={`${viewMode === 'list' ? 'mt-3' : 'mt-4'}`}>
                             <div className="flex flex-wrap gap-1">
-                              {(Array.isArray(contractor.specialties) 
+                              {(Array.isArray(contractor.specialties)
                                 ? contractor.specialties.slice(0, 3)
                                 : JSON.parse(contractor.specialties || '[]').slice(0, 3)
                               ).map((specialty: string) => (

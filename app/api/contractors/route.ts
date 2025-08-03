@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const location = searchParams.get('location')
     const specialty = searchParams.get('specialty')
-    
+
     // BULLETPROOF: Validate and sanitize pagination parameters
     const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1)
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12') || 12))
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Contractors API error:', error)
-    
+
     // BULLETPROOF: Enhanced error handling
     if (error instanceof Error && error.message.includes('database')) {
       return NextResponse.json(
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         { status: 503 }
       )
     }
-    
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
