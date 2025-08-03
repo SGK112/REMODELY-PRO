@@ -102,13 +102,14 @@ export async function POST(request: NextRequest) {
     const quote = await prisma.quote.create({
       data: {
         customerId: session.user.id,
+        contractorId: validatedData.contractorId,
         projectType: validatedData.projectType,
         description: validatedData.description,
         budget: validatedData.budget,
         timeline: validatedData.timeline,
         location: validatedData.location,
-        phone: validatedData.phone,
-        preferredContact: validatedData.preferredContact,
+        materials: JSON.stringify(validatedData.materials || []),
+        squareFootage: validatedData.squareFootage,
         status: 'PENDING'
       }
     });
@@ -124,9 +125,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Quote submission error:', error);
 
-    if (error.name === 'ZodError') {
+    if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { message: 'Invalid data provided', errors: error.errors },
+        { message: 'Invalid data provided', errors: (error as any).errors },
         { status: 400 }
       );
     }
@@ -214,28 +215,4 @@ export async function PATCH(request: NextRequest) {
     console.error('Error updating quote:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-rating: true,
-          },
-        },
-customer: {
-  select: {
-    firstName: true,
-      lastName: true,
-          },
-},
-      },
-    });
-
-// Parse JSON fields for response
-const quoteData = {
-  ...updatedQuote,
-  materials: JSON.parse(updatedQuote.materials || '[]'),
-};
-
-return NextResponse.json({ quote: quoteData });
-  } catch (error) {
-  console.error('Error updating quote:', error);
-  return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-}
 }
