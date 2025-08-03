@@ -83,7 +83,7 @@ class ROCSampleGenerator {
       'Chandler': ['85224', '85225', '85226', '85248', '85249'],
       'Tucson': ['85701', '85702', '85703', '85704', '85705', '85706']
     };
-    
+
     const cityZips = zipCodes[city] || ['85001'];
     return cityZips[Math.floor(Math.random() * cityZips.length)];
   }
@@ -120,7 +120,7 @@ class ROCSampleGenerator {
       'R-3': ['Electrical Systems'],
       'R-4': ['Dual Fuel']
     };
-    
+
     return specialtyMap[licenseClass] || ['General Contracting'];
   }
 
@@ -129,7 +129,7 @@ class ROCSampleGenerator {
     const licenseClass = this.licenseClasses[Math.floor(Math.random() * this.licenseClasses.length)];
     const businessName = this.generateBusinessName();
     const specialties = this.getSpecialtiesFromLicenseClass(licenseClass);
-    
+
     // Generate license dates
     const licenseIssued = new Date(2018 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28));
     const licenseExpiration = new Date(licenseIssued.getFullYear() + 2, licenseIssued.getMonth(), licenseIssued.getDate());
@@ -167,24 +167,24 @@ class ROCSampleGenerator {
 
   async seedSampleContractors(count = 1000) {
     console.log(`🌱 Generating ${count} sample ROC contractors...`);
-    
+
     const contractors = [];
     const licenseNumbers = new Set();
-    
+
     for (let i = 0; i < count; i++) {
       let contractor;
       let attempts = 0;
-      
+
       // Ensure unique license numbers
       do {
         contractor = this.generateContractor();
         attempts++;
       } while (licenseNumbers.has(contractor.rocLicenseNumber) && attempts < 10);
-      
+
       if (!licenseNumbers.has(contractor.rocLicenseNumber)) {
         licenseNumbers.add(contractor.rocLicenseNumber);
         contractors.push(contractor);
-        
+
         if (contractors.length % 100 === 0) {
           console.log(`📊 Generated ${contractors.length} contractors...`);
         }
@@ -192,21 +192,21 @@ class ROCSampleGenerator {
     }
 
     console.log(`💾 Inserting ${contractors.length} contractors into database...`);
-    
+
     let inserted = 0;
     const batchSize = 50;
-    
+
     for (let i = 0; i < contractors.length; i += batchSize) {
       const batch = contractors.slice(i, i + batchSize);
-      
+
       try {
         // Use createMany for bulk insert without skipDuplicates (not supported with SQLite)
         const result = await prisma.contractor.createMany({
           data: batch
         });
-        
+
         inserted += result.count;
-        console.log(`✅ Inserted batch ${Math.floor(i/batchSize) + 1}: ${result.count} contractors (Total: ${inserted})`);
+        console.log(`✅ Inserted batch ${Math.floor(i / batchSize) + 1}: ${result.count} contractors (Total: ${inserted})`);
       } catch (error) {
         console.error(`❌ Error inserting batch starting at ${i}:`, error.message);
       }
@@ -253,7 +253,7 @@ class ROCSampleGenerator {
 
     console.log('\n📊 ROC Contractor Statistics:');
     console.log(`Total ROC Contractors: ${stats._count.id.toLocaleString()}`);
-    
+
     console.log('\n🏗️ Top License Classes:');
     licenseClasses
       .sort((a, b) => b._count.licenseClass - a._count.licenseClass)
@@ -271,7 +271,7 @@ class ROCSampleGenerator {
 
 async function main() {
   const generator = new ROCSampleGenerator();
-  
+
   const args = process.argv.slice(2);
   const command = args[0] || 'seed';
   const count = parseInt(args[1]) || 1000;
@@ -283,11 +283,11 @@ async function main() {
         console.log(`\n✅ Successfully seeded ${inserted} ROC contractors!`);
         await generator.generateStats();
         break;
-        
+
       case 'stats':
         await generator.generateStats();
         break;
-        
+
       case 'clear':
         const deleted = await prisma.contractor.deleteMany({
           where: {
@@ -296,7 +296,7 @@ async function main() {
         });
         console.log(`🧹 Cleared ${deleted.count} ROC contractors`);
         break;
-        
+
       default:
         console.log(`
 🎲 ROC Sample Data Generator

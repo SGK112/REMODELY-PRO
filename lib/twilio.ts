@@ -48,7 +48,7 @@ export class TwilioService {
     try {
       // Format phone number to E.164 format if not already
       const formattedNumber = options.to.startsWith('+') ? options.to : `+1${options.to.replace(/\D/g, '')}`
-      
+
       // Map notification type to intent
       const intentMap = {
         'quote': 'quote.request',
@@ -56,17 +56,17 @@ export class TwilioService {
         'welcome': 'contractor.recruitment',
         'reminder': 'customer.service'
       }
-      
+
       const intent = options.intent || intentMap[options.type] || 'default'
       const customerName = options.customerName || ''
-      
+
       // Use webhook URL for dynamic TwiML content
-      const baseUrl = process.env.NODE_ENV === 'production' 
+      const baseUrl = process.env.NODE_ENV === 'production'
         ? 'https://remodely.ai'
         : (process.env.NEXTAUTH_URL || 'http://localhost:3001');
-      
+
       const webhookUrl = `${baseUrl}/api/voice/webhook?intent=${intent}&name=${encodeURIComponent(customerName)}`
-      
+
       const call = await client.calls.create({
         to: formattedNumber,
         from: twilioPhoneNumber,
@@ -93,7 +93,7 @@ export class TwilioService {
       message,
       type: 'quote'
     })
-    
+
     return result.success
   }
 
@@ -105,7 +105,7 @@ export class TwilioService {
       message,
       type: 'booking'
     })
-    
+
     return result.success
   }
 
@@ -119,7 +119,7 @@ export class TwilioService {
       message,
       type: 'welcome'
     })
-    
+
     return result.success
   }
 

@@ -1,64 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  // Handle GET requests (Twilio sometimes sends GET first)
-  return new NextResponse('Webhook endpoint ready', { status: 200 });
+    // Handle GET requests (Twilio sometimes sends GET first)
+    return new NextResponse('Webhook endpoint ready', { status: 200 });
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    // Parse Twilio webhook data
-    const formData = await request.formData();
-    const from = formData.get('From') as string;
-    const to = formData.get('To') as string;
-    const callSid = formData.get('CallSid') as string;
-    const digits = formData.get('Digits') as string;
-    
-    console.log('Twilio Voice Webhook:', { from, to, callSid, digits });
+    try {
+        // Parse Twilio webhook data
+        const formData = await request.formData();
+        const from = formData.get('From') as string;
+        const to = formData.get('To') as string;
+        const callSid = formData.get('CallSid') as string;
+        const digits = formData.get('Digits') as string;
 
-    // Get intent from query params
-    const { searchParams } = new URL(request.url);
-    const intent = searchParams.get('intent') || 'default';
-    const customerName = searchParams.get('name') || '';
+        console.log('Twilio Voice Webhook:', { from, to, callSid, digits });
 
-    let twimlResponse = '';
+        // Get intent from query params
+        const { searchParams } = new URL(request.url);
+        const intent = searchParams.get('intent') || 'default';
+        const customerName = searchParams.get('name') || '';
 
-    if (digits) {
-      // Handle menu selections based on intent
-      twimlResponse = handleMenuSelection(intent, digits, customerName);
-    } else {
-      // Initial call - provide main menu based on intent
-      twimlResponse = generateInitialTwiML(intent, customerName);
-    }
+        let twimlResponse = '';
 
-    return new NextResponse(twimlResponse, {
-      headers: {
-        'Content-Type': 'text/xml',
-        'Cache-Control': 'no-cache'
-      }
-    });
+        if (digits) {
+            // Handle menu selections based on intent
+            twimlResponse = handleMenuSelection(intent, digits, customerName);
+        } else {
+            // Initial call - provide main menu based on intent
+            twimlResponse = generateInitialTwiML(intent, customerName);
+        }
 
-  } catch (error) {
-    console.error('Voice webhook error:', error);
-    
-    // Fallback TwiML
-    const fallbackTwiML = `<?xml version="1.0" encoding="UTF-8"?>
+        return new NextResponse(twimlResponse, {
+            headers: {
+                'Content-Type': 'text/xml',
+                'Cache-Control': 'no-cache'
+            }
+        });
+
+    } catch (error) {
+        console.error('Voice webhook error:', error);
+
+        // Fallback TwiML
+        const fallbackTwiML = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">Hi! This is Sarah from Remodely AI. Thanks for calling us today!</Say>
 </Response>`;
 
-    return new NextResponse(fallbackTwiML, {
-      headers: { 'Content-Type': 'text/xml' }
-    });
-  }
+        return new NextResponse(fallbackTwiML, {
+            headers: { 'Content-Type': 'text/xml' }
+        });
+    }
 }
 
 function generateInitialTwiML(intent: string, customerName: string): string {
-  const greeting = customerName ? `Hi ${customerName}!` : 'Hi there!';
-  
-  switch (intent) {
-    case 'contractor.recruitment':
-      return `<?xml version="1.0" encoding="UTF-8"?>
+    const greeting = customerName ? `Hi ${customerName}!` : 'Hi there!';
+
+    switch (intent) {
+        case 'contractor.recruitment':
+            return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">${greeting} This is Sarah from Remodely AI. Thanks so much for reaching out about joining our contractor network! I am really excited to talk with you.</Say>
   <Pause length="1"/>
@@ -71,8 +71,8 @@ function generateInitialTwiML(intent: string, customerName: string): string {
   <Say voice="alice">I did not catch that. Let me have someone from our team call you back shortly. Thanks for your interest in Remodely AI!</Say>
 </Response>`;
 
-    case 'customer.service':
-      return `<?xml version="1.0" encoding="UTF-8"?>
+        case 'customer.service':
+            return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">${greeting} This is Sarah from Remodely AI. I got your message about your stone surface project, and I am here to help!</Say>
   <Pause length="1"/>
@@ -85,8 +85,8 @@ function generateInitialTwiML(intent: string, customerName: string): string {
   <Say voice="alice">No problem! I will have one of our customer service specialists call you back within the hour. Thanks for choosing Remodely AI!</Say>
 </Response>`;
 
-    case 'quote.request':
-      return `<?xml version="1.0" encoding="UTF-8"?>
+        case 'quote.request':
+            return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">${greeting} Sarah here from Remodely AI. I am so excited you are thinking about upgrading your stone surfaces - it is such a game changer!</Say>
   <Pause length="1"/>
@@ -99,8 +99,8 @@ function generateInitialTwiML(intent: string, customerName: string): string {
   <Say voice="alice">That is okay! I will have a project specialist call you to discuss your specific needs. We will get you some amazing quotes!</Say>
 </Response>`;
 
-    default:
-      return `<?xml version="1.0" encoding="UTF-8"?>
+        default:
+            return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">${greeting} This is Sarah from Remodely AI. Thanks for calling us!</Say>
   <Pause length="1"/>
@@ -112,13 +112,13 @@ function generateInitialTwiML(intent: string, customerName: string): string {
   </Gather>
   <Say voice="alice">Thanks for calling! Someone from our team will get back to you shortly.</Say>
 </Response>`;
-  }
+    }
 }
 
 function handleMenuSelection(intent: string, digits: string, customerName: string): string {
-  const name = customerName ? customerName : 'there';
-  
-  return `<?xml version="1.0" encoding="UTF-8"?>
+    const name = customerName ? customerName : 'there';
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="alice">Thanks for your selection, ${name}! I am connecting you with the right specialist who can help you with your ${intent.replace('.', ' ')} needs.</Say>
   <Pause length="1"/>
