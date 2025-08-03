@@ -8,11 +8,11 @@ const nextConfig = {
   // Disable static optimization temporarily for debugging
   output: 'standalone',
   trailingSlash: false,
-  
+
   // Fix hydration issues
   swcMinify: true,
   reactStrictMode: false, // Temporarily disable strict mode
-  
+
   // Image optimization
   images: {
     dangerouslyAllowSVG: true,
@@ -60,7 +60,7 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
   compress: true,
-  
+
   // Environment variables
   env: {
     CUSTOM_KEY: process.env.NODE_ENV,

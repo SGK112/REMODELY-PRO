@@ -53,7 +53,7 @@ function SignInForm() {
       } else {
         // Get the session to determine user type and redirect accordingly
         const session = await getSession()
-        
+
         if (session?.user?.userType === 'CONTRACTOR') {
           router.push('/dashboard/contractor')
         } else if (session?.user?.userType === 'ADMIN') {
