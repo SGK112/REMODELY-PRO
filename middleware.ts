@@ -2,95 +2,133 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-// Define protected routes
-const protectedRoutes = [
-  '/dashboard',
-  '/profile',
-  '/admin',
-  '/api/user',
-  '/api/upload',
-  '/api/sms',
-  '/api/voice',
-  '/api/quotes',
-  '/api/contractors/profile',
-  '/api/scrape'
-]
-
 export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request })
   const { pathname } = request.nextUrl
 
-  // Check if the current path is protected
-  const isProtectedRoute = protectedRoutes.some(route =>
-    pathname.startsWith(route)
+  // Public paths that don't require authentication
+  const publicPaths = [
+    '/',
+    '/auth/login',
+    '/auth/register',
+    '/auth/phone-verification',
+    '/contractors',
+    '/search',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/api/health',
+    '/api/contractors',
+    '/api/auth'
+  ]
+
+  // Static asset paths that should always be accessible
+  const staticAssetPaths = [
+    '/_next',
+    '/favicon.ico',
+    '/logo-remodely.svg',
+    '/logo.svg',
+    '/brands',
+    '/uploads',
+    '/static'
+  ]
+
+  // Check if current path is a static asset
+  const isStaticAsset = staticAssetPaths.some(path =>
+    pathname.startsWith(path)
   )
 
-  if (isProtectedRoute) {
-    // Get the token from the request
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    })
+  // Allow static assets
+  if (isStaticAsset) {
+    return NextResponse.next()
+  }
 
-    // If no token, redirect to login
-    if (!token) {
-      // For API routes, return 401
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Authentication required' },
-          { status: 401 }
-        )
-      }
+  // Check if current path is public
+  const isPublicPath = publicPaths.some(path =>
+    pathname === path || pathname.startsWith(`${path}/`)
+  )
 
-      // For page routes, redirect to login
-      const loginUrl = new URL('/signup', request.url)
-      loginUrl.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(loginUrl)
+  // API routes that require authentication
+  const protectedApiRoutes = [
+    '/api/user',
+    '/api/quotes',
+    '/api/bookings',
+    '/api/payments',
+    '/api/reviews'
+  ]
+
+  // Admin routes
+  const adminRoutes = ['/admin', '/api/admin', '/api/scrape']
+
+  // Dashboard routes
+  const dashboardRoutes = ['/dashboard']
+
+  // Allow public paths
+  if (isPublicPath) {
+    return NextResponse.next()
+  }
+
+  // Redirect unauthenticated users to login
+  if (!token) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
     }
 
-    // Role-based access control for dashboard routes
-    if (pathname.startsWith('/dashboard/contractor') && token.userType !== 'CONTRACTOR') {
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Contractor access required' },
-          { status: 403 }
-        )
-      }
-      // Redirect to appropriate dashboard instead of returning JSON
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
+    const loginUrl = new URL('/auth/login', request.url)
+    loginUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
 
-    if (pathname.startsWith('/dashboard/customer') && token.userType !== 'CUSTOMER') {
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Customer access required' },
-          { status: 403 }
-        )
-      }
-      // Redirect to appropriate dashboard instead of returning JSON
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-
-    if (pathname.startsWith('/dashboard/admin') && token.userType !== 'ADMIN') {
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Admin access required' },
-          { status: 403 }
-        )
-      }
-      // Redirect to appropriate dashboard instead of returning JSON
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-
-    if (pathname.startsWith('/admin') && token.userType !== 'ADMIN') {
+  // Check admin access
+  if (adminRoutes.some(route => pathname.startsWith(route))) {
+    if (token.userType !== 'ADMIN') {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json(
           { error: 'Admin access required' },
           { status: 403 }
         )
       }
-      // Redirect to login for admin routes
-      return NextResponse.redirect(new URL('/auth/signin', request.url))
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
+  }
+
+  // Check dashboard access and redirect based on user type
+  if (dashboardRoutes.some(route => pathname.startsWith(route))) {
+    const userType = token.userType as string
+
+    if (pathname === '/dashboard') {
+      // Redirect to appropriate dashboard based on user type
+      switch (userType) {
+        case 'ADMIN':
+          return NextResponse.redirect(new URL('/dashboard/admin', request.url))
+        case 'CONTRACTOR':
+          return NextResponse.redirect(new URL('/dashboard/contractor', request.url))
+        case 'CUSTOMER':
+        default:
+          return NextResponse.redirect(new URL('/dashboard/customer', request.url))
+      }
+    }
+
+    // Check role-specific dashboard access
+    if (pathname.startsWith('/dashboard/admin') && userType !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    if (pathname.startsWith('/dashboard/contractor') && userType !== 'CONTRACTOR') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    if (pathname.startsWith('/dashboard/customer') && userType !== 'CUSTOMER') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
+  // Check protected API routes
+  if (protectedApiRoutes.some(route => pathname.startsWith(route))) {
+    // Additional API-specific checks can be added here
+    return NextResponse.next()
   }
 
   return NextResponse.next()
@@ -98,13 +136,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/admin/:path*',
-    '/api/quotes/:path*',
-    '/api/contractors/:path*',
-    '/api/auth/:path*',
-    '/api/scrape',
-    '/api/sms',
-    '/api/voice'
-  ]
+    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+  ],
 }

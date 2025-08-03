@@ -49,6 +49,8 @@ model User {
   phone         String?
   phoneVerified Boolean   @default(false)
   phoneVerifiedAt DateTime?
+  resetToken    String?
+  resetTokenExpiry DateTime?
   
   accounts      Account[]
   sessions      Session[]

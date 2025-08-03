@@ -5,10 +5,6 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Disable static optimization temporarily for debugging
-  output: 'standalone',
-  trailingSlash: false,
-
   // Fix hydration issues
   swcMinify: true,
   reactStrictMode: false, // Temporarily disable strict mode
@@ -41,7 +37,7 @@ const nextConfig = {
   },
 
   // Enhanced webpack config
-  webpack: (config) => {
+  webpack: (config, { dev, isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -49,6 +45,12 @@ const nextConfig = {
       tls: false,
       crypto: false,
     }
+
+    // Better error handling in development
+    if (dev && !isServer) {
+      config.devtool = 'cheap-module-source-map';
+    }
+
     return config
   },
 
@@ -96,6 +98,19 @@ const nextConfig = {
         ],
       },
     ]
+  },
+
+  // Ensure proper server configuration
+  async rewrites() {
+    return [
+      // ...existing rewrites...
+    ];
+  },
+
+  // Add proper error handling
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   },
 }
 

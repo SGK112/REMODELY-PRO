@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { quoteSchema } from '@/lib/validation';
 
 export async function GET(request: NextRequest) {
   try {
@@ -86,79 +87,54 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    if (session.user.userType !== 'CUSTOMER') {
-      return NextResponse.json({ error: 'Only customers can request quotes' }, { status: 403 });
-    }
+    const body = await request.json();
 
-    const customer = await prisma.customer.findUnique({
-      where: { userId: session.user.id }
-    });
+    // Validate the request data
+    const validatedData = quoteSchema.parse(body);
 
-    if (!customer) {
-      return NextResponse.json({ error: 'Customer profile not found' }, { status: 404 });
-    }
-
-    const data = await request.json();
-    const {
-      contractorId,
-      projectType,
-      description,
-      squareFootage,
-      materials,
-      location,
-      budget,
-      timeline,
-    } = data;
-
-    if (!contractorId || !projectType || !description || !location) {
-      return NextResponse.json({
-        error: 'Missing required fields: contractorId, projectType, description, location'
-      }, { status: 400 });
-    }
-
+    // Create the quote in the database
     const quote = await prisma.quote.create({
       data: {
-        customerId: customer.id,
-        contractorId,
-        projectType,
-        description,
-        squareFootage: squareFootage ? parseFloat(squareFootage) : null,
-        materials: JSON.stringify(materials || []),
-        location,
-        budget: budget ? parseFloat(budget) : null,
-        timeline,
-        status: 'PENDING',
-        validUntil: timeline ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null, // 30 days from now
-      },
-      include: {
-        contractor: {
-          select: {
-            businessName: true,
-            rating: true,
-          },
-        },
-        customer: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
+        customerId: session.user.id,
+        projectType: validatedData.projectType,
+        description: validatedData.description,
+        budget: validatedData.budget,
+        timeline: validatedData.timeline,
+        location: validatedData.location,
+        phone: validatedData.phone,
+        preferredContact: validatedData.preferredContact,
+        status: 'PENDING'
+      }
     });
 
-    // Parse JSON fields for response
-    const quoteData = {
-      ...quote,
-      materials: JSON.parse(quote.materials || '[]'),
-    };
+    return NextResponse.json(
+      {
+        message: 'Quote request submitted successfully',
+        quoteId: quote.id
+      },
+      { status: 201 }
+    );
 
-    return NextResponse.json({ quote: quoteData }, { status: 201 });
   } catch (error) {
-    console.error('Error creating quote:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Quote submission error:', error);
+
+    if (error.name === 'ZodError') {
+      return NextResponse.json(
+        { message: 'Invalid data provided', errors: error.errors },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -238,4 +214,28 @@ export async function PATCH(request: NextRequest) {
     console.error('Error updating quote:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
+}
+rating: true,
+          },
+        },
+customer: {
+  select: {
+    firstName: true,
+      lastName: true,
+          },
+},
+      },
+    });
+
+// Parse JSON fields for response
+const quoteData = {
+  ...updatedQuote,
+  materials: JSON.parse(updatedQuote.materials || '[]'),
+};
+
+return NextResponse.json({ quote: quoteData });
+  } catch (error) {
+  console.error('Error updating quote:', error);
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+}
 }

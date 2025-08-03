@@ -1,44 +1,36 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    <!-- Gradients matching the Google-style colorful design -->
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge> 
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD93D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA726;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34D399;stop-opacity:1" />
+    </linearGradient>
   </defs>
-  
-  <!-- Background with modern gradient -->
-  <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#faviconGradient)" filter="url(#glow)"/>
-  
-  <!-- Modern "R" letter -->
-  <g fill="white">
-    <!-- R main vertical -->
-    <rect x="8" y="10" width="2.5" height="12" rx="1"/>
+
+  <!-- House/Triangle Icon (Google-style) - Compact favicon version -->
+  <g transform="translate(2, 4)">
+    <!-- Red roof beam (left) -->
+    <path d="M0 14 L14 0 L16 2 L2 16 Z" fill="url(#redGradient)"/>
     
-    <!-- R top horizontal -->
-    <rect x="8" y="10" width="8" height="2.5" rx="1"/>
+    <!-- Yellow roof beam (right) -->
+    <path d="M14 0 L28 14 L26 16 L12 2 Z" fill="url(#yellowGradient)"/>
     
-    <!-- R middle horizontal -->
-    <rect x="8" y="15.75" width="6" height="2.5" rx="1"/>
+    <!-- Blue wall (right side) -->
+    <path d="M26 12 L28 12 L28 20 L26 20 Z" fill="url(#blueGradient)"/>
     
-    <!-- R bottom diagonal -->
-    <rect x="12" y="18.5" width="6" height="2.5" rx="1" transform="rotate(30 15 20)"/>
-    
-    <!-- R vertical right (top) -->
-    <rect x="16" y="10" width="2.5" height="8.25" rx="1"/>
+    <!-- Green foundation -->
+    <rect x="2" y="20" width="24" height="4" fill="url(#greenGradient)" rx="2"/>
   </g>
-  
-  <!-- AI accent dots -->
-  <circle cx="22" cy="12" r="1.5" fill="#60a5fa" opacity="0.9">
-    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="24" cy="15" r="1" fill="#93c5fd" opacity="0.7">
-    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" begin="0.5s"/>
-  </circle>
 </svg>

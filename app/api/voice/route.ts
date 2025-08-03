@@ -14,38 +14,37 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the voice call method
-    const result = await TwilioService.makeVoiceCall({
+    const success = await TwilioService.makeVoiceCall({
       to,
       message,
       type: 'reminder'
     })
 
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        message: 'Voice call initiated successfully',
-        callSid: result.callSid
+    if (success) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Voice call initiated successfully'
       })
     } else {
       return NextResponse.json(
-        { error: result.error || 'Failed to initiate voice call' },
+        { error: 'Failed to initiate voice call' },
         { status: 500 }
       )
     }
   } catch (error: any) {
     console.error('Voice call API error:', error)
-
+    
     // Handle Twilio-specific errors
     if (error.code === 21219) {
       return NextResponse.json(
-        {
+        { 
           error: 'Phone number not verified. Trial accounts can only call verified numbers. Please verify your phone number in the Twilio Console first.',
           code: 'UNVERIFIED_NUMBER'
         },
         { status: 400 }
       )
     }
-
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

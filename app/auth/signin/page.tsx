@@ -1,237 +1,216 @@
-'use client'
+"use client"
 
-import { Suspense, useState, useEffect } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff, Crown, ArrowRight, Zap, Building2, Home } from 'lucide-react'
+import { useState, useEffect } from "react"
+import { signIn, getSession } from "next-auth/react"
+import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Home, Hammer } from "lucide-react"
 
-function SignInForm() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+export default function SignInPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [activeTab, setActiveTab] = useState("customer")
 
+  const callbackUrl = searchParams?.get("callbackUrl") || "/"
+
+  // Set initial tab based on URL parameter
   useEffect(() => {
-    const message = searchParams?.get('message')
-    if (message) {
-      // Show success message if coming from registration
-      const messageElement = document.createElement('div')
-      messageElement.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50'
-      messageElement.textContent = message
-      document.body.appendChild(messageElement)
-      setTimeout(() => messageElement.remove(), 5000)
+    const tabParam = searchParams?.get("tab")
+    if (tabParam === "contractor" || tabParam === "customer") {
+      setActiveTab(tabParam)
     }
   }, [searchParams])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, userType: string) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
+    setIsLoading(true)
+    setError("")
+
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+
+    if (!email || !password) {
+      setError("Please fill in all fields")
+      setIsLoading(false)
+      return
+    }
 
     try {
-      const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false
+      const result = await signIn("credentials", {
+        email,
+        password,
+        userType,
+        redirect: false,
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
-      } else {
-        // Get the session to determine user type and redirect accordingly
+        setError(result.error)
+      } else if (result?.ok) {
+        // Get updated session
         const session = await getSession()
 
-        if (session?.user?.userType === 'CONTRACTOR') {
-          router.push('/dashboard/contractor')
-        } else if (session?.user?.userType === 'ADMIN') {
-          router.push('/dashboard/admin')
+        // Redirect based on user type
+        if (session?.user?.userType === "CONTRACTOR") {
+          router.push("/dashboard/contractor")
+        } else if (session?.user?.userType === "CUSTOMER") {
+          router.push("/dashboard/customer")
         } else {
-          router.push('/dashboard/customer')
+          router.push(callbackUrl)
         }
+        router.refresh()
       }
     } catch (error) {
-      console.error('Sign in error:', error)
-      setError('Network error. Please try again.')
+      console.error("Sign in error:", error)
+      setError("An unexpected error occurred")
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center text-2xl font-bold text-slate-800 mb-6">
-            <Crown className="w-8 h-8 text-blue-600 mr-2" />
-            Remodely.AI
-          </Link>
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Welcome Back</h1>
-          <p className="text-slate-600">Sign in to your AI-powered account</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+          <CardDescription className="text-center">
+            {activeTab === "customer"
+              ? "Sign in to get quotes from verified contractors"
+              : "Sign in to manage your contractor profile"
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="customer" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Homeowner
+              </TabsTrigger>
+              <TabsTrigger value="contractor" className="flex items-center gap-2">
+                <Hammer className="h-4 w-4" />
+                Contractor
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Quick Access Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white/60 backdrop-blur-lg rounded-xl border border-white/20 p-4 text-center">
-            <Home className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-            <div className="text-sm font-medium text-slate-700">Homeowners</div>
-            <div className="text-xs text-slate-500">Find contractors</div>
-          </div>
-          <div className="bg-white/60 backdrop-blur-lg rounded-xl border border-white/20 p-4 text-center">
-            <Building2 className="w-6 h-6 text-indigo-600 mx-auto mb-2" />
-            <div className="text-sm font-medium text-slate-700">Contractors</div>
-            <div className="text-xs text-slate-500">Grow your business</div>
-          </div>
-        </div>
-
-        {/* Sign In Form */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/70"
-                  placeholder="Enter your email"
-                />
+            <TabsContent value="customer" className="space-y-4">
+              <div className="text-center py-2">
+                <p className="text-sm text-gray-600">
+                  Get quotes for your stone & surface projects
+                </p>
               </div>
-            </div>
+              <form onSubmit={(e) => handleSubmit(e, "CUSTOMER")} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customer-email">Email</Label>
+                  <Input
+                    id="customer-email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customer-password">Password</Label>
+                  <Input
+                    id="customer-password"
+                    name="password"
+                    type="password"
+                    required
+                    placeholder="Enter your password"
+                    disabled={isLoading}
+                  />
+                </div>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                  {isLoading ? "Signing In..." : "Sign In & Get Quotes"}
+                </Button>
+              </form>
+            </TabsContent>
 
-            {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/70"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+            <TabsContent value="contractor" className="space-y-4">
+              <div className="text-center py-2">
+                <p className="text-sm text-gray-600">
+                  Access your contractor dashboard
+                </p>
               </div>
-            </div>
+              <form onSubmit={(e) => handleSubmit(e, "CONTRACTOR")} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contractor-email">Email</Label>
+                  <Input
+                    id="contractor-email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contractor-password">Password</Label>
+                  <Input
+                    id="contractor-password"
+                    name="password"
+                    type="password"
+                    required
+                    placeholder="Enter your password"
+                    disabled={isLoading}
+                  />
+                </div>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Signing In..." : "Access Dashboard"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember"
-                  name="remember"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                />
-                <label htmlFor="remember" className="ml-2 block text-sm text-slate-700">
-                  Remember me
-                </label>
-              </div>
-              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
-                Forgot password?
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                href={`/auth/signup?tab=${activeTab}`}
+                className="text-blue-600 hover:underline"
+              >
+                Sign up here
               </Link>
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  Sign In
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                </>
-              )}
-            </button>
-
-            {/* AI Features Highlight */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-              <div className="flex items-center text-blue-700 mb-2">
-                <Zap className="w-5 h-5 mr-2" />
-                <span className="font-semibold">Welcome to the Future</span>
-              </div>
-              <ul className="text-sm text-blue-600 space-y-1">
-                <li>• AI-powered contractor matching</li>
-                <li>• Instant voice quotes with Sarah AI</li>
-                <li>• Smart project management</li>
-                <li>• Predictive pricing analytics</li>
-              </ul>
-            </div>
-          </form>
-
-          {/* Sign Up Link */}
-          <div className="mt-6 text-center">
-            <span className="text-slate-600">Don't have an account? </span>
-            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
-              Create Account
+            </p>
+            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+              Forgot your password?
             </Link>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-slate-500">
-            By signing in, you agree to our{' '}
-            <Link href="/terms" className="text-blue-600 hover:text-blue-700">Terms</Link>
-            {' '}&{' '}
-            <Link href="/privacy" className="text-blue-600 hover:text-blue-700">Privacy Policy</Link>
-          </p>
-        </div>
-      </div>
+          {/* Quick Browse Option */}
+          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-500 mb-2">Or continue without signing in</p>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/contractors">
+                Browse Contractors
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
-
-export default function SignInPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-      <div className="text-white">Loading...</div>
-    </div>}>
-      <SignInForm />
-    </Suspense>
+    </div >
   )
 }

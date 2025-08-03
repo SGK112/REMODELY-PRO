@@ -1,60 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { TwilioService } from '@/lib/twilio'
 
-// Demo endpoint - not protected for testing purposes
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { to, message } = body
-
-    if (!to) {
-      return NextResponse.json(
-        { error: 'Phone number is required' },
-        { status: 400 }
-      )
-    }
-
-    const defaultMessage = message || 'Hello! This is a demo call from Remodely.AI. Thank you for testing our voice API system!'
-
-    console.log('🎉 DEMO VOICE CALL INITIATED')
+    const { to, message } = await request.json()
+    
+    console.log('🎉 DEMO VOICE CALL SIMULATION')
     console.log('📞 Calling:', to)
-    console.log('🎙️  Voice Message:', defaultMessage)
+    console.log('🎙️  Voice Message:', message)
     console.log('⏰ Time:', new Date().toLocaleString())
-
-    // Use the Twilio service to make the call
-    const result = await TwilioService.makeVoiceCall({
-      to,
-      message: defaultMessage,
-      type: 'reminder'
-    })
-
-    if (result.success) {
-      console.log('✅ Voice call initiated successfully!')
-      console.log('📋 Call SID:', result.callSid)
-
-      return NextResponse.json({
-        success: true,
-        message: 'Demo voice call initiated successfully',
-        callSid: result.callSid,
-        phoneNumber: to,
-        voiceMessage: defaultMessage,
+    
+    // Simulate the TwiML that would be spoken
+    const twiml = `<Response><Say voice="alice">${message}</Say></Response>`
+    
+    console.log('🎵 TwiML Generated:', twiml)
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Demo voice call simulated successfully!',
+      callDetails: {
+        to: to,
+        status: 'simulated',
+        duration: 'estimated 30-45 seconds',
+        voice: 'alice',
+        twiml: twiml,
         timestamp: new Date().toISOString()
-      })
-    } else {
-      console.error('❌ Voice call failed:', result.error)
-      return NextResponse.json(
-        { error: result.error || 'Failed to initiate demo call' },
-        { status: 500 }
-      )
-    }
-
-  } catch (error: any) {
-    console.error('💥 Demo voice call error:', error)
-
-    return NextResponse.json({
-      error: error.message || 'Failed to initiate demo call',
-      code: error.code,
-      details: error.moreInfo || null
+      },
+      note: 'This is a simulation. Add Twilio credentials to make real calls.'
+    })
+    
+  } catch (error) {
+    console.error('Demo voice call error:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to simulate voice call' 
     }, { status: 500 })
   }
 }
