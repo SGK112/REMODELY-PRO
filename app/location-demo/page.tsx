@@ -1,9 +1,9 @@
 'use client'
 
-import { useLocation } from '@/components/providers/LocationProvider'
+import { useLocation, LocationProvider } from '@/components/providers/LocationProvider'
 import LocationRequest from '@/components/ui/LocationRequest'
 
-export default function LocationDemo() {
+function LocationDemoContent() {
     const {
         currentLocation,
         isLoading,
@@ -153,5 +153,13 @@ export default function LocationDemo() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function LocationDemo() {
+    return (
+        <LocationProvider>
+            <LocationDemoContent />
+        </LocationProvider>
     )
 }
