@@ -45,10 +45,7 @@ export async function POST(request: NextRequest) {
       try {
         rocContractor = await prisma.contractor.findFirst({
           where: {
-            OR: [
-              { licenseNumber: rocLicenseNumber },
-              { rocLicenseNumber: rocLicenseNumber }
-            ]
+            rocLicenseNumber: rocLicenseNumber
           }
         })
       } catch (error) {
