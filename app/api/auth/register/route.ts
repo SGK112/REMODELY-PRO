@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
             reviewCount: 0,
             yearsExperience: yearsExperience || 1,
             yearsInBusiness: yearsExperience || 1,
+            licenseNumber: rocLicenseNumber || null,
             rocLicenseNumber: rocLicenseNumber || null,
           }
         })
