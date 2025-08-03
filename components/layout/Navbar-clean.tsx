@@ -91,7 +91,7 @@ export function Navbar() {
 
                         {/* CTA Buttons */}
                         <Link
-                            href="/signup"
+                            href="/auth/signup"
                             className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-blue-900/25"
                         >
                             Join PRO
@@ -174,14 +174,14 @@ export function Navbar() {
                         {/* Mobile CTAs */}
                         <div className="pt-4 border-t border-slate-600 space-y-3">
                             <Link
-                                href="/signup"
+                                href="/auth/signup"
                                 className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-center py-3.5 px-4 rounded-lg font-semibold shadow-lg hover:shadow-blue-900/25 transition-all"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Join REMODELY AI PRO
                             </Link>
                             <Link
-                                href="/signup/contractor"
+                                href="/auth/signup"
                                 className="block w-full bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white text-center py-3.5 px-4 rounded-lg font-medium border border-slate-600 hover:border-slate-500 transition-all"
                                 onClick={() => setIsOpen(false)}
                             >

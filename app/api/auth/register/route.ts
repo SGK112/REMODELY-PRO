@@ -1,33 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { hash } from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from "next/server"
+import bcrypt from "bcryptjs"
+import { prisma } from "@/lib/prisma"
+import { UserType } from "@prisma/client"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-
-    // Basic validation for required fields
     const {
       name,
       email,
       password,
-      userType,
-      rocLicenseNumber,
       phone,
+      userType,
       businessName,
-      serviceArea,
-      specialties,
-      yearsExperience
+      licenseNumber,
+      description
     } = body
 
-    if (!name || !email || !password || !userType) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    // Validate required fields
+    if (!name || !email || !password || !phone || !userType) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      )
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
+    // Validate userType
+    const validUserTypes = ['CUSTOMER', 'CONTRACTOR', 'ADMIN']
+    if (!validUserTypes.includes(userType)) {
+      return NextResponse.json(
+        { error: "Invalid user type" },
+        { status: 400 }
+      )
     }
 
     // Check if user already exists
@@ -36,100 +40,69 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
-      return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 })
-    }
-
-    // ROC License verification for contractors
-    let rocContractor = null
-    if (userType === 'CONTRACTOR' && rocLicenseNumber) {
-      try {
-        rocContractor = await prisma.contractor.findFirst({
-          where: {
-            licenseNumber: rocLicenseNumber
-          }
-        })
-      } catch (error) {
-        console.error('ROC verification error:', error)
-      }
+      return NextResponse.json(
+        { error: "User with this email already exists" },
+        { status: 400 }
+      )
     }
 
     // Hash password
-    const hashedPassword = await hash(password, 12)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        userType,
-        phone: phone || null,
-        phoneVerified: false,
-        phoneVerifiedAt: null,
-        emailVerified: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
+    // Create user with transaction
+    const user = await prisma.$transaction(async (tx) => {
+      // Create user
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          phone,
+          userType: userType as UserType,
+          phoneVerified: false,
+        }
+      })
+
+      // Create role-specific profile
+      if (userType === "CONTRACTOR") {
+        await tx.contractor.create({
+          data: {
+            userId: newUser.id,
+            businessName: businessName || name,
+            licenseNumber: licenseNumber || null,
+            description: description || null,
+            serviceArea: "[]", // Default empty JSON array
+            specialties: "[]", // Default empty JSON array
+            isVerified: false,
+            rating: 0,
+          }
+        })
+      } else if (userType === "CUSTOMER") {
+        const nameParts = name.split(' ')
+        await tx.customer.create({
+          data: {
+            userId: newUser.id,
+            firstName: nameParts[0] || name,
+            lastName: nameParts[1] || '',
+          }
+        })
       }
+
+      return newUser
     })
 
-    // Create contractor profile if user is contractor
-    if (userType === 'CONTRACTOR') {
-      if (rocContractor) {
-        // Update existing ROC contractor with user information
-        await prisma.contractor.update({
-          where: { id: rocContractor.id },
-          data: {
-            userId: user.id,
-            phone: phone || rocContractor.phone,
-            profileComplete: true,
-            isVerified: true,
-            verified: true
-          }
-        })
-      } else {
-        // Create new contractor profile
-        await prisma.contractor.create({
-          data: {
-            userId: user.id,
-            businessName: businessName || `${name} Contracting`,
-            description: `Professional contractor based in Arizona.`,
-            serviceArea: JSON.stringify(serviceArea || ['Phoenix, AZ']),
-            specialties: JSON.stringify(specialties || ['General Contracting']),
-            address: '',
-            city: '',
-            state: 'AZ',
-            zipCode: '',
-            phone: phone || '',
-            website: '',
-            isVerified: false,
-            verified: false,
-            profileComplete: false,
-            rating: 4.0,
-            reviewCount: 0,
-            yearsExperience: yearsExperience || 1,
-            yearsInBusiness: yearsExperience || 1,
-            licenseNumber: rocLicenseNumber || null,
-          }
-        })
-      }
-    }
+    // Return success (exclude password)
+    const { password: _, ...userWithoutPassword } = user
 
-    // Return success response (without sensitive data)
     return NextResponse.json({
-      message: 'User created successfully',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        userType: user.userType,
-        hasROCLicense: !!rocContractor
-      }
+      message: "User created successfully",
+      user: userWithoutPassword
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Registration error:', error)
+    console.error("Registration error:", error)
     return NextResponse.json(
-      { error: 'Internal server error during registration' },
+      { error: "Internal server error" },
       { status: 500 }
     )
   }

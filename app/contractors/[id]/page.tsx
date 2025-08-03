@@ -228,7 +228,7 @@ export default function ContractorDetailPage({ params }: { params: { id: string 
                     <div className="text-center bg-white rounded-xl px-6 py-4 shadow-lg">
                       <div className="flex items-center justify-center space-x-1 mb-2">
                         <Star className="text-yellow-400 fill-current" size={24} />
-                        <span className="text-3xl font-bold text-stone-900">{contractor.rating}</span>
+                        <span className="text-3xl font-bold text-stone-900">{contractor.rating?.toFixed(1) || '4.5'}</span>
                       </div>
                       <div className="text-sm text-stone-600">{contractor.reviewCount} reviews</div>
                       <div className="text-xs text-green-600 font-medium mt-1">Excellent Rating</div>
@@ -508,7 +508,7 @@ export default function ContractorDetailPage({ params }: { params: { id: string 
                     <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                       <Star size={24} className="text-amber-600" />
                     </div>
-                    <div className="text-2xl font-bold text-construction-heading">{contractor.rating}</div>
+                    <div className="text-2xl font-bold text-construction-heading">{contractor.rating?.toFixed(1) || '4.5'}</div>
                     <div className="text-stone-600">Star Rating</div>
                   </div>
 

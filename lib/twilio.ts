@@ -39,48 +39,24 @@ export class TwilioService {
     }
   }
 
-  static async makeVoiceCall(options: NotificationOptions & { intent?: string, customerName?: string }): Promise<{ success: boolean, callSid?: string, error?: string }> {
+  static async makeVoiceCall(options: NotificationOptions): Promise<boolean> {
     if (!client || !twilioPhoneNumber) {
       console.error('Twilio client not configured')
-      return { success: false, error: 'Twilio client not configured' }
+      return false
     }
 
     try {
-      // Format phone number to E.164 format if not already
-      const formattedNumber = options.to.startsWith('+') ? options.to : `+1${options.to.replace(/\D/g, '')}`
-
-      // Map notification type to intent
-      const intentMap = {
-        'quote': 'quote.request',
-        'booking': 'appointment.booking',
-        'welcome': 'contractor.recruitment',
-        'reminder': 'customer.service'
-      }
-
-      const intent = options.intent || intentMap[options.type] || 'default'
-      const customerName = options.customerName || ''
-
-      // Use webhook URL for dynamic TwiML content
-      const baseUrl = process.env.NODE_ENV === 'production'
-        ? 'https://remodely.ai'
-        : (process.env.NEXTAUTH_URL || 'http://localhost:3001');
-
-      const webhookUrl = `${baseUrl}/api/voice/webhook?intent=${intent}&name=${encodeURIComponent(customerName)}`
-
       const call = await client.calls.create({
-        to: formattedNumber,
+        twiml: `<Response><Say voice="alice">${options.message}</Say></Response>`,
         from: twilioPhoneNumber,
-        url: webhookUrl,
-        method: 'POST',
-        statusCallback: `${baseUrl}/api/voice/status`,
-        statusCallbackMethod: 'POST'
+        to: options.to,
       })
 
-      console.log('Voice call initiated:', call.sid, 'with webhook:', webhookUrl)
-      return { success: true, callSid: call.sid }
+      console.log('Voice call initiated successfully:', call.sid)
+      return true
     } catch (error) {
       console.error('Failed to make voice call:', error)
-      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+      throw error
     }
   }
 
@@ -88,25 +64,21 @@ export class TwilioService {
   static async sendQuoteNotification(to: string, customerName: string, projectType: string): Promise<boolean> {
     const message = `Hello! You have received a new quote request for ${projectType} from ${customerName}. Please log into your Remodely.AI dashboard to review and respond.`
 
-    const result = await this.makeVoiceCall({
+    return this.makeVoiceCall({
       to,
       message,
       type: 'quote'
     })
-
-    return result.success
   }
 
   static async sendBookingConfirmation(to: string, customerName: string, scheduledDate: string): Promise<boolean> {
     const message = `Your countertop installation with ${customerName} has been confirmed for ${scheduledDate}. Thank you for using Remodely.AI!`
 
-    const result = await this.makeVoiceCall({
+    return this.makeVoiceCall({
       to,
       message,
       type: 'booking'
     })
-
-    return result.success
   }
 
   static async sendWelcomeMessage(to: string, userType: 'customer' | 'contractor'): Promise<boolean> {
@@ -114,13 +86,11 @@ export class TwilioService {
       ? 'Welcome to Remodely.AI! Your contractor profile is now active. Start receiving quote requests from customers in your area.'
       : 'Welcome to Remodely.AI! Your account is ready. You can now browse certified contractors and request quotes for your countertop project.'
 
-    const result = await this.makeVoiceCall({
+    return this.makeVoiceCall({
       to,
       message,
       type: 'welcome'
     })
-
-    return result.success
   }
 
   // Twilio Verify Service Methods

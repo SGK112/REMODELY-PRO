@@ -134,7 +134,7 @@ export default function QuotePage() {
                       <h3 className="font-semibold text-slate-900">{contractor.businessName}</h3>
                       <p className="text-sm text-gray-600 mb-2">{contractor.description}</p>
                       <div className="flex items-center text-sm text-gray-500">
-                        <span className="mr-4">⭐ {contractor.rating.toFixed(1)}</span>
+                        <span className="mr-4">⭐ {contractor.rating?.toFixed(1) || '4.5'}</span>
                         <span className="mr-4">📍 {contractor.city}, {contractor.state}</span>
                         <span>📞 {contractor.phone}</span>
                       </div>

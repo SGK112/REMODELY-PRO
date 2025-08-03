@@ -1,101 +1,51 @@
-# RemodelyPro - Professional Contractor Platform
+# Remodely Pro - Home Remodeling Marketplace
 
-RemodelyPro is a comprehensive platform connecting homeowners with verified contractors for home remodeling projects. Built with Next.js 14, it features advanced location-based search, professional contractor tools, and intelligent project matching.
+A **production-ready Next.js 14 App Router** marketplace connecting homeowners with verified remodeling and construction contractors. The platform features **role-based authentication**, **automated contractor discovery**, and **comprehensive project management**.
 
-## 🚀 Live Demo
-- **Production**: https://remodely.ai
-- **Development**: http://localhost:3001
+## 🏠 What We Do
 
-## 🏗️ Platform Overview
+Remodely Pro is a comprehensive marketplace for home improvement projects including:
+
+- **Kitchen Remodeling** - Custom cabinets, countertops, appliances
+- **Bathroom Renovations** - Complete makeovers, tile work, fixtures  
+- **Home Additions** - Room additions, second stories, extensions
+- **Flooring Projects** - Hardwood, tile, carpet, luxury vinyl
+- **Roofing Services** - Repairs, replacements, maintenance
+- **General Construction** - Custom builds, repairs, maintenance
+
+## 🚀 Key Features
 
 ### For Homeowners
-- **Smart Contractor Search**: Location-based search with Google Maps integration
-- **Project Management**: Track quotes, compare contractors, manage timelines
-- **Verified Reviews**: Authentic reviews from real customers
-- **Intelligent Matching**: AI-powered contractor recommendations
+- **Get Multiple Quotes** - Request quotes from verified contractors
+- **Browse Contractors** - Search by location, specialty, and ratings
+- **Project Management** - Track progress, communicate, make payments
+- **Verified Reviews** - Read authentic customer experiences
 
-### For Contractors
-- **Professional Tools Suite**: Project management, estimating, invoicing
-- **Lead Generation**: Access to qualified customer projects
-- **Portfolio Showcase**: Display work samples and client testimonials
-- **Freemium Monetization**: Tiered pricing with professional features
+### For Contractors  
+- **Lead Generation** - Get connected with qualified customers
+- **Profile Management** - Showcase work, manage availability
+- **Quote Management** - Respond to requests, track conversions
+- **Payment Processing** - Secure payments through Stripe
 
-## 🛠️ Technical Stack
+## 🛠 Tech Stack
 
-### Frontend
-- **Next.js 14.2.30**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Responsive styling
-- **Lucide React**: Modern icon system
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL (production), SQLite (development)
+- **Authentication**: NextAuth.js with custom credentials
+- **Payments**: Stripe integration
+- **Communication**: Twilio (SMS), Email notifications
+- **Maps**: Google Maps API integration
+- **Deployment**: Render.com ready
 
-### Backend & Database
-- **Prisma ORM**: Database management with SQLite
-- **NextAuth.js**: Authentication system
-- **Google Maps API**: Location services and geocoding
-- **Twilio**: Phone verification (optional)
-
-### Deployment
-- **Render**: Production hosting (Port 10000)
-- **SQLite**: Development database
-- **Environment**: Node.js runtime
-
-## 📁 Project Structure
-
-```
-REMODELY-PRO/
-├── app/                          # Next.js 14 App Router
-│   ├── api/                      # API routes
-│   │   ├── auth/                 # Authentication endpoints
-│   │   ├── contractors/          # Contractor data APIs
-│   │   └── location/             # Location services
-│   ├── dashboard/                # User dashboards
-│   │   ├── customer/             # Customer dashboard
-│   │   └── contractor/           # Contractor dashboard & tools
-│   ├── contractors/              # Contractor search & profiles
-│   ├── signup/                   # Registration flows
-│   └── matches/                  # Project matching
-├── components/                   # Reusable UI components
-│   ├── ui/                       # Base UI components
-│   │   └── SmartSearch.tsx       # Advanced search with Google Maps
-│   ├── layout/                   # Layout components
-│   ├── dashboard/                # Dashboard-specific components
-│   └── home/                     # Homepage sections
-├── lib/                          # Utility libraries
-│   ├── searchService.ts          # Enhanced search with geolocation
-│   ├── location.ts               # Location utilities
-│   └── auth.ts                   # Authentication config
-├── prisma/                       # Database schema and migrations
-├── scripts/                      # Development and deployment scripts
-└── docs/                         # Documentation files
-```
-
-## 🔧 Installation & Setup
+## 📋 Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm/yarn
-- Google Maps API key
-- Git for version control
+- Node.js 18+
+- PostgreSQL (production) or SQLite (development)
+- Required API keys (see `.env.example`)
 
-### Environment Variables
-Create `.env.local` in the root directory:
-
-```env
-# Database
-DATABASE_URL="file:./dev.db"
-
-# Authentication
-NEXTAUTH_URL="http://localhost:3001"
-NEXTAUTH_SECRET="your-secret-key-here"
-
-# Google Maps Integration
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="AIzaSyC8jWPmElbmTOcerNu_mawvZLeTbFtl_s4"
-
-# Optional: Twilio for phone verification
-TWILIO_ACCOUNT_SID="your-twilio-sid"
-TWILIO_AUTH_TOKEN="your-twilio-token"
-```
-
-### Development Setup
+### Installation
 
 ```bash
 # Clone the repository
@@ -105,110 +55,160 @@ cd REMODELY-PRO
 # Install dependencies
 npm install
 
-# Set up the database
-npx prisma generate
-npx prisma db push
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
 
-# Populate with sample data
-node scripts/populate-contractors.js
+# Set up database
+npm run db:generate
+npm run db:push
+npm run db:seed
 
 # Start development server
 npm run dev
 ```
 
-The application will be available at http://localhost:3001
+Visit `http://localhost:3000` to see the application.
 
-## 🗄️ Database Schema
+## 🔧 Development
 
-### Core Models
-- **User**: Authentication and basic user info
-- **Contractor**: Business profiles and service details
-- **Customer**: Project requirements and preferences
-- **Project**: Home improvement project details
-- **Quote**: Contractor proposals and estimates
-- **Review**: Customer feedback and ratings
+### Essential Commands
 
-### Current Data
-- 13+ contractors with diverse specialties
-- Phoenix, AZ focus area with sample projects
-- Vendor/distributor relationships (Surprise Granite partners)
+```bash
+# Database operations
+npm run db:generate    # Generate Prisma client
+npm run db:push        # Push schema to database  
+npm run db:seed        # Seed with sample data
+npm run db:studio      # Open Prisma Studio
 
-## 🎯 Key Features
-
-### Enhanced Search System
-- **Location Intelligence**: Google Maps integration with distance calculations
-- **Smart Filtering**: Specialty, price range, rating, availability
-- **Autocomplete**: Real-time location suggestions
-- **Geolocation**: Current location detection and nearby searches
-
-### Contractor Tools Platform
-- **Project Management**: Timeline tracking, milestone management
-- **Estimating System**: Material calculations, labor costs
-- **Invoicing**: Professional invoice generation
-- **Freemium Model**: Basic free tier, premium paid features
-
-### Monetization Strategy
-- **Free Tier**: Basic profile, limited leads (3/month)
-- **Professional ($49/month)**: Unlimited leads, basic tools
-- **Enterprise ($149/month)**: Full tool suite, priority placement
-- **Premium ($299/month)**: White-label options, API access
-
-## 🚀 Deployment
-
-### Render Configuration
-The application is configured for Render deployment:
-
-```yaml
-# render.yaml
-services:
-  - type: web
-    name: remodely-pro
-    env: node
-    plan: starter
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npm start
-    envVars:
-      - key: PORT
-        value: 10000
-      - key: NODE_ENV
-        value: production
+# Development
+npm run dev           # Start development server
+npm run build         # Build for production
+npm run start         # Start production server
+npm run lint          # Run ESLint
 ```
 
-### Deployment Steps
-1. **Environment Setup**: Configure all environment variables in Render
-2. **Database Migration**: Run Prisma migrations in production
-3. **Build Process**: Next.js optimized build with static generation
-4. **Health Checks**: Automated deployment verification
+### Project Structure
 
-## 📊 Performance & Analytics
+```
+app/
+├── auth/                 # Authentication pages
+├── dashboard/            # Role-based dashboards
+│   ├── customer/        # Customer dashboard
+│   ├── contractor/      # Contractor dashboard  
+│   └── admin/           # Admin dashboard
+├── api/                 # API routes
+│   ├── auth/           # Authentication endpoints
+│   ├── quotes/         # Quote management
+│   ├── contractors/    # Contractor operations
+│   └── users/          # User management
+├── contractors/         # Public contractor pages
+├── quote/              # Quote request flow
+└── search/             # Search functionality
 
-### Optimization Features
-- **Next.js 14**: App Router with server components
-- **Image Optimization**: Automatic WebP conversion and lazy loading
-- **Code Splitting**: Route-based code splitting
-- **Static Generation**: Pre-built pages for better performance
+components/
+├── ui/                 # Reusable UI components
+├── forms/              # Form components
+└── layout/             # Layout components
 
-### Monitoring
-- Built-in Next.js analytics
-- Error boundary implementation
-- Performance monitoring ready
+lib/
+├── auth.ts            # NextAuth configuration
+├── prisma.ts          # Database client
+├── validation.ts      # Zod schemas
+├── email.ts           # Email service
+├── twilio.ts          # SMS service
+└── utils.ts           # Utility functions
+```
 
-## 🔒 Security
+## 🗄 Database Schema
 
-### Authentication
-- NextAuth.js with multiple providers
-- Secure session management
-- Role-based access control
+The application uses a hub-and-spoke model around the `User` entity:
 
-### Data Protection
-- Input validation and sanitization
-- SQL injection prevention (Prisma ORM)
-- XSS protection
-- HTTPS enforcement in production
+```prisma
+User (userType: CUSTOMER|CONTRACTOR|ADMIN)
+├── Customer?           # Customer profile
+├── Contractor?         # Contractor business profile
+├── Quote[]            # Quote requests/responses
+├── Booking[]          # Confirmed projects
+├── Payment[]          # Payment history
+└── Review[]           # Reviews given/received
+```
 
-## 🧪 Testing
+## 🔐 Authentication
 
-### Test Suite
+- **Role-based access control** (Customer, Contractor, Admin)
+- **Phone verification** via Twilio
+- **Protected routes** with middleware
+- **Session management** with NextAuth.js
+
+## 💳 Payment Processing
+
+- **Stripe integration** for secure payments
+- **Escrow-style** payment holding
+- **Automated payouts** to contractors
+- **Payment history** and invoicing
+
+## 🌍 Deployment
+
+### Environment Setup
+
+```bash
+# Production environment
+cp .env.production .env
+
+# Build and deploy
+npm run build
+npm run start
+```
+
+### Render.com Deployment
+
+The application is configured for Render.com deployment:
+
+1. Connect your repository
+2. Set environment variables
+3. Deploy with `npm run build:render`
+
+## 📱 API Documentation
+
+### Authentication Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/verify-phone` - Phone verification
+- `GET/POST /api/auth/*` - NextAuth.js endpoints
+
+### Quote Management
+- `POST /api/quotes` - Create quote request
+- `GET /api/quotes` - Get user quotes
+- `PUT /api/quotes/[id]` - Update quote
+- `POST /api/quotes/[id]/respond` - Contractor response
+
+### Contractor Operations  
+- `GET /api/contractors` - Search contractors
+- `GET /api/contractors/[id]` - Get contractor profile
+- `PUT /api/contractors/[id]` - Update contractor profile
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the documentation
+- Contact the development team
+
+---
+
+**Remodely Pro** - Connecting homeowners with trusted remodeling professionals.
 - Unit tests for utilities and services
 - Integration tests for API endpoints
 - End-to-end testing for critical user flows

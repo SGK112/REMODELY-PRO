@@ -1,976 +1,615 @@
 'use client'
 
-import { useState, useEffect, useMemo, Suspense } from 'react'
-import { Search, MapPin, Star, Filter, Grid, List, Map } from 'lucide-react'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { useLocation } from '@/components/providers/LocationProvider'
-import { LocationData } from '@/lib/location'
-import GoogleMap from '@/components/ui/GoogleMap'
-import MapsAction from '@/components/ui/MapsAction'
-import { ContractorLocation } from '@/lib/maps'
-import LocationRequest from '@/components/ui/LocationRequest'
-import { LocationRequestCompact } from '@/components/ui/LocationRequest'
-import { ContractorAvatar, ProfessionalImage } from '@/components/ui/ProfessionalImage'
-import { ProfessionalSearch } from '@/components/ui/ProfessionalSearch'
-import { ContractorStatus, StatusBadge, ProfessionalRating } from '@/components/ui/ProfessionalStatus'
+import { useState, useEffect } from 'react'
+import { Search, MapPin, Star, Filter, Grid, List, Phone, Mail, ExternalLink, Navigation, Clock, Target } from 'lucide-react'
+import Image from 'next/image'
 import { ImageService } from '@/lib/imageService'
-import { SmartSearch } from '@/components/ui/SmartSearch'
-import { searchService, SearchFilters, ContractorSearchResult } from '@/lib/searchService'
+import AdvancedLocationService, { LocationCoordinates } from '@/lib/advancedLocationService'
+import AIAgentService from '@/lib/aiAgentService'
+import ContractorTools from '@/components/ContractorTools'
 
 interface Contractor {
   id: string
-  name: string
-  businessName: string
+  companyName: string
+  contactName: string | null
+  email: string | null
+  phone: string | null
+  website: string | null
+  specialties: string | string[]
   rating: number
   reviewCount: number
-  location: string
-  coordinates?: {
-    lat: number
-    lng: number
-  }
-  distance?: number
-  specialties: string[]
-  yearsExperience: number
-  profileImage: string
-  portfolioImages: string[]
-  description: string
+  description: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  profileImage: string | null
   verified: boolean
-  phone: string
-  website?: string
-  priceRange: string
-  // Enhanced professional properties
-  premium?: boolean
-  featured?: boolean
-  averageResponseHours?: number
-  completedProjects?: number
-  certifications?: string[]
+  yearsInBusiness: number | null
+  latitude?: number
+  longitude?: number
+  distance?: number
+  drivingTime?: string
+  aiScore?: number
+  aiReasons?: string[]
 }
 
-const MOCK_CONTRACTORS: Contractor[] = [
-  {
-    id: '1',
-    name: 'Mirage Marble & Granite Team',
-    businessName: 'Mirage Marble & Granite',
-    rating: 5.0,
-    reviewCount: 549,
-    location: 'Peoria, AZ',
-    coordinates: { lat: 33.5806, lng: -112.2374 },
-    distance: 2.1,
-    specialties: ['Granite Fabrication', 'Quartz Installation', 'Marble Countertops'],
-    yearsExperience: 15,
-    profileImage: ImageService.getContractorProfileImage(0),
-    portfolioImages: [
-      ImageService.getProjectImage(0, 'kitchen-project'),
-      ImageService.getProjectImage(1, 'bathroom-project')
-    ],
-    description: 'Family business offering a wide range of natural stone fabrication products. Verified business with excellent Google reviews and professional service.',
-    verified: true,
-    premium: true,
-    featured: true,
-    averageResponseHours: 1,
-    completedProjects: 1250,
-    certifications: ['Licensed', 'Insured', 'Caesarstone Certified'],
-    phone: '(623) 606-7610',
-    website: 'mirageaz.com',
-    priceRange: 'Premium'
-  },
-  {
-    id: '2',
-    name: 'Diamond Kitchen & Bath Team',
-    businessName: 'Diamond Kitchen & Bath Inc',
-    rating: 4.8,
-    reviewCount: 324,
-    location: 'Glendale, AZ',
-    coordinates: { lat: 33.5387, lng: -112.1860 },
-    distance: 5.3,
-    specialties: ['Kitchen Cabinetry', 'Bathroom Remodeling', 'Countertop Installation'],
-    yearsExperience: 18,
-    profileImage: ImageService.getContractorProfileImage(1),
-    portfolioImages: [
-      ImageService.getProjectImage(2, 'kitchen-project'),
-      ImageService.getProjectImage(3, 'bathroom-project')
-    ],
-    description: 'Specialized in high-end kitchen and bathroom renovations with focus on quality craftsmanship and customer satisfaction.',
-    verified: true,
-    premium: true,
-    averageResponseHours: 2,
-    completedProjects: 980,
-    certifications: ['Licensed', 'Insured', 'NKBA Certified'],
-    phone: '(602) 555-0123',
-    website: 'diamondkb.com',
-    priceRange: 'Premium'
-  },
-  {
-    id: '3',
-    name: 'TM Quartz & Granite Team',
-    businessName: 'TM Quartz & Granite',
-    rating: 5.0,
-    reviewCount: 38,
-    location: 'Phoenix, AZ',
-    coordinates: { lat: 33.4484, lng: -112.0740 },
-    distance: 8.2,
-    specialties: ['Quartz Fabrication', 'Granite Installation', 'Custom Stone Work'],
-    yearsExperience: 12,
-    profileImage: ImageService.getContractorProfileImage(2),
-    portfolioImages: [
-      ImageService.getProjectImage(4, 'kitchen-project'),
-      ImageService.getProjectImage(5, 'bathroom-project')
-    ],
-    description: 'Specialized stone fabrication and installation with perfect 5.0 rating and quality craftsmanship. Expert in custom quartz and granite work.',
-    verified: true,
-    phone: '(602) 555-0038',
-    priceRange: 'Mid-Range'
-  },
-  {
-    id: '4',
-    name: 'S3 Plumbing Team',
-    businessName: 'S3 Plumbing',
-    rating: 5.0,
-    reviewCount: 32,
-    location: 'Mesa, AZ',
-    coordinates: { lat: 33.4152, lng: -111.8315 },
-    distance: 12.1,
-    specialties: ['Plumbing Installation', 'Pipe Repair', 'Emergency Services'],
-    yearsExperience: 14,
-    profileImage: ImageService.getContractorProfileImage(3),
-    portfolioImages: [
-      ImageService.getProjectImage(6, 'flooring-project'),
-      ImageService.getProjectImage(7, 'kitchen-project')
-    ],
-    description: 'Professional plumbing services with perfect rating and reliable emergency response. Available 24/7 for urgent plumbing needs.',
-    verified: true,
-    phone: '(480) 555-0032',
-    priceRange: 'Mid-Range'
-  },
-  {
-    id: '5',
-    name: 'AZ Granite & Remodeling Team',
-    businessName: 'AZ Granite & Remodeling',
-    rating: 5.0,
-    reviewCount: 39,
-    location: 'Chandler, AZ',
-    coordinates: { lat: 33.3062, lng: -111.8413 },
-    distance: 15.7,
-    specialties: ['Granite Installation', 'Kitchen Remodeling', 'Stone Fabrication'],
-    yearsExperience: 16,
-    profileImage: ImageService.getContractorProfileImage(4),
-    portfolioImages: [
-      ImageService.getProjectImage(8, 'bathroom-project'),
-      ImageService.getProjectImage(9, 'kitchen-project')
-    ],
-    description: 'Complete granite and remodeling services with perfect customer satisfaction rating. Specializing in full kitchen transformations.',
-    verified: true,
-    phone: '(480) 555-0039',
-    priceRange: 'Mid-Range'
-  },
-  {
-    id: '6',
-    name: 'Phend Plumbing Team',
-    businessName: 'Phend Plumbing',
-    rating: 5.0,
-    reviewCount: 41,
-    location: 'Phoenix, AZ',
-    coordinates: { lat: 33.4734, lng: -112.0406 },
-    distance: 7.4,
-    specialties: ['Residential Plumbing', 'Commercial Services', 'Water Heater Installation'],
-    yearsExperience: 22,
-    profileImage: ImageService.getContractorProfileImage(5),
-    portfolioImages: [
-      ImageService.getProjectImage(10, 'bathroom-project'),
-      ImageService.getProjectImage(11, 'hvac-project')
-    ],
-    description: 'Trusted plumbing services with decades of experience and perfect customer reviews. Serving both residential and commercial clients.',
-    verified: true,
-    phone: '(602) 555-0041',
-    priceRange: 'Mid-Range'
-  },
-  {
-    id: '7',
-    name: 'Liberty Plumbing Team',
-    businessName: 'Liberty Plumbing',
-    rating: 5.0,
-    reviewCount: 26,
-    location: 'Scottsdale, AZ',
-    coordinates: { lat: 33.4942, lng: -111.9261 },
-    distance: 9.8,
-    specialties: ['Emergency Plumbing', 'Drain Cleaning', 'Fixture Installation'],
-    yearsExperience: 10,
-    profileImage: ImageService.getContractorProfileImage(6),
-    portfolioImages: [
-      ImageService.getProjectImage(12, 'bathroom-project'),
-      ImageService.getProjectImage(13, 'general-contracting')
-    ],
-    description: 'Fast, reliable plumbing services with 24/7 emergency availability and perfect rating. Quick response times guaranteed.',
-    verified: true,
-    phone: '(480) 555-0026',
-    priceRange: 'Mid-Range'
-  },
-  {
-    id: '8',
-    name: 'Harper Stone and Tile Team',
-    businessName: 'Harper Stone and Tile',
-    rating: 5.0,
-    reviewCount: 21,
-    location: 'Tempe, AZ',
-    coordinates: { lat: 33.4255, lng: -111.9400 },
-    distance: 11.2,
-    specialties: ['Stone Installation', 'Tile Work', 'Kitchen Remodeling'],
-    yearsExperience: 13,
-    profileImage: ImageService.getContractorProfileImage(7),
-    portfolioImages: [
-      ImageService.getProjectImage(14, 'kitchen-project'),
-      ImageService.getProjectImage(15, 'bathroom-project')
-    ],
-    description: 'Premium stone and tile installation services with meticulous attention to detail. Specializing in high-end residential projects.',
-    verified: true,
-    phone: '(480) 555-0021',
-    priceRange: 'Premium'
-  },
-  {
-    id: '9',
-    name: 'Auros Home Remodel Team',
-    businessName: 'Auros Home Remodel',
-    rating: 5.0,
-    reviewCount: 36,
-    location: 'Gilbert, AZ',
-    coordinates: { lat: 33.3528, lng: -111.7890 },
-    distance: 18.5,
-    specialties: ['Full Home Remodeling', 'Kitchen Design', 'Bathroom Renovation'],
-    yearsExperience: 20,
-    profileImage: ImageService.getContractorProfileImage(0), // Reuse first profile for variety
-    portfolioImages: [
-      ImageService.getProjectImage(16, 'living-room'),
-      ImageService.getProjectImage(17, 'kitchen-project')
-    ],
-    description: 'Complete home remodeling services with innovative design and quality construction. Perfect rating with comprehensive project management.',
-    verified: true,
-    phone: '(480) 555-0036',
-    priceRange: 'Premium'
-  }
-];
+interface LocationInfo {
+  lat: number
+  lng: number
+  address: string
+  city: string
+  state: string
+  zipCode: string
+}
 
-const SPECIALTIES = [
-  'Kitchen Remodeling',
-  'Bathroom Remodeling',
-  'Granite Installation',
-  'Quartz Countertops',
-  'Marble Work',
-  'Custom Fabrication',
-  'Interior Design',
-  'Outdoor Kitchens',
-  'Restoration Services'
-]
-
-function ContractorsPageContent() {
-  const searchParams = useSearchParams()
-  // Temporarily disable location provider to fix immediate issues
-  const currentLocation = null
-  const searchLocation = async (query: string) => {
-    console.log('Location search:', query)
-    return Promise.resolve({} as any)
-  }
-  const calculateDistance = (lat: number, lng: number): number => Math.random() * 20
-
-  const [searchTerm, setSearchTerm] = useState('')
-  const [locationQuery, setLocationQuery] = useState(searchParams?.get('location') || '')
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState('')
-  const [rating, setRating] = useState(0)
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid')
-  const [showFilters, setShowFilters] = useState(false)
-  const [showLocationRequest, setShowLocationRequest] = useState(true)
-
-  // Enhanced search state
-  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    location: locationQuery,
-    radius: 25,
-    minRating: 0,
-    specialties: [],
-    priceRange: '',
-    availability: '',
-    sortBy: 'distance'
-  })
-  const [searchLoading, setSearchLoading] = useState(false)
-  const [filteredResults, setFilteredResults] = useState<ContractorSearchResult[]>([])
-
-  // State for real vs mock data
+export default function ContractorsPage() {
   const [contractors, setContractors] = useState<Contractor[]>([])
+  const [filteredContractors, setFilteredContractors] = useState<Contractor[]>([])
   const [loading, setLoading] = useState(true)
-  const [dataSource, setDataSource] = useState<'mock' | 'database'>('mock')
+  const [locationLoading, setLocationLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedSpecialty, setSelectedSpecialty] = useState('all')
+  const [locationFilter, setLocationFilter] = useState('')
+  const [minRating, setMinRating] = useState(0)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [showFilters, setShowFilters] = useState(false)
+  const [maxDistance, setMaxDistance] = useState(25) // miles
+  const [userLocation, setUserLocation] = useState<LocationInfo | null>(null)
+  const [locationService] = useState(() => AdvancedLocationService.getInstance())
+  const [aiAgentService] = useState(() => AIAgentService.getInstance())
+  const [sortBy, setSortBy] = useState<'rating' | 'distance' | 'name'>('rating')
 
-  // Load real contractors from database
-  const loadRealContractors = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/contractors?page=1&limit=50')
-      if (response.ok) {
-        const data = await response.json()
-        console.log('API Response:', data)
-
-        // Transform database data to match frontend interface
-        const transformedContractors = data.contractors?.map((contractor: any) => ({
-          id: contractor.id,
-          name: contractor.user?.name || 'Professional Contractor',
-          businessName: contractor.businessName || `${contractor.user?.name || 'Professional'} Contracting`,
-          rating: contractor.rating || 4.5,
-          reviewCount: contractor.reviewCount || Math.floor(Math.random() * 100) + 10,
-          location: `${contractor.city || 'Unknown City'}, ${contractor.state || 'Unknown State'}`,
-          distance: 0, // Calculate based on user location
-          specialties: Array.isArray(contractor.specialties) ? contractor.specialties : JSON.parse(contractor.specialties || '["General Contracting"]'),
-          yearsExperience: contractor.yearsExperience || Math.floor(Math.random() * 15) + 5,
-          profileImage: contractor.user?.image || ImageService.getContractorProfileImage(),
-          portfolioImages: Array.isArray(contractor.portfolioImages) ? contractor.portfolioImages :
-            contractor.portfolioImages ? JSON.parse(contractor.portfolioImages) : [
-              ImageService.getProjectImage(0, 'kitchen-project'),
-              ImageService.getProjectImage(1, 'bathroom-project')
-            ],
-          description: contractor.description || 'Professional contractor services with years of experience.',
-          verified: contractor.isVerified || Math.random() > 0.3,
-          phone: contractor.phone || `(512) 555-0${Math.floor(Math.random() * 900) + 100}`,
-          website: contractor.website,
-          priceRange: contractor.priceRange || ['$', '$$', '$$$'][Math.floor(Math.random() * 3)]
-        })) || []
-
-        if (transformedContractors.length > 0) {
-          setContractors(transformedContractors)
-          setDataSource('database')
-          console.log(`✅ Loaded ${transformedContractors.length} contractors from database`)
-        } else {
-          throw new Error('No contractors found in database')
-        }
-      } else {
-        throw new Error('Failed to load contractors from API')
-      }
-    } catch (error) {
-      console.error('Error loading contractors:', error)
-      // Fall back to mock data with better variety
-      const enhancedMockData = MOCK_CONTRACTORS.map((contractor, index) => ({
-        ...contractor,
-        profileImage: ImageService.getContractorProfileImage(index),
-        portfolioImages: [
-          ImageService.getProjectImage(index * 3, 'kitchen-project'),
-          ImageService.getProjectImage(index * 3 + 1, 'bathroom-project'),
-          ImageService.getProjectImage(index * 3 + 2, 'living-room')
-        ]
-      }))
-      setContractors(enhancedMockData)
-      setDataSource('mock')
-      console.log('✅ Using enhanced mock data')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Enhanced search handler
-  const handleSearch = async (filters: SearchFilters) => {
-    setSearchLoading(true)
-    setSearchFilters(filters)
-
-    try {
-      // Convert contractors to search result format
-      const contractorSearchResults: ContractorSearchResult[] = contractors.map(contractor => ({
-        id: contractor.id,
-        name: contractor.name,
-        businessName: contractor.businessName,
-        rating: contractor.rating,
-        reviewCount: contractor.reviewCount,
-        location: contractor.location,
-        coordinates: contractor.coordinates,
-        specialties: contractor.specialties,
-        yearsExperience: contractor.yearsExperience,
-        profileImage: contractor.profileImage,
-        portfolioImages: contractor.portfolioImages,
-        description: contractor.description,
-        verified: contractor.verified,
-        phone: contractor.phone,
-        website: contractor.website,
-        priceRange: contractor.priceRange,
-        premium: contractor.premium,
-        featured: contractor.featured
-      }))
-
-      // Use enhanced search service
-      const results = await searchService.searchContractors(contractorSearchResults, filters)
-      setFilteredResults(results)
-
-      // Update URL with search parameters
-      const params = new URLSearchParams()
-      if (filters.location) params.set('location', filters.location)
-      if (filters.radius !== 25) params.set('radius', filters.radius.toString())
-      if (filters.minRating > 0) params.set('rating', filters.minRating.toString())
-      if (filters.specialties.length > 0) params.set('specialties', filters.specialties.join(','))
-      if (filters.priceRange) params.set('price', filters.priceRange)
-      if (filters.sortBy !== 'distance') params.set('sort', filters.sortBy)
-
-      window.history.pushState({}, '', `/contractors?${params.toString()}`)
-
-    } catch (error) {
-      console.error('Search failed:', error)
-      setFilteredResults(contractors.map(contractor => ({ ...contractor, distance: contractor.distance || 0 })))
-    } finally {
-      setSearchLoading(false)
-    }
-  }
-
-  // Load data on component mount
+  // Fetch contractors on component mount
   useEffect(() => {
-    loadRealContractors()
+    const fetchContractors = async () => {
+      try {
+        const response = await fetch('/api/contractors')
+        if (response.ok) {
+          const data = await response.json()
+          setContractors(data)
+          setFilteredContractors(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch contractors:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContractors()
   }, [])
 
-  // Convert contractors to map locations
-  const contractorLocations: ContractorLocation[] = useMemo(() => {
-    return contractors.map((contractor, index) => ({
-      id: contractor.id,
-      name: contractor.businessName,
-      address: contractor.location,
-      coordinates: {
-        // Arizona coordinates with some variation for different contractors
-        lat: 33.4484 + (Math.random() - 0.5) * 0.5,
-        lng: -112.0740 + (Math.random() - 0.5) * 0.5
-      },
-      placeId: undefined
-    }))
-  }, [contractors])
+  // Get user's current location
+  const getCurrentLocation = async () => {
+    setLocationLoading(true)
+    try {
+      const position = await locationService.getCurrentLocation()
+      const locationDetails = await locationService.reverseGeocode(position)
+      
+      setUserLocation({
+        lat: position.lat,
+        lng: position.lng,
+        address: locationDetails.formatted,
+        city: locationDetails.city,
+        state: locationDetails.state,
+        zipCode: locationDetails.zipCode
+      })
 
-  const handleContractorMapClick = (contractor: ContractorLocation) => {
-    const fullContractor = contractors.find(c => c.id === contractor.id)
-    if (fullContractor) {
-      console.log('Clicked contractor:', fullContractor)
+      // Calculate distances and driving times for all contractors
+      await calculateContractorDistances(position)
+    } catch (error) {
+      console.error('Failed to get location:', error)
+      alert('Unable to get your location. Please enter your address manually.')
+    } finally {
+      setLocationLoading(false)
     }
   }
 
-  // Calculate distances and sort contractors based on user location
-  const contractorsWithDistance = useMemo(() => {
-    return contractors.map(contractor => {
-      let distanceValue = contractor.distance || 0 // Use existing distance or 0
+  // Calculate distances and driving times for contractors
+  const calculateContractorDistances = async (userPos: LocationCoordinates) => {
+    const updatedContractors = await Promise.all(
+      (contractors || []).map(async (contractor): Promise<Contractor> => {
+        if (contractor.latitude && contractor.longitude) {
+          const distance = locationService.calculateDistance(
+            userPos,
+            { lat: contractor.latitude, lng: contractor.longitude }
+          )
 
-      if (currentLocation && contractor.coordinates) {
-        // Calculate actual distance using coordinates
-        distanceValue = calculateDistance(
-          contractor.coordinates.lat,
-          contractor.coordinates.lng
-        )
-      }
+          // Get driving time for contractors within reasonable distance
+          let drivingTime: string | undefined = undefined
+          if (distance <= 100) { // Only get driving time for contractors within 100 miles
+            try {
+              const drivingInfo = await locationService.getDrivingInfo(
+                userPos,
+                { lat: contractor.latitude, lng: contractor.longitude }
+              )
+              drivingTime = `${drivingInfo.duration} min`
+            } catch (error) {
+              console.warn(`Failed to get driving time for contractor ${contractor.id}:`, error)
+            }
+          }
 
-      return {
-        ...contractor,
-        distance: distanceValue,
-        distanceValue
-      }
-    }).sort((a, b) => a.distanceValue - b.distanceValue)
-  }, [currentLocation, calculateDistance])
+          return {
+            ...contractor,
+            distance: Math.round(distance * 10) / 10, // Round to 1 decimal
+            drivingTime
+          }
+        }
+        return contractor
+      })
+    )
 
-  // Use filtered results from enhanced search or fall back to basic filtering
-  const filteredContractors = useMemo(() => {
-    // If we have search results from enhanced search, use those
-    if (filteredResults.length > 0 || searchFilters.location || searchFilters.minRating > 0 || searchFilters.specialties.length > 0) {
-      return filteredResults
+    setContractors(updatedContractors)
+    setFilteredContractors(updatedContractors)
+  }
+
+  // Search by address
+  const searchByAddress = async (address: string) => {
+    if (!address.trim()) return
+
+    setLocationLoading(true)
+    try {
+      const locationData = await locationService.geocodeAddress(address)
+      
+      setUserLocation({
+        lat: locationData.coordinates.lat,
+        lng: locationData.coordinates.lng,
+        address: locationData.formatted,
+        city: locationData.city,
+        state: locationData.state,
+        zipCode: locationData.zipCode
+      })
+
+      await calculateContractorDistances(locationData.coordinates)
+    } catch (error) {
+      console.error('Failed to geocode address:', error)
+      alert('Unable to find that address. Please try a different location.')
+    } finally {
+      setLocationLoading(false)
+    }
+  }
+
+  // AI-powered contractor matching
+  const getAIRecommendations = async () => {
+    if (!userLocation) {
+      alert('Please set your location first')
+      return
     }
 
-    // Otherwise, use basic filtering for backward compatibility
-    return contractorsWithDistance.filter(contractor => {
-      const matchesSearch = contractor.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contractor.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+    try {
+      const projectDetails = {
+        type: selectedSpecialty === 'all' ? 'general contracting' : selectedSpecialty,
+        location: { lat: userLocation.lat, lng: userLocation.lng },
+        requirements: []
+      }
 
-      const matchesLocation = !locationQuery ||
-        contractor.location.toLowerCase().includes(locationQuery.toLowerCase())
+      const recommendations = await aiAgentService.matchContractorsToProject(
+        projectDetails,
+        contractors || []
+      )
 
-      const matchesSpecialties = selectedSpecialties.length === 0 ||
-        selectedSpecialties.some(specialty => contractor.specialties.includes(specialty))
+      // Update contractors with AI scores
+      const contractorsWithScores = (contractors || []).map(contractor => {
+        const recommendation = recommendations.find(r => r.contractorId === contractor.id)
+        return {
+          ...contractor,
+          aiScore: recommendation?.score || 0,
+          aiReasons: recommendation?.reasons || []
+        }
+      })
 
-      const matchesPriceRange = !priceRange || contractor.priceRange === priceRange
+      setFilteredContractors(contractorsWithScores.sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0)))
+    } catch (error) {
+      console.error('AI matching failed:', error)
+    }
+  }
 
-      const matchesRating = contractor.rating >= rating
+  // Filter and sort contractors
+  useEffect(() => {
+    let filtered = (contractors || []).filter(contractor => {
+      // Search term filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase()
+        const matchesSearch = 
+          contractor.companyName?.toLowerCase().includes(searchLower) ||
+          contractor.contactName?.toLowerCase().includes(searchLower) ||
+          (Array.isArray(contractor.specialties) 
+            ? contractor.specialties.some(s => s.toLowerCase().includes(searchLower))
+            : contractor.specialties?.toLowerCase().includes(searchLower)) ||
+          contractor.city?.toLowerCase().includes(searchLower)
+        
+        if (!matchesSearch) return false
+      }
 
-      return matchesSearch && matchesLocation && matchesSpecialties && matchesPriceRange && matchesRating
+      // Specialty filter
+      if (selectedSpecialty !== 'all') {
+        const specialties = Array.isArray(contractor.specialties) 
+          ? contractor.specialties 
+          : JSON.parse(contractor.specialties || '[]')
+        
+        const hasSpecialty = specialties.some((s: string) => 
+          s.toLowerCase().includes(selectedSpecialty.toLowerCase())
+        )
+        
+        if (!hasSpecialty) return false
+      }
+
+      // Location filter
+      if (locationFilter) {
+        const locationLower = locationFilter.toLowerCase()
+        const matchesLocation = 
+          contractor.city?.toLowerCase().includes(locationLower) ||
+          contractor.state?.toLowerCase().includes(locationLower) ||
+          contractor.address?.toLowerCase().includes(locationLower)
+        
+        if (!matchesLocation) return false
+      }
+
+      // Rating filter
+      if (contractor.rating < minRating) return false
+
+      // Distance filter
+      if (userLocation && contractor.distance && contractor.distance > maxDistance) {
+        return false
+      }
+
+      return true
     })
-  }, [filteredResults, contractorsWithDistance, searchFilters, searchTerm, locationQuery, selectedSpecialties, priceRange, rating])
 
-  const toggleSpecialty = (specialty: string) => {
-    setSelectedSpecialties(prev =>
-      prev.includes(specialty)
-        ? prev.filter(s => s !== specialty)
-        : [...prev, specialty]
+    // Sort contractors
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'distance':
+          if (!a.distance && !b.distance) return 0
+          if (!a.distance) return 1
+          if (!b.distance) return -1
+          return a.distance - b.distance
+        case 'name':
+          return (a.companyName || '').localeCompare(b.companyName || '')
+        case 'rating':
+        default:
+          return b.rating - a.rating
+      }
+    })
+
+    setFilteredContractors(filtered)
+  }, [contractors, searchTerm, selectedSpecialty, locationFilter, minRating, maxDistance, sortBy, userLocation])
+
+  // Get unique specialties for filter
+  const allSpecialties = Array.from(new Set(
+    (contractors || []).flatMap(contractor => 
+      Array.isArray(contractor.specialties) 
+        ? contractor.specialties 
+        : JSON.parse(contractor.specialties || '[]')
+    )
+  )).sort()
+
+  const formatRating = (rating: number) => {
+    return rating % 1 === 0 ? rating.toString() : rating.toFixed(1)
+  }
+
+  const getContractorImage = (contractor: Contractor) => {
+    if (contractor.profileImage) {
+      return contractor.profileImage
+    }
+    return ImageService.getContractorProfileImage()
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-600">Loading contractors...</p>
+        </div>
+      </div>
     )
   }
 
-  const handleLocationSearch = async (query: string) => {
-    setLocationQuery(query)
-    try {
-      const location = await searchLocation(query)
-      console.log('Location search result:', location)
-    } catch (error) {
-      console.error('Failed to search location:', error)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100">
-      {/* Data Source Indicator */}
-      {!loading && (
-        <div className={`${dataSource === 'database' ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} border-b`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                {dataSource === 'database' ? (
-                  <>
-                    <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                    <span className="text-sm text-emerald-700 font-medium">
-                      ✅ Live Professional Data - {contractors.length} contractors from database
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    <span className="text-sm text-amber-700 font-medium">
-                      🎭 Demo Data - Using sample professionals for demonstration
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={loadRealContractors}
-                  className="text-sm text-amber-600 hover:text-amber-700 font-medium"
-                >
-                  🔄 Refresh Data
-                </button>
-                <button
-                  onClick={() => {
-                    setSearchTerm('')
-                    setLocationQuery('')
-                    setSelectedSpecialties([])
-                    setPriceRange('')
-                    setRating(0)
-                  }}
-                  className="text-sm bg-gradient-to-r from-amber-600 to-orange-700 text-white px-3 py-1 rounded-md hover:from-amber-700 hover:to-orange-800 font-medium"
-                >
-                  🗑️ Clear Search
-                </button>
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Find Contractors</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                {filteredContractors.length} verified contractors found
+                {userLocation && ` in ${userLocation.city}, ${userLocation.state}`}
+              </p>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Professional Header */}
-      <div className="bg-gradient-to-r from-white via-stone-50 to-amber-50 shadow-sm border-b border-amber-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-slate-900 mb-4">
-              Find Professional Construction Contractors Near You
-            </h1>
-            <p className="text-xl text-stone-600 max-w-3xl mx-auto">
-              Connect with AI-verified, professional contractors and construction specialists in your area through REMODELY AI PRO
-            </p>
-          </div>
-
-          {/* Location Request - Temporarily disabled to fix search display */}
-          {false && showLocationRequest && !currentLocation && (
-            <div className="max-w-2xl mx-auto mb-6">
-              <LocationRequest
-                onLocationReceived={() => setShowLocationRequest(false)}
-                onDismiss={() => setShowLocationRequest(false)}
-              />
+            <div className="mt-4 md:mt-0 flex space-x-3">
+              <button
+                onClick={getCurrentLocation}
+                disabled={locationLoading}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                {locationLoading ? 'Getting Location...' : 'Use My Location'}
+              </button>
+              <button
+                onClick={getAIRecommendations}
+                disabled={!userLocation}
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                AI Match
+              </button>
             </div>
-          )}
-
-          {/* Enhanced Smart Search */}
-          <div className="max-w-5xl mx-auto">
-            <SmartSearch
-              onSearch={handleSearch}
-              loading={searchLoading}
-              className="mb-6"
-            />
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className={`lg:w-80 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-
-              {/* Specialties */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Specialties</h4>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {SPECIALTIES.map(specialty => (
-                    <label key={specialty} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedSpecialties.includes(specialty)}
-                        onChange={() => toggleSpecialty(specialty)}
-                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{specialty}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Range */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Price Range</h4>
-                <div className="space-y-2">
-                  {['$', '$$', '$$$', '$$$$'].map(price => (
-                    <label key={price} className="flex items-center">
-                      <input
-                        type="radio"
-                        name="price"
-                        value={price}
-                        checked={priceRange === price}
-                        onChange={(e) => setPriceRange(e.target.value)}
-                        className="text-primary-600 focus:ring-primary-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{price}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Minimum Rating */}
-              <div className="mb-6">
-                <h4 className="font-medium text-gray-900 mb-3">Minimum Rating</h4>
-                <div className="space-y-2">
-                  {[4.5, 4.0, 3.5, 3.0].map(ratingValue => (
-                    <label key={ratingValue} className="flex items-center">
-                      <input
-                        type="radio"
-                        name="rating"
-                        value={ratingValue}
-                        checked={rating === ratingValue}
-                        onChange={(e) => setRating(Number(e.target.value))}
-                        className="text-primary-600 focus:ring-primary-500"
-                      />
-                      <span className="ml-2 flex items-center">
-                        <Star className="text-yellow-400 fill-current" size={16} />
-                        <span className="ml-1 text-sm text-gray-700">{ratingValue}+</span>
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setSelectedSpecialties([])
-                  setPriceRange('')
-                  setRating(0)
-                }}
-                className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Clear All Filters
-              </button>
-            </div>
-          </div>
-
-          {/* Results */}
-          <div className="flex-1">
-            {/* Results Header */}
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-900">
-                  {filteredContractors.length} Contractors Found
-                </h2>
-                <p className="text-gray-600">
-                  {locationQuery ? `in ${locationQuery}` : 'in your area'}
-                </p>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                  <option>Best Match</option>
-                  <option>Highest Rated</option>
-                  <option>Most Reviews</option>
-                  <option>Nearest</option>
-                </select>
-
-                <div className="flex border border-gray-300 rounded-lg">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400'}`}
-                  >
-                    <Grid size={20} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400'}`}
-                  >
-                    <List size={20} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('map')}
-                    className={`p-2 ${viewMode === 'map' ? 'bg-blue-100 text-blue-600' : 'text-gray-400'}`}
-                  >
-                    <Map size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Contractor Grid/List/Map */}
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading contractors...</p>
-              </div>
-            ) : viewMode === 'map' ? (
-              <div className="h-[600px] rounded-lg overflow-hidden border">
-                <GoogleMap
-                  contractors={contractorLocations}
-                  onContractorClick={handleContractorMapClick}
-                  center={{ lat: 33.4484, lng: -112.0740 }} // Phoenix, AZ
-                  zoom={10}
-                />
-              </div>
-            ) : (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-6'}>
-                {filteredContractors.map(contractor => (
-                  <ContractorCard key={contractor.id} contractor={contractor} viewMode={viewMode} />
-                ))}
-              </div>
-            )}
-
-            {!loading && filteredContractors.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <Search size={64} className="mx-auto" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No contractors found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your search criteria or filters</p>
-                <button
-                  onClick={() => {
-                    setSearchTerm('')
-                    setSelectedSpecialties([])
-                    setPriceRange('')
-                    setRating(0)
-                  }}
-                  className="btn-primary"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            )}
-          </div>
+        {/* AI Contractor Tools Demo */}
+        <div className="mb-8">
+          <ContractorTools 
+            contractorId="demo-contractor-1"
+            contractorName="Demo Contractor"
+            contractorPhone="+15125551234"
+          />
         </div>
-      </div>
-    </div>
-  )
-}
 
-function ContractorCard({ contractor, viewMode }: { contractor: Contractor, viewMode: 'grid' | 'list' }) {
-  if (viewMode === 'list') {
-    return (
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-shrink-0">
-            <ContractorAvatar
-              src={contractor.profileImage}
-              name={contractor.name}
-              size={96}
-              className=""
-            />
-          </div>
-
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+        <div className="lg:grid lg:grid-cols-4 lg:gap-8">
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
               <div>
-                <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="text-xl font-semibold text-gray-900">{contractor.businessName}</h3>
-                  {contractor.verified && (
-                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-                      Verified
-                    </span>
+                <h3 className="font-semibold text-gray-900 mb-3">Search</h3>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search contractors..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Location</h3>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Enter address or city..."
+                      value={locationFilter}
+                      onChange={(e) => setLocationFilter(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && searchByAddress(locationFilter)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  {userLocation && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Distance: {maxDistance} miles
+                      </label>
+                      <input
+                        type="range"
+                        min="5"
+                        max="100"
+                        value={maxDistance}
+                        onChange={(e) => setMaxDistance(Number(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
                   )}
                 </div>
-                <p className="text-gray-600 mb-2">{contractor.name}</p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
-                  <span>{contractor.location}</span>
-                  <span>{contractor.distance}</span>
-                  <span>{contractor.yearsExperience} years experience</span>
-                </div>
               </div>
 
-              <div className="text-right">
-                <div className="flex items-center space-x-1 mb-1">
-                  <Star className="text-yellow-400 fill-current" size={16} />
-                  <span className="font-semibold">{contractor.rating}</span>
-                  <span className="text-gray-500">({contractor.reviewCount})</span>
-                </div>
-                <div className="text-sm text-gray-500">{contractor.priceRange}</div>
-              </div>
-            </div>
-
-            <p className="text-gray-700 mb-4">{contractor.description}</p>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {contractor.specialties.map(specialty => (
-                <span
-                  key={specialty}
-                  className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-1 rounded-full"
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Specialty</h3>
+                <select
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {specialty}
-                </span>
-              ))}
+                  <option value="all">All Specialties</option>
+                  {allSpecialties.map(specialty => (
+                    <option key={specialty} value={specialty}>{specialty}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Minimum Rating</h3>
+                <select
+                  value={minRating}
+                  onChange={(e) => setMinRating(Number(e.target.value))}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value={0}>Any Rating</option>
+                  <option value={3}>3+ Stars</option>
+                  <option value={4}>4+ Stars</option>
+                  <option value={4.5}>4.5+ Stars</option>
+                </select>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Sort By</h3>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'rating' | 'distance' | 'name')}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="rating">Highest Rated</option>
+                  {userLocation && <option value="distance">Nearest First</option>}
+                  <option value="name">Alphabetical</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3 mt-8 lg:mt-0">
+            {/* View Mode Toggle */}
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-sm text-gray-500">
+                Showing {filteredContractors.length} of {(contractors || []).length} contractors
+              </p>
+              <div className="flex rounded-lg border border-gray-300">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 ${viewMode === 'grid' 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-400 hover:text-gray-600'}`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 ${viewMode === 'list' 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-400 hover:text-gray-600'}`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-              <div className="flex space-x-2">
-                {contractor.portfolioImages.slice(0, 3).map((image, idx) => (
-                  <ProfessionalImage
-                    key={idx}
-                    src={image}
-                    alt="Portfolio project"
-                    width={64}
-                    height={64}
-                    category="kitchen-project"
-                    className="w-16 h-16 rounded object-cover"
-                  />
+            {/* Contractors Grid/List */}
+            {filteredContractors.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No contractors found</h3>
+                <p className="text-gray-500">Try adjusting your search criteria or location</p>
+              </div>
+            ) : (
+              <div className={viewMode === 'grid' 
+                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' 
+                : 'space-y-4'
+              }>
+                {filteredContractors.map((contractor) => (
+                  <div
+                    key={contractor.id}
+                    className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${
+                      viewMode === 'list' ? 'flex p-4' : 'p-6'
+                    }`}
+                  >
+                    {/* Profile Image */}
+                    <div className={viewMode === 'list' ? 'flex-shrink-0 mr-4' : 'mb-4'}>
+                      <div className={`relative ${viewMode === 'list' ? 'w-16 h-16' : 'w-20 h-20'} mx-auto`}>
+                        <Image
+                          src={getContractorImage(contractor)}
+                          alt={contractor.companyName}
+                          fill
+                          className="rounded-full object-cover"
+                          sizes={viewMode === 'list' ? '64px' : '80px'}
+                        />
+                        {contractor.verified && (
+                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className={viewMode === 'list' ? 'flex-1' : ''}>
+                      <div className={viewMode === 'list' ? 'flex justify-between items-start' : 'text-center'}>
+                        <div className={viewMode === 'list' ? 'flex-1' : ''}>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {contractor.companyName}
+                          </h3>
+                          {contractor.contactName && (
+                            <p className="text-sm text-gray-600">{contractor.contactName}</p>
+                          )}
+
+                          {/* Rating */}
+                          <div className={`flex items-center ${viewMode === 'list' ? 'mt-1' : 'justify-center mt-2'}`}>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < Math.floor(contractor.rating)
+                                      ? 'text-yellow-400 fill-current'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="ml-2 text-sm text-gray-600">
+                              {formatRating(contractor.rating)} ({contractor.reviewCount})
+                            </span>
+                          </div>
+
+                          {/* Location & Distance */}
+                          <div className={`flex items-center ${viewMode === 'list' ? 'mt-2' : 'justify-center mt-3'} text-sm text-gray-500`}>
+                            <MapPin className="w-4 h-4 mr-1" />
+                            <span>
+                              {contractor.city}, {contractor.state}
+                              {contractor.distance && ` • ${contractor.distance} miles`}
+                            </span>
+                          </div>
+
+                          {/* Driving Time */}
+                          {contractor.drivingTime && (
+                            <div className={`flex items-center ${viewMode === 'list' ? 'mt-1' : 'justify-center mt-2'} text-sm text-blue-600`}>
+                              <Clock className="w-4 h-4 mr-1" />
+                              <span>{contractor.drivingTime} drive</span>
+                            </div>
+                          )}
+
+                          {/* Specialties */}
+                          <div className={`${viewMode === 'list' ? 'mt-3' : 'mt-4'}`}>
+                            <div className="flex flex-wrap gap-1">
+                              {(Array.isArray(contractor.specialties) 
+                                ? contractor.specialties.slice(0, 3)
+                                : JSON.parse(contractor.specialties || '[]').slice(0, 3)
+                              ).map((specialty: string) => (
+                                <span
+                                  key={specialty}
+                                  className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+                                >
+                                  {specialty}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className={`${viewMode === 'list' ? 'ml-4 flex flex-col space-y-2' : 'mt-6 flex justify-center space-x-2'}`}>
+                          {contractor.phone && (
+                            <a
+                              href={`tel:${contractor.phone}`}
+                              className="inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                            >
+                              <Phone className="w-4 h-4 mr-1" />
+                              Call
+                            </a>
+                          )}
+                          {contractor.website && (
+                            <a
+                              href={contractor.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                            >
+                              <ExternalLink className="w-4 h-4 mr-1" />
+                              Website
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 sm:space-x-3">
-                <div className="flex space-x-2">
-                  <Link href={`/contractors/${contractor.id}`} className="btn-outline flex-1 sm:flex-none">
-                    View Profile
-                  </Link>
-                  <button className="btn-primary flex-1 sm:flex-none">Get Quote</button>
-                </div>
-                <MapsAction
-                  contractor={{
-                    id: contractor.id,
-                    name: contractor.businessName,
-                    businessName: contractor.businessName,
-                    address: contractor.location,
-                    phone: '(555) 123-4567', // Mock phone for demo
-                    website: `https://example.com/contractor/${contractor.id}`,
-                    coordinates: {
-                      lat: 33.4484 + (Math.random() - 0.5) * 0.5,
-                      lng: -112.0740 + (Math.random() - 0.5) * 0.5
-                    }
-                  }}
-                  showAllActions={false}
-                />
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-      <div className="relative">
-        <ProfessionalImage
-          src={contractor.portfolioImages[0]}
-          alt="Portfolio project showcase"
-          width={400}
-          height={192}
-          category="kitchen-project"
-          className="w-full h-48 object-cover"
-        />
-        {contractor.verified && (
-          <span className="absolute top-3 right-3 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-            Verified
-          </span>
-        )}
-      </div>
-
-      <div className="p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <ContractorAvatar
-            src={contractor.profileImage}
-            name={contractor.name}
-            size={48}
-            className=""
-          />
-          <div>
-            <h3 className="font-semibold text-gray-900">{contractor.businessName}</h3>
-            <p className="text-sm text-gray-600">{contractor.name}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-1">
-            <Star className="text-yellow-400 fill-current" size={16} />
-            <span className="font-semibold">{contractor.rating}</span>
-            <span className="text-gray-500 text-sm">({contractor.reviewCount})</span>
-          </div>
-          <span className="text-sm font-medium text-gray-900">{contractor.priceRange}</span>
-        </div>
-
-        <div className="text-sm text-gray-500 mb-3">
-          <div>{contractor.location} • {contractor.distance}</div>
-          <div>{contractor.yearsExperience} years experience</div>
-        </div>
-
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">{contractor.description}</p>
-
-        <div className="flex flex-wrap gap-1 mb-4">
-          {contractor.specialties.slice(0, 2).map(specialty => (
-            <span
-              key={specialty}
-              className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-1 rounded-full"
-            >
-              {specialty}
-            </span>
-          ))}
-          {contractor.specialties.length > 2 && (
-            <span className="text-xs text-gray-500 px-2 py-1">
-              +{contractor.specialties.length - 2} more
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex space-x-2">
-            <Link
-              href={`/contractors/${contractor.id}`}
-              className="flex-1 text-center btn-outline text-sm py-2"
-            >
-              View Profile
-            </Link>
-            <button className="flex-1 btn-primary text-sm py-2">
-              Get Quote
-            </button>
-          </div>
-          <MapsAction
-            contractor={{
-              id: contractor.id,
-              name: contractor.businessName,
-              businessName: contractor.businessName,
-              address: contractor.location,
-              phone: '(555) 123-4567', // Mock phone for demo
-              website: `https://example.com/contractor/${contractor.id}`,
-              coordinates: {
-                lat: 33.4484 + (Math.random() - 0.5) * 0.5,
-                lng: -112.0740 + (Math.random() - 0.5) * 0.5
-              }
-            }}
-            showAllActions={false}
-          />
         </div>
       </div>
     </div>
-  )
-}
-
-export default function ContractorsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading contractors...</p>
-        </div>
-      </div>
-    }>
-      <ContractorsPageContent />
-    </Suspense>
   )
 }
