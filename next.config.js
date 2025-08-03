@@ -5,9 +5,16 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
+  // Disable static optimization temporarily for debugging
+  output: 'standalone',
+  trailingSlash: false,
+  
   // Fix hydration issues
   swcMinify: true,
-  reactStrictMode: true,
+  reactStrictMode: false, // Temporarily disable strict mode
+  
+  // Reduce static generation issues
+  generateStaticParams: false,
 
   // Image optimization
   images: {
@@ -23,63 +30,75 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
+        hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3002',
-        pathname: '/api/placeholder/**',
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
       },
     ],
   },
-  env: {
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+
+  // Enhanced webpack config
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      crypto: false,
+    }
+    return config
   },
-  // Optimize builds and fix webpack issues
+
+  // Reduce bundle size
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+
   // Performance optimizations
-  swcMinify: true,
   poweredByHeader: false,
-  // Handle SSR and webpack issues
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+  compress: true,
+  
+  // Environment variables
+  env: {
+    CUSTOM_KEY: process.env.NODE_ENV,
   },
-  // Fix for Render deployment
-  output: 'standalone',
-  // Webpack configuration fixes for Render
-  webpack: (config, { dev, isServer }) => {
-    // Fix for crypto polyfill issues
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      };
-    }
 
-    // Ensure TypeScript path mapping works on Render
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname),
-    };
+  async redirects() {
+    return [
+      {
+        source: '/home',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
 
-    // Optimize for production builds
-    if (!dev) {
-      config.optimization = {
-        ...config.optimization,
-        sideEffects: false,
-      };
-    }
-
-    return config;
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ]
   },
 }
 
