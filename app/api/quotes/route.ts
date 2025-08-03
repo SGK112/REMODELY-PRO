@@ -95,8 +95,24 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    // BULLETPROOF: Sanitize and validate input
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json(
+        { message: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
+
     // Validate the request data
     const validatedData = quoteSchema.parse(body);
+
+    // BULLETPROOF: Validate database connection and required fields
+    if (!validatedData.contractorId || !validatedData.projectType) {
+      return NextResponse.json(
+        { message: 'Missing required fields: contractorId and projectType' },
+        { status: 400 }
+      );
+    }
 
     // Create the quote in the database
     const quote = await prisma.quote.create({
@@ -125,10 +141,24 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Quote submission error:', error);
 
+    // BULLETPROOF: Enhanced error handling
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { message: 'Invalid data provided', errors: (error as any).errors },
+        { 
+          message: 'Invalid data provided', 
+          errors: (error as any).errors,
+          details: 'Please check all required fields and try again'
+        },
         { status: 400 }
+      );
+    }
+
+    // Database connection errors
+    if (error instanceof Error && error.message.includes('database')) {
+      console.error('Database error in quote submission:', error);
+      return NextResponse.json(
+        { message: 'Database temporarily unavailable. Please try again.' },
+        { status: 503 }
       );
     }
 
@@ -148,11 +178,26 @@ export async function PATCH(request: NextRequest) {
     }
 
     const data = await request.json();
+    
+    // BULLETPROOF: Validate input data structure
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json({
+        error: 'Invalid request body'
+      }, { status: 400 });
+    }
+
     const { quoteId, status, estimatedCost, notes } = data;
 
-    if (!quoteId || !status) {
+    // BULLETPROOF: Enhanced validation
+    if (!quoteId || typeof quoteId !== 'string') {
       return NextResponse.json({
-        error: 'Missing required fields: quoteId, status'
+        error: 'Invalid or missing quoteId'
+      }, { status: 400 });
+    }
+
+    if (!status || typeof status !== 'string') {
+      return NextResponse.json({
+        error: 'Invalid or missing status'
       }, { status: 400 });
     }
 
@@ -184,8 +229,8 @@ export async function PATCH(request: NextRequest) {
       where: { id: quoteId },
       data: {
         status,
-        ...(estimatedCost && { estimatedCost: parseFloat(estimatedCost) }),
-        ...(notes && { notes }),
+        ...(estimatedCost && !isNaN(parseFloat(estimatedCost)) && { estimatedCost: parseFloat(estimatedCost) }),
+        ...(notes && typeof notes === 'string' && { notes: notes.trim() }),
         updatedAt: new Date(),
       },
       include: {
