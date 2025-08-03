@@ -13,9 +13,6 @@ const nextConfig = {
   swcMinify: true,
   reactStrictMode: false, // Temporarily disable strict mode
   
-  // Reduce static generation issues
-  generateStaticParams: false,
-
   // Image optimization
   images: {
     dangerouslyAllowSVG: true,
