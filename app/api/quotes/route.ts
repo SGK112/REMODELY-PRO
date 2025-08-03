@@ -144,8 +144,8 @@ export async function POST(request: NextRequest) {
     // BULLETPROOF: Enhanced error handling
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { 
-          message: 'Invalid data provided', 
+        {
+          message: 'Invalid data provided',
           errors: (error as any).errors,
           details: 'Please check all required fields and try again'
         },
@@ -178,7 +178,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     // BULLETPROOF: Validate input data structure
     if (!data || typeof data !== 'object') {
       return NextResponse.json({

@@ -25,9 +25,9 @@ export function Navigation() {
                     {/* Logo */}
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-1">
-                        <img 
-                            src="/logo-remodely.svg" 
-                            alt="Remodely AI Pro" 
+                        <img
+                            src="/logo-remodely.svg"
+                            alt="Remodely AI Pro"
                             className="h-10 w-auto"
                             onError={(e) => {
                                 console.log('Logo failed to load, using fallback')
