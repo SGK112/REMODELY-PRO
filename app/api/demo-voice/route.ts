@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     if (result.success) {
       console.log('✅ Voice call initiated successfully!')
       console.log('📋 Call SID:', result.callSid)
-      
-      return NextResponse.json({ 
-        success: true, 
+
+      return NextResponse.json({
+        success: true,
         message: 'Demo voice call initiated successfully',
         callSid: result.callSid,
         phoneNumber: to,
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('💥 Demo voice call error:', error)
-    
+
     return NextResponse.json({
       error: error.message || 'Failed to initiate demo call',
       code: error.code,

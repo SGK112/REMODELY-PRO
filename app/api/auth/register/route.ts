@@ -5,19 +5,19 @@ import { prisma } from '@/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Basic validation for required fields
-    const { 
-      name, 
-      email, 
-      password, 
-      userType, 
-      rocLicenseNumber, 
-      phone, 
-      businessName, 
-      serviceArea, 
-      specialties, 
-      yearsExperience 
+    const {
+      name,
+      email,
+      password,
+      userType,
+      rocLicenseNumber,
+      phone,
+      businessName,
+      serviceArea,
+      specialties,
+      yearsExperience
     } = body
 
     if (!name || !email || !password || !userType) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (userType === 'CONTRACTOR' && rocLicenseNumber) {
       try {
         rocContractor = await prisma.contractor.findFirst({
-          where: { 
+          where: {
             OR: [
               { licenseNumber: rocLicenseNumber },
               { rocLicenseNumber: rocLicenseNumber }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         // Update existing ROC contractor with user information
         await prisma.contractor.update({
           where: { id: rocContractor.id },
-          data: { 
+          data: {
             userId: user.id,
             phone: phone || rocContractor.phone,
             profileComplete: true,
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
             reviewCount: 0,
             yearsExperience: yearsExperience || 1,
             yearsInBusiness: yearsExperience || 1,
-            licenseNumber: rocLicenseNumber || null,
+            rocLicenseNumber: rocLicenseNumber || null,
           }
         })
       }

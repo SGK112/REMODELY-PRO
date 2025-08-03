@@ -34,10 +34,10 @@ class FastROCConverter {
    */
   async convertToJSONL(inputFile, outputFile = 'roc-contractors.jsonl') {
     console.log('🔄 Converting to JSONL format...');
-    
+
     const outputPath = path.join(this.outputDir, outputFile);
     const writeStream = fs.createWriteStream(outputPath);
-    
+
     const fileStream = fs.createReadStream(inputFile);
     const rl = readline.createInterface({
       input: fileStream,
@@ -57,16 +57,16 @@ class FastROCConverter {
       try {
         const values = this.parseCSVLine(line);
         const contractor = this.mapToContractor(headers, values);
-        
+
         if (contractor && contractor.licenseStatus === 'Active') {
           writeStream.write(JSON.stringify(contractor) + '\n');
           this.stats.activeContractors++;
           this.stats.licenseClasses.add(contractor.licenseClass);
           this.stats.cities.add(contractor.city);
         }
-        
+
         this.stats.totalProcessed++;
-        
+
         if (this.stats.totalProcessed % 1000 === 0) {
           console.log(`📊 Processed ${this.stats.totalProcessed} records...`);
         }
@@ -85,17 +85,17 @@ class FastROCConverter {
    */
   async convertToSQLite(inputFile, outputFile = 'roc-contractors.db') {
     console.log('🔄 Converting to SQLite database...');
-    
+
     const Database = require('better-sqlite3');
     const outputPath = path.join(this.outputDir, outputFile);
-    
+
     // Remove existing database
     if (fs.existsSync(outputPath)) {
       fs.unlinkSync(outputPath);
     }
-    
+
     const db = new Database(outputPath);
-    
+
     // Create optimized table with indexes
     db.exec(`
       CREATE TABLE contractors (
@@ -172,17 +172,17 @@ class FastROCConverter {
       try {
         const values = this.parseCSVLine(line);
         const contractor = this.mapToContractor(headers, values);
-        
+
         if (contractor) {
           batch.push(contractor);
-          
+
           if (batch.length >= this.batchSize) {
             insertMany(batch);
             batch = [];
             console.log(`📊 Inserted ${this.stats.totalProcessed} records...`);
           }
         }
-        
+
         this.stats.totalProcessed++;
       } catch (error) {
         this.stats.errors.push(`Line ${this.stats.totalProcessed}: ${error.message}`);
@@ -204,7 +204,7 @@ class FastROCConverter {
    */
   async splitByRegion(inputFile) {
     console.log('🔄 Splitting by region...');
-    
+
     const regionDir = path.join(this.outputDir, 'regions');
     if (!fs.existsSync(regionDir)) {
       fs.mkdirSync(regionDir, { recursive: true });
@@ -230,10 +230,10 @@ class FastROCConverter {
       try {
         const values = this.parseCSVLine(line);
         const contractor = this.mapToContractor(headers, values);
-        
+
         if (contractor && contractor.licenseStatus === 'Active') {
           const region = this.getRegion(contractor.city);
-          
+
           if (!fileStreams.has(region)) {
             const regionFile = path.join(regionDir, `${region}.json`);
             fileStreams.set(region, {
@@ -242,7 +242,7 @@ class FastROCConverter {
             });
             fileStreams.get(region).stream.write('[\n');
           }
-          
+
           const regionData = fileStreams.get(region);
           if (regionData.contractors.length > 0) {
             regionData.stream.write(',\n');
@@ -250,7 +250,7 @@ class FastROCConverter {
           regionData.stream.write(JSON.stringify(contractor, null, 2));
           regionData.contractors.push(contractor);
         }
-        
+
         this.stats.totalProcessed++;
       } catch (error) {
         this.stats.errors.push(`Line ${this.stats.totalProcessed}: ${error.message}`);
@@ -273,10 +273,10 @@ class FastROCConverter {
    */
   async createPrismaSeed(inputFile, outputFile = 'prisma-seed.js') {
     console.log('🔄 Creating Prisma seed file...');
-    
+
     const outputPath = path.join(this.outputDir, outputFile);
     const writeStream = fs.createWriteStream(outputPath);
-    
+
     // Write seed file header
     writeStream.write(`
 const { PrismaClient } = require('@prisma/client');
@@ -308,12 +308,12 @@ async function main() {
       try {
         const values = this.parseCSVLine(line);
         const contractor = this.mapToContractor(headers, values);
-        
+
         if (contractor && contractor.licenseStatus === 'Active') {
           if (contractorCount > 0) {
             writeStream.write(',\n');
           }
-          
+
           writeStream.write(`    {
       businessName: ${JSON.stringify(contractor.businessName)},
       rocLicenseNumber: ${JSON.stringify(contractor.licenseNumber)},
@@ -333,15 +333,15 @@ async function main() {
       rocImportDate: new Date(),
       scrapedFrom: 'Arizona ROC'
     }`);
-          
+
           contractorCount++;
-          
+
           // Limit to reasonable number for seeding
           if (contractorCount >= 5000) {
             break;
           }
         }
-        
+
         this.stats.totalProcessed++;
       } catch (error) {
         this.stats.errors.push(`Line ${this.stats.totalProcessed}: ${error.message}`);
@@ -392,10 +392,10 @@ main()
     const result = [];
     let current = '';
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         inQuotes = !inQuotes;
       } else if (char === ',' && !inQuotes) {
@@ -405,7 +405,7 @@ main()
         current += char;
       }
     }
-    
+
     result.push(current.trim());
     return result;
   }
@@ -415,11 +415,11 @@ main()
    */
   mapToContractor(headers, values) {
     const contractor = {};
-    
+
     for (let i = 0; i < headers.length && i < values.length; i++) {
       const header = headers[i].toLowerCase().trim();
       const value = values[i] ? values[i].replace(/"/g, '').trim() : '';
-      
+
       // Map common ROC fields
       switch (header) {
         case 'license number':
@@ -465,7 +465,7 @@ main()
           break;
       }
     }
-    
+
     return contractor.licenseNumber ? contractor : null;
   }
 
@@ -474,13 +474,13 @@ main()
    */
   getRegion(city) {
     if (!city) return 'unknown';
-    
+
     const phoenixMetro = ['phoenix', 'scottsdale', 'tempe', 'mesa', 'chandler', 'glendale', 'peoria', 'surprise', 'avondale', 'goodyear'];
     const tucsonArea = ['tucson', 'oro valley', 'marana', 'sahuarita'];
     const flagstaffArea = ['flagstaff', 'sedona', 'prescott'];
-    
+
     const cityLower = city.toLowerCase();
-    
+
     if (phoenixMetro.some(metro => cityLower.includes(metro))) {
       return 'phoenix-metro';
     } else if (tucsonArea.some(area => cityLower.includes(area))) {
@@ -501,7 +501,7 @@ main()
     console.log(`Active Contractors: ${this.stats.activeContractors.toLocaleString()}`);
     console.log(`License Classes: ${this.stats.licenseClasses.size}`);
     console.log(`Cities: ${this.stats.cities.size}`);
-    
+
     if (this.stats.errors.length > 0) {
       console.log(`\n❌ Errors: ${this.stats.errors.length}`);
       this.stats.errors.slice(0, 5).forEach(error => console.log(`  - ${error}`));
@@ -516,11 +516,11 @@ main()
 async function main() {
   const converter = new FastROCConverter();
   await converter.init();
-  
+
   const args = process.argv.slice(2);
   const inputFile = args[0];
   const strategy = args[1] || 'all';
-  
+
   if (!inputFile) {
     console.log(`
 🚀 Fast ROC Converter
@@ -551,30 +551,30 @@ Examples:
 
   try {
     const startTime = Date.now();
-    
+
     if (strategy === 'jsonl' || strategy === 'all') {
       await converter.convertToJSONL(inputFile);
     }
-    
+
     if (strategy === 'sqlite' || strategy === 'all') {
       await converter.convertToSQLite(inputFile);
     }
-    
+
     if (strategy === 'regions' || strategy === 'all') {
       await converter.splitByRegion(inputFile);
     }
-    
+
     if (strategy === 'seed' || strategy === 'all') {
       await converter.createPrismaSeed(inputFile);
     }
-    
+
     const endTime = Date.now();
     const duration = ((endTime - startTime) / 1000).toFixed(2);
-    
+
     converter.printStats();
     console.log(`\n⚡ Conversion completed in ${duration} seconds`);
     console.log(`📁 Output directory: ${converter.outputDir}`);
-    
+
   } catch (error) {
     console.error('❌ Conversion failed:', error.message);
     process.exit(1);

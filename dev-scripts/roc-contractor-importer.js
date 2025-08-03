@@ -38,7 +38,7 @@ class ROCContractorImporter {
                 .on('end', async () => {
                     console.log(`\n✅ CSV parsing complete! Processed ${this.processedCount} records`)
                     console.log('💾 Starting database import...')
-                    
+
                     await this.batchImportContractors(contractors)
                     resolve(this.getSummary())
                 })
@@ -53,8 +53,8 @@ class ROCContractorImporter {
         // Extract and clean data from ROC CSV
         const licenseClasses = this.parseContractorClass(row['Class'], row['Class Detail'])
         const businessName = this.cleanBusinessName(row['Business Name'])
-        const dbaName = row['Doing Business As'] && row['Doing Business As'].trim() !== '' 
-            ? row['Doing Business As'].trim() 
+        const dbaName = row['Doing Business As'] && row['Doing Business As'].trim() !== ''
+            ? row['Doing Business As'].trim()
             : null
 
         return {
@@ -275,7 +275,7 @@ class ROCContractorImporter {
                 zipCode: contractorData.zipCode,
                 phone: null, // Will be added when they sign up
                 website: null,
-                
+
                 // ROC License Information
                 rocLicenseNumber: contractorData.rocLicenseNumber,
                 licenseClass: contractorData.licenseClass,
@@ -284,24 +284,24 @@ class ROCContractorImporter {
                 licenseIssued: contractorData.licenseIssued,
                 licenseExpiration: contractorData.licenseExpiration,
                 qualifyingParty: contractorData.qualifyingParty,
-                
+
                 // Verification Status
                 isVerified: true, // ROC license = verified
                 verified: true,
                 isROCVerified: true,
                 rocVerifiedDate: new Date(),
-                
+
                 // Profile Completion
                 profileComplete: false, // Still need contact info, photos, etc.
-                
+
                 // Business Information
                 yearsInBusiness: contractorData.estimatedYearsInBusiness,
                 yearsExperience: contractorData.estimatedYearsInBusiness,
-                
+
                 // Default ratings (will be updated with real reviews)
                 rating: 4.0,
                 reviewCount: 0,
-                
+
                 // Import metadata
                 scrapedFrom: 'arizona_roc_import',
                 lastScraped: contractorData.rocImportDate,
@@ -326,10 +326,10 @@ class ROCContractorImporter {
                 isVerified: true,
                 verified: true,
                 rocImportDate: rocData.rocImportDate,
-                
+
                 // Update years in business if ROC data is older
                 yearsInBusiness: Math.max(rocData.estimatedYearsInBusiness, 1),
-                
+
                 // Merge specialties if not already present
                 specialties: JSON.stringify([
                     ...new Set([
@@ -354,7 +354,7 @@ class ROCContractorImporter {
             .toLowerCase()
             .replace(/[^a-z0-9]/g, '')
             .substring(0, 20)
-        
+
         return `${cleanBusinessName}.roc${licenseNumber}@placeholder.remodely.ai`
     }
 
@@ -399,7 +399,7 @@ class ContractorVerificationSystem {
 
     static async facilitateROCContractorSignup(licenseNumber, contactInfo) {
         const contractor = await this.getContractorByROC(licenseNumber)
-        
+
         if (!contractor) {
             throw new Error('ROC License not found in our database')
         }
@@ -436,11 +436,11 @@ class ContractorVerificationSystem {
 // Main execution function
 async function importROCDatabase() {
     const importer = new ROCContractorImporter()
-    
+
     try {
         const csvPath = '/Users/homepc/Downloads/ROC_Posting-List_2025-08-01.csv'
         const results = await importer.importROCContractors(csvPath)
-        
+
         console.log('\n🎉 ROC Import Complete!')
         console.log('================================')
         console.log(`📊 Total Processed: ${results.processed}`)
@@ -448,18 +448,18 @@ async function importROCDatabase() {
         console.log(`🔄 Updated Existing: ${results.duplicates}`)
         console.log(`❌ Errors: ${results.errors}`)
         console.log(`📈 Success Rate: ${results.successRate}`)
-        
+
         // Generate final stats
         const totalContractors = await prisma.contractor.count()
         const rocVerified = await prisma.contractor.count({
             where: { isROCVerified: true }
         })
-        
+
         console.log('\n📈 Database Summary:')
         console.log(`👥 Total Contractors: ${totalContractors}`)
         console.log(`✅ ROC Verified: ${rocVerified}`)
         console.log(`📍 Coverage: Arizona Statewide`)
-        
+
     } catch (error) {
         console.error('❌ Import failed:', error)
     } finally {
