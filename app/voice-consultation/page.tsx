@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Crown, Phone, MessageSquare, Zap, Clock, Star, ArrowRight, CheckCircle, Mic, Bot, Calendar } from 'lucide-react'
 
