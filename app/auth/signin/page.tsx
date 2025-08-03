@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Construction } from 'lucide-react'
-import { useScrollNavigation } from '@/hooks/useScrollNavigation'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -14,7 +13,6 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { navigateTo } = useScrollNavigation()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +29,8 @@ export default function SignInPage() {
       if (result?.error) {
         setError('Invalid email or password')
       } else if (result?.ok) {
-        navigateTo('/dashboard')
+        // Redirect to dashboard - let the dashboard page handle role-based routing
+        router.push('/dashboard')
       }
     } catch (error) {
       setError('Something went wrong. Please try again.')
@@ -41,36 +40,32 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-construction-hero flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Construction className="w-10 h-10 text-amber-600 mr-3" />
-            <h1 className="text-3xl font-bold text-slate-900">
-              REMODELY<span className="text-amber-600">.AI</span>
-            </h1>
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
-          <p className="mt-2 text-slate-600">Sign in to your professional account</p>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-construction-heading">
+            REMODELY<span className="text-amber-600">.AI</span>
+          </h1>
+          <p className="mt-2 text-stone-600 text-lg">Sign in to your professional account</p>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-slate-200">
+        <div className="bg-white py-8 px-4 shadow-construction rounded-2xl sm:px-10 border border-stone-200">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-stone-700">
                 Email address
               </label>
-              <div className="relative">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-stone-400" />
                 </div>
                 <input
                   id="email"
@@ -80,19 +75,19 @@ export default function SignInPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-stone-300 rounded-xl placeholder-stone-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 transition-colors"
                   placeholder="Enter your email"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-stone-700">
                 Password
               </label>
-              <div className="relative">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-stone-400" />
                 </div>
                 <input
                   id="password"
@@ -102,72 +97,63 @@ export default function SignInPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-500"
+                  className="appearance-none block w-full pl-10 pr-10 py-3 border border-stone-300 rounded-xl placeholder-stone-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 transition-colors"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-amber-600 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                    <EyeOff className="h-5 w-5 text-stone-400" />
                   ) : (
-                    <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                    <Eye className="h-5 w-5 text-stone-400" />
                   )}
                 </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <Link
-                  href="/auth/forgot-password"
-                  className="font-medium text-amber-600 hover:text-amber-500"
-                >
-                  Forgot your password?
-                </Link>
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                disabled={loading || !email || !password}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                disabled={loading}
+                className="w-full btn-primary py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    Sign in
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
+            </div>
+
+            <div className="flex items-center justify-end">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-amber-600 hover:text-amber-700 font-medium"
+              >
+                Forgot your password?
+              </Link>
             </div>
           </form>
 
-          <div className="mt-6">
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-300" />
+                <div className="w-full border-t border-stone-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">New to REMODELY.AI?</span>
+                <span className="px-4 bg-white text-stone-500">Don't have an account?</span>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Link
                 href="/signup"
-                className="w-full inline-flex justify-center py-2 px-4 border border-slate-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                className="w-full inline-flex justify-center py-3 px-4 border border-stone-300 rounded-xl shadow-sm bg-white text-sm font-medium text-stone-600 hover:bg-stone-50 hover:border-amber-300 transition-colors"
               >
                 Customer Sign Up
               </Link>
               <Link
                 href="/signup/contractor"
-                className="w-full inline-flex justify-center py-2 px-4 border border-amber-300 rounded-lg shadow-sm bg-amber-50 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+                className="w-full inline-flex justify-center py-3 px-4 border border-amber-300 rounded-xl shadow-sm bg-amber-50 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
               >
                 PRO Sign Up
               </Link>
