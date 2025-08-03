@@ -38,11 +38,9 @@ export async function POST(request: NextRequest) {
                     const voiceResult = await TwilioService.makeVoiceCall({
                         to: phoneNumber,
                         message: fulfillmentText,
-                        type: 'welcome',
-                        intent: 'contractor.recruitment',
-                        customerName
+                        type: 'welcome'
                     });
-                    voiceCallTriggered = voiceResult.success;
+                    voiceCallTriggered = voiceResult;
                     console.log('Contractor recruitment voice call:', voiceResult);
                 }
                 break;
@@ -56,11 +54,9 @@ export async function POST(request: NextRequest) {
                     const voiceResult = await TwilioService.makeVoiceCall({
                         to: phoneNumber,
                         message: fulfillmentText,
-                        type: 'quote',
-                        intent: 'customer.service',
-                        customerName
+                        type: 'quote'
                     });
-                    voiceCallTriggered = voiceResult.success;
+                    voiceCallTriggered = voiceResult;
                     console.log('Customer service voice call:', voiceResult);
                 }
                 break;
@@ -74,11 +70,9 @@ export async function POST(request: NextRequest) {
                     const voiceResult = await TwilioService.makeVoiceCall({
                         to: phoneNumber,
                         message: fulfillmentText,
-                        type: 'quote',
-                        intent: 'quote.request',
-                        customerName
+                        type: 'quote'
                     });
-                    voiceCallTriggered = voiceResult.success;
+                    voiceCallTriggered = voiceResult;
                     console.log('Quote request voice call:', voiceResult);
                 }
                 break;
@@ -92,11 +86,9 @@ export async function POST(request: NextRequest) {
                     const voiceResult = await TwilioService.makeVoiceCall({
                         to: phoneNumber,
                         message: fulfillmentText,
-                        type: 'booking',
-                        intent: 'appointment.booking',
-                        customerName
+                        type: 'booking'
                     });
-                    voiceCallTriggered = voiceResult.success;
+                    voiceCallTriggered = voiceResult;
                     console.log('Appointment booking voice call:', voiceResult);
                 }
                 break;

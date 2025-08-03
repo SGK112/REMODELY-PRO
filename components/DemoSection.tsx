@@ -29,7 +29,7 @@ const demoScenarios = [
 ]
 
 export default function DemoSection() {
-    const [activeDemo, setActiveDemo] = useState(null)
+    const [activeDemo, setActiveDemo] = useState<string | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
 
     const startDemo = (demoId: string) => {
