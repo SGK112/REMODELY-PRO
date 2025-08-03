@@ -8,52 +8,52 @@ export function Footer() {
   const { getPopularLocations } = useLocation()
   const popularLocations = getPopularLocations()
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white">
+    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              {/* Enhanced Footer Logo */}
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-700 rounded-xl flex items-center justify-center shadow-lg">
+              {/* Professional Footer Logo matching navbar */}
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                 {/* Professional "RA" monogram to match navbar */}
                 <div className="text-white font-bold text-xl tracking-tight">
                   <span className="text-white">R</span>
-                  <span className="text-amber-200">A</span>
+                  <span className="text-blue-200">A</span>
                 </div>
               </div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                  REMODELY AI PRO
+                <span className="text-2xl font-bold text-white">
+                  REMODELY<span className="text-blue-400"> AI</span>
                 </span>
               </div>
             </div>
             <p className="text-stone-300 mb-8 max-w-md leading-relaxed text-lg">
-              North America's premier AI-powered construction marketplace connecting property owners with verified professional contractors and construction specialists.
+              North America's premier AI-powered renovation marketplace connecting property owners with verified professional contractors and renovation specialists.
             </p>
 
             {/* Enhanced Trust Indicators */}
             <div className="grid grid-cols-3 gap-6 mb-8">
-              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-amber-600/20">
-                <div className="flex items-center justify-center text-amber-400 mb-2">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-blue-600/20">
+                <div className="flex items-center justify-center text-blue-400 mb-2">
                   <Star className="w-6 h-6 mr-1 fill-current" />
                   <span className="font-bold text-xl">4.9</span>
                 </div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Professional Rating</div>
+                <div className="text-xs text-slate-400 uppercase tracking-wide">Professional Rating</div>
               </div>
-              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-emerald-600/20">
-                <div className="flex items-center justify-center text-emerald-400 mb-2">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-blue-600/20">
+                <div className="flex items-center justify-center text-blue-400 mb-2">
                   <Shield className="w-6 h-6 mr-1" />
                   <span className="font-bold text-xl">3200+</span>
                 </div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Certified Pros</div>
+                <div className="text-xs text-slate-400 uppercase tracking-wide">Certified Pros</div>
               </div>
-              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-orange-600/20">
-                <div className="flex items-center justify-center text-orange-400 mb-2">
+              <div className="text-center bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm border border-blue-600/20">
+                <div className="flex items-center justify-center text-blue-400 mb-2">
                   <Award className="w-6 h-6 mr-1" />
                   <span className="font-bold text-xl">$15M+</span>
                 </div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Projects Value</div>
+                <div className="text-xs text-slate-400 uppercase tracking-wide">Projects Value</div>
               </div>
             </div>
 
@@ -70,12 +70,44 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Professional Services */}
+          {/* Solutions by Audience */}
           <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">Professional Services</h4>
+            <h4 className="text-xl font-semibold mb-6 text-white">Solutions</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/contractors" className="text-stone-300 hover:text-amber-400 transition-colors flex items-center group">
+                <Link href="/for-homeowners" className="text-stone-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">For Homeowners</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/for-contractors" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">For Contractors</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/for-designers" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">For Designers</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/for-commercial" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Commercial & Facilities</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/marketplace" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Marketplace</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h4 className="text-xl font-semibold mb-6 text-white">Services</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/contractors" className="text-stone-300 hover:text-blue-400 transition-colors flex items-center group">
                   <span className="group-hover:translate-x-1 transition-transform">Find Contractors</span>
                 </Link>
               </li>
@@ -90,8 +122,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/signup/contractor" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">For Contractors</span>
+                <Link href="/signup" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Join Platform</span>
                 </Link>
               </li>
               <li>

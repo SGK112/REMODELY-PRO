@@ -5,101 +5,97 @@ const prisma = new PrismaClient()
 const vendors = [
     {
         name: "Aracruz Granite",
-        addre        console.log(`✅ Added ${vendor.name} (${vendor.type})`)
-    } catch (error) {
-        console.error(`❌ Error adding ${vendor.name}:`, error.message)
-    }
-    }s: "2310 W Sherman St, Phoenix, AZ 85009",
-    phone: "(602) 252-1171",
+        address: "2310 W Sherman St, Phoenix, AZ 85009",
+        phone: "(602) 252-1171",
         email: "info@aracruzgranite.com",
-            specialties: ["Natural Stone", "Granite", "Quartzite"],
-                type: "distributor",
-                    website: "https://aracruzgranite.com",
-                        description: "Wide selection of natural stone slabs, including granite and quartzite"
-  },
-{
-    name: "Architectural Surfaces",
+        specialties: ["Natural Stone", "Granite", "Quartzite"],
+        type: "distributor",
+        website: "https://aracruzgranite.com",
+        description: "Wide selection of natural stone slabs, including granite and quartzite"
+    },
+    {
+        name: "Architectural Surfaces",
         address: "9175 E Pima Center Pkwy Suite A-1, Scottsdale, AZ 85258",
-            phone: "(480) 210-3570",
-                specialties: ["Natural Stone", "Quartz", "Tile"],
-                    type: "distributor",
-                        website: "https://archsurfaces.com",
-                            description: "Leading importer of natural stone, quartz, and tile with 35 national showrooms"
-},
-{
-    name: "Arizona Tile",
+        phone: "(480) 210-3570",
+        specialties: ["Natural Stone", "Quartz", "Tile"],
+        type: "distributor",
+        website: "https://archsurfaces.com",
+        description: "Leading importer of natural stone, quartz, and tile with 35 national showrooms"
+    },
+    {
+        name: "Arizona Tile",
         address: "8829 S Priest Dr, Tempe, AZ 85284",
-            phone: "(480) 893-9393",
-                specialties: ["Granite", "Marble", "Quartz", "Tile", "Natural Stone"],
-                    type: "distributor",
-                        website: "https://arizonatile.com",
-                            description: "Family-owned since 1977, offering over 230 varieties of granite, marble, quartz, and more"
-},
-{
-    name: "MSI Surfaces",
+        phone: "(480) 893-9393",
+        specialties: ["Granite", "Marble", "Quartz", "Tile", "Natural Stone"],
+        type: "distributor",
+        website: "https://arizonatile.com",
+        description: "Family-owned since 1977, offering over 230 varieties of granite, marble, quartz, and more"
+    },
+    {
+        name: "MSI Surfaces",
         address: "4405 W Roosevelt St, Phoenix, AZ 85043",
-            phone: "(602) 393-6330",
-                specialties: ["Quartz", "Granite", "Porcelain", "Natural Stone"],
-                    type: "distributor",
-                        website: "https://msisurf.com",
-                            description: "Extensive range of quartz, granite, and porcelain surfaces with state-of-the-art showroom",
-                                rating: 5.0
-},
-{
-    name: "Cosentino",
+        phone: "(602) 393-6330",
+        specialties: ["Quartz", "Granite", "Porcelain", "Natural Stone"],
+        type: "distributor",
+        website: "https://msisurf.com",
+        description: "Extensive range of quartz, granite, and porcelain surfaces with state-of-the-art showroom",
+        rating: 5.0
+    },
+    {
+        name: "Cosentino",
         address: "8307 S Priest Dr, Tempe, AZ 85284",
-            phone: "(480) 763-9400",
-                specialties: ["Silestone", "Dekton", "Quartz Surfaces"],
-                    type: "manufacturer",
-                        website: "https://cosentino.com",
-                            description: "Global leader in innovative surfaces like Silestone quartz and Dekton ultra-compact surfaces"
-},
-{
-    name: "Cambria",
+        phone: "(480) 763-9400",
+        specialties: ["Silestone", "Dekton", "Quartz Surfaces"],
+        type: "manufacturer",
+        website: "https://cosentino.com",
+        description: "Global leader in innovative surfaces like Silestone quartz and Dekton ultra-compact surfaces"
+    },
+    {
+        name: "Cambria",
         address: "1250 N Fairway Dr Building C, Suite 103, Avondale, AZ 85323",
-            phone: "(623) 471-6872",
-                specialties: ["Quartz Surfaces", "Premium Countertops"],
-                    type: "manufacturer",
-                        website: "https://cambriausa.com",
-                            description: "Premium quartz surfaces with exclusive designs, available by appointment"
-},
-{
-    name: "Classic Surfaces",
+        phone: "(623) 471-6872",
+        specialties: ["Quartz Surfaces", "Premium Countertops"],
+        type: "manufacturer",
+        website: "https://cambriausa.com",
+        description: "Premium quartz surfaces with exclusive designs, available by appointment"
+    },
+    {
+        name: "Classic Surfaces",
         address: "4645 W Mcdowell Rd Suite #101 Phoenix, AZ",
-            phone: "(602) 334-1972",
-                email: "info@classic-surfaces.com",
-                    specialties: ["Quartz", "Natural Stone", "Surfacing Materials"],
-                        type: "distributor",
-                            website: "https://classic-surfaces.com",
-                                description: "High-quality surfacing materials, including quartz and natural stone"
-},
-{
-    name: "Cactus Stone & Tile",
+        phone: "(602) 334-1972",
+        email: "info@classic-surfaces.com",
+        specialties: ["Quartz", "Natural Stone", "Surfacing Materials"],
+        type: "distributor",
+        website: "https://classic-surfaces.com",
+        description: "High-quality surfacing materials, including quartz and natural stone"
+    },
+    {
+        name: "Cactus Stone & Tile",
         address: "5005 E Madison St, Phoenix, AZ 85034",
-            phone: "(602) 914-2202",
-                specialties: ["Natural Stone", "Granite", "Marble", "Tile"],
-                    type: "distributor",
-                        website: "https://cactusstonetile.com",
-                            description: "Wholesale distributor of ceramic and stone tile, natural stone slabs"
-},
-{
-    name: "Bolder Image Stone",
+        phone: "(602) 914-2202",
+        specialties: ["Natural Stone", "Granite", "Marble", "Tile"],
+        type: "distributor",
+        website: "https://cactusstonetile.com",
+        description: "Wholesale distributor of ceramic and stone tile, natural stone slabs"
+    },
+    {
+        name: "Bolder Image Stone",
         address: "4101 W Van Buren St STE#3, Phoenix, AZ 85009",
-            phone: "(602) 484-7700",
-                specialties: ["Granite", "Marble", "Quartz", "Custom Fabrication"],
-                    type: "fabricator",
-                        website: "https://bolderimage.com",
-                            description: "Specializes in granite, marble, and quartz countertops with custom fabrication services"
-},
-{
-    name: "The Stone Collection - Phoenix",
+        phone: "(602) 484-7700",
+        specialties: ["Granite", "Marble", "Quartz", "Custom Fabrication"],
+        type: "fabricator",
+        website: "https://bolderimage.com",
+        description: "Specializes in granite, marble, and quartz countertops with custom fabrication services"
+    },
+    {
+        name: "The Stone Collection - Phoenix",
         phone: "(602) 889-2067",
-            email: "info@thestonecollection.com",
-                specialties: ["Natural Stone", "Quartz Slabs", "Premium Materials"],
-                    type: "distributor",
-                        website: "https://thestonecollection.com",
-                            description: "Premium Natural Stone and Quartz Slabs for enriching environments"
-}
+        email: "info@thestonecollection.com",
+        specialties: ["Natural Stone", "Quartz Slabs", "Premium Materials"],
+        type: "distributor",
+        website: "https://thestonecollection.com",
+        description: "Premium Natural Stone and Quartz Slabs for enriching environments"
+    }
 ]
 
 // Additional national vendors/distributors
@@ -200,24 +196,27 @@ async function addVendorsToDatabase() {
                 })
 
                 console.log(`✅ Added ${vendor.name} (${vendor.type})`)
+            } catch (error) {
+                console.error(`❌ Error adding ${vendor.name}:`, error.message)
             }
-
-    console.log(`\n🎉 Successfully added ${allVendors.length} vendors to the database!`)
-
-            // Show updated stats
-            const contractorCount = await prisma.contractor.count()
-            const userCount = await prisma.user.count()
-
-            console.log(`\n📊 Updated Database Stats:`)
-            console.log(`👥 Total users: ${userCount}`)
-            console.log(`🏗️  Total contractors: ${contractorCount}`)
-
-        } catch (error) {
-            console.error('❌ Error adding vendors:', error)
-        } finally {
-            await prisma.$disconnect()
         }
+
+        console.log(`\n🎉 Successfully added ${allVendors.length} vendors to the database!`)
+
+        // Show updated stats
+        const contractorCount = await prisma.contractor.count()
+        const userCount = await prisma.user.count()
+
+        console.log(`\n📊 Updated Database Stats:`)
+        console.log(`👥 Total users: ${userCount}`)
+        console.log(`🏗️  Total contractors: ${contractorCount}`)
+
+    } catch (error) {
+        console.error('❌ Error adding vendors:', error)
+    } finally {
+        await prisma.$disconnect()
     }
+}
 
 // Run the population
 addVendorsToDatabase()

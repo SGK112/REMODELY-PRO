@@ -19,21 +19,21 @@ export function Navbar() {
     }
 
     return (
-        <nav className="bg-gradient-to-r from-slate-50 via-white to-stone-50 border-b border-amber-200/50 sticky top-0 z-50 backdrop-blur-sm shadow-sm">
+        <nav className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 border-b border-slate-600/30 sticky top-0 z-50 backdrop-blur-sm shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0 flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-700 rounded-lg flex items-center justify-center shadow-md">
-                                {/* Professional "RA" monogram */}
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
+                                {/* Professional "R" monogram */}
                                 <div className="text-white font-bold text-lg tracking-tight">
                                     <span className="text-white">R</span>
-                                    <span className="text-amber-200">A</span>
+                                    <span className="text-blue-200">A</span>
                                 </div>
                             </div>
-                            <span className="font-bold text-xl text-slate-900 hidden sm:block tracking-tight">
-                                REMODELY<span className="text-amber-600"> AI</span><span className="text-orange-600 text-base"> PRO</span>
+                            <span className="font-bold text-xl text-white hidden sm:block tracking-tight">
+                                REMODELY<span className="text-blue-400"> AI</span>
                             </span>
                         </Link>
                     </div>                    {/* Desktop Search Bar - Centered */}
@@ -48,7 +48,7 @@ export function Navbar() {
                                     placeholder="Search professional contractors..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-lg bg-stone-50/50 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white transition-colors"
+                                    className="block w-full pl-10 pr-4 py-2.5 border border-slate-600 rounded-lg bg-slate-700/50 placeholder-slate-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-slate-700 transition-colors"
                                 />
                             </div>
                         </form>
@@ -58,31 +58,41 @@ export function Navbar() {
                     <div className="hidden md:flex items-center space-x-1">
                         <Link
                             href="/contractors"
-                            className="text-slate-700 hover:text-amber-700 hover:bg-amber-50 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-amber-200"
+                            className="text-slate-300 hover:text-blue-400 hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-slate-600"
                         >
-                            Browse Professionals
+                            Find Contractors
                         </Link>
                         <Link
-                            href="/saved-contractors"
-                            className="text-slate-700 hover:text-orange-700 hover:bg-orange-50 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-orange-200 flex items-center"
+                            href="/marketplace"
+                            className="text-slate-300 hover:text-blue-400 hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-slate-600"
                         >
-                            <Users className="w-4 h-4 mr-1.5" />
-                            Saved
+                            Marketplace
                         </Link>
+
+                        {/* Solutions Dropdown - would need state management for full dropdown */}
+                        <div className="relative group">
+                            <button className="text-slate-300 hover:text-blue-400 hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-slate-600 flex items-center">
+                                Solutions
+                                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
                         <Link
                             href="/quote"
-                            className="text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-emerald-200"
+                            className="text-slate-300 hover:text-blue-400 hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-slate-600"
                         >
                             Get Quote
                         </Link>
 
                         {/* Divider */}
-                        <div className="h-8 w-px bg-stone-200 mx-3"></div>
+                        <div className="h-8 w-px bg-slate-600 mx-3"></div>
 
                         {/* CTA Buttons */}
                         <Link
                             href="/signup"
-                            className="bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow-md"
+                            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-blue-900/25"
                         >
                             Join PRO
                         </Link>
@@ -92,7 +102,7 @@ export function Navbar() {
                     <div className="md:hidden flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex items-center justify-center p-2.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500 border border-transparent hover:border-amber-200 transition-all"
+                            className="inline-flex items-center justify-center p-2.5 rounded-lg text-slate-300 hover:text-blue-400 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-transparent hover:border-slate-600 transition-all"
                         >
                             {isOpen ? (
                                 <X className="block h-5 w-5" />
@@ -106,7 +116,7 @@ export function Navbar() {
 
             {/* Mobile menu */}
             {isOpen && (
-                <div className="md:hidden border-t border-stone-200 bg-gradient-to-b from-white/98 to-stone-50/98 backdrop-blur-sm">
+                <div className="md:hidden border-t border-slate-600 bg-slate-800 backdrop-blur-sm">
                     <div className="px-4 pt-4 pb-4 space-y-2">
                         {/* Mobile Search */}
                         <form onSubmit={handleSearch} className="mb-4">
@@ -119,7 +129,7 @@ export function Navbar() {
                                     placeholder="Search professional contractors..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3.5 border border-stone-300 rounded-lg bg-stone-50/50 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white transition-colors"
+                                    className="block w-full pl-10 pr-4 py-3.5 border border-slate-600 rounded-lg bg-slate-700/50 placeholder-slate-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-slate-700 transition-colors"
                                 />
                             </div>
                         </form>
@@ -127,43 +137,52 @@ export function Navbar() {
                         {/* Mobile Navigation Links */}
                         <Link
                             href="/contractors"
-                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-700 hover:text-amber-700 hover:bg-amber-50 rounded-lg border border-transparent hover:border-amber-200 transition-all"
+                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-700 rounded-lg border border-transparent hover:border-slate-600 transition-all"
                             onClick={() => setIsOpen(false)}
                         >
-                            <Users className="w-5 h-5 mr-3 text-amber-600" />
+                            <Users className="w-5 h-5 mr-3 text-blue-400" />
                             Browse Professionals
                         </Link>
 
                         <Link
-                            href="/saved-contractors"
-                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-700 hover:text-orange-700 hover:bg-orange-50 rounded-lg border border-transparent hover:border-orange-200 transition-all"
+                            href="/marketplace"
+                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-700 rounded-lg border border-transparent hover:border-slate-600 transition-all"
                             onClick={() => setIsOpen(false)}
                         >
-                            <Users className="w-5 h-5 mr-3 text-orange-600" />
+                            <Users className="w-5 h-5 mr-3 text-blue-400" />
+                            Marketplace
+                        </Link>
+
+                        <Link
+                            href="/saved-contractors"
+                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-700 rounded-lg border border-transparent hover:border-slate-600 transition-all"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <Users className="w-5 h-5 mr-3 text-blue-400" />
                             Saved Professionals
                         </Link>
 
                         <Link
                             href="/quote"
-                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg border border-transparent hover:border-emerald-200 transition-all"
+                            className="flex items-center px-4 py-3.5 text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-700 rounded-lg border border-transparent hover:border-slate-600 transition-all"
                             onClick={() => setIsOpen(false)}
                         >
-                            <MessageCircle className="w-5 h-5 mr-3 text-emerald-600" />
+                            <MessageCircle className="w-5 h-5 mr-3 text-blue-400" />
                             Get Professional Quote
                         </Link>
 
                         {/* Mobile CTAs */}
-                        <div className="pt-4 border-t border-stone-200 space-y-3">
+                        <div className="pt-4 border-t border-slate-600 space-y-3">
                             <Link
                                 href="/signup"
-                                className="block w-full bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white text-center py-3.5 px-4 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all"
+                                className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-center py-3.5 px-4 rounded-lg font-semibold shadow-lg hover:shadow-blue-900/25 transition-all"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Join REMODELY AI PRO
                             </Link>
                             <Link
                                 href="/signup/contractor"
-                                className="block w-full bg-stone-50 hover:bg-stone-100 text-slate-700 hover:text-slate-900 text-center py-3.5 px-4 rounded-lg font-medium border border-stone-300 hover:border-stone-400 transition-all"
+                                className="block w-full bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white text-center py-3.5 px-4 rounded-lg font-medium border border-slate-600 hover:border-slate-500 transition-all"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Join as Professional
