@@ -77,7 +77,7 @@ function SignInContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
@@ -103,7 +103,7 @@ function SignInContent() {
 
             <TabsContent value="customer" className="space-y-4">
               <div className="text-center py-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Get quotes for your stone & surface projects
                 </p>
               </div>
@@ -117,6 +117,7 @@ function SignInContent() {
                     required
                     placeholder="Enter your email"
                     disabled={isLoading}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
@@ -128,6 +129,7 @@ function SignInContent() {
                     required
                     placeholder="Enter your password"
                     disabled={isLoading}
+                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   />
                 </div>
                 {error && (
@@ -135,15 +137,22 @@ function SignInContent() {
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                  {isLoading ? "Signing In..." : "Sign In & Get Quotes"}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign In & Get Quotes'
+                  )}
                 </Button>
               </form>
             </TabsContent>
 
             <TabsContent value="contractor" className="space-y-4">
               <div className="text-center py-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Access your contractor dashboard
                 </p>
               </div>
@@ -157,6 +166,7 @@ function SignInContent() {
                     required
                     placeholder="Enter your email"
                     disabled={isLoading}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
@@ -168,6 +178,7 @@ function SignInContent() {
                     required
                     placeholder="Enter your password"
                     disabled={isLoading}
+                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   />
                 </div>
                 {error && (
@@ -175,7 +186,7 @@ function SignInContent() {
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
                   {isLoading ? "Signing In..." : "Access Dashboard"}
                 </Button>
               </form>
@@ -183,7 +194,7 @@ function SignInContent() {
           </Tabs>
 
           <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{" "}
               <Link
                 href={`/auth/signup?tab=${activeTab}`}
@@ -215,7 +226,7 @@ function SignInContent() {
 export default function SignInPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md">
           <CardContent className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin" />

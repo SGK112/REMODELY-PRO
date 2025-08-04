@@ -38,13 +38,13 @@ export default function QuickQuoteForm() {
     }
 
     return (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-card">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-4xl font-bold text-foreground mb-4">
                         Get Your Free Quote in 60 Seconds
                     </h2>
-                    <p className="text-xl text-gray-600">
+                    <p className="text-xl text-muted-foreground">
                         No account required • Instant contractor matching • 100% free
                     </p>
                 </div>

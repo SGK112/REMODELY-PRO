@@ -1,12 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Star, Shield, Award } from 'lucide-react'
-import { useLocation } from '@/components/providers/LocationProvider'
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Star, Shield, Award, Zap, Users, Building, MessageSquare } from 'lucide-react'
 
 export function Footer() {
-  const { getPopularLocations } = useLocation()
-  const popularLocations = getPopularLocations()
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -16,16 +13,13 @@ export function Footer() {
             <div className="flex items-center space-x-3 mb-6">
               {/* Professional Footer Logo matching navbar */}
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                {/* Professional "RA" monogram to match navbar */}
-                <div className="text-white font-bold text-xl tracking-tight">
-                  <span className="text-white">R</span>
-                  <span className="text-blue-200">A</span>
-                </div>
+                <div className="text-white font-bold text-xl tracking-tight">R</div>
               </div>
               <div>
                 <span className="text-2xl font-bold text-white">
                   REMODELY<span className="text-blue-400"> AI</span>
                 </span>
+                <div className="text-xs text-blue-300 -mt-1">Marketplace</div>
               </div>
             </div>
             <p className="text-stone-300 mb-8 max-w-md leading-relaxed text-lg">
@@ -58,19 +52,51 @@ export function Footer() {
             </div>
 
             <div className="flex space-x-6">
-              <a href="#" className="text-stone-400 hover:text-amber-400 transition-all duration-200 hover:scale-110">
+              <a href="https://facebook.com/RemodelyAI" className="text-stone-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
                 <Facebook size={24} />
               </a>
-              <a href="#" className="text-stone-400 hover:text-orange-400 transition-all duration-200 hover:scale-110">
+              <a href="https://twitter.com/RemodelyAI" className="text-stone-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
                 <Twitter size={24} />
               </a>
-              <a href="#" className="text-stone-400 hover:text-red-400 transition-all duration-200 hover:scale-110">
+              <a href="https://instagram.com/RemodelyAI" className="text-stone-400 hover:text-blue-400 transition-all duration-200 hover:scale-110">
                 <Instagram size={24} />
               </a>
             </div>
           </div>
 
-          {/* Solutions by Audience */}
+          {/* Services */}
+          <div>
+            <h4 className="text-xl font-semibold mb-6 text-white">Services</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/contractors" className="text-stone-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Find Contractors</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-chat" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">AI Assistant</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/marketplace/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Smart Tools</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/voice-consultation" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Voice SARAH</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/plans" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Plans & Pricing</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Solutions */}
           <div>
             <h4 className="text-xl font-semibold mb-6 text-white">Solutions</h4>
             <ul className="space-y-3">
@@ -85,40 +111,81 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/for-designers" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">For Designers</span>
+                <Link href="/white-label" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">White Label Solutions</span>
                 </Link>
               </li>
               <li>
-                <Link href="/for-commercial" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">Commercial & Facilities</span>
+                <Link href="/enterprise" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Enterprise</span>
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">Marketplace</span>
+                <Link href="/api" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">API Access</span>
                 </Link>
               </li>
             </ul>
           </div>
+        </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">Services</h4>
-            <ul className="space-y-3">
+        {/* Contact Section */}
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex items-center space-x-3 text-gray-300 hover:text-blue-400 transition-colors">
+              <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                <Phone size={18} />
+              </div>
+              <div>
+                <div className="font-semibold">1-800-REMODEL</div>
+                <div className="text-sm text-gray-400">24/7 Support</div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3 text-gray-300 hover:text-blue-400 transition-colors">
+              <div className="w-10 h-10 bg-green-600/20 rounded-lg flex items-center justify-center">
+                <Mail size={18} />
+              </div>
+              <div>
+                <div className="font-semibold">hello@remodely.ai</div>
+                <div className="text-sm text-gray-400">Quick Response</div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3 text-gray-300">
+              <div className="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                <MapPin size={18} />
+              </div>
+              <div>
+                <div className="font-semibold">Nationwide Service</div>
+                <div className="text-sm text-gray-400">All 50 States</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">
+            © 2025 REMODELY.AI. All rights reserved.
+          </p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/support" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Support
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
               <li>
-                <Link href="/contractors" className="text-stone-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">Find Contractors</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/matches" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">Smart Matching</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/quote" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
-                  <span className="group-hover:translate-x-1 transition-transform">Get Quotes</span>
+                <Link href="/developers" className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group">
+                  <span className="group-hover:translate-x-1 transition-transform">Developers</span>
                 </Link>
               </li>
               <li>
@@ -133,8 +200,6 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Contact Info */}
           <div>
             <h4 className="text-xl font-semibold mb-6 text-white">Contact</h4>
             <div className="space-y-4">

@@ -104,7 +104,7 @@ export class SubscriberGrowthAlgorithm {
    * Generate personalized conversion strategy
    */
   static generateConversionStrategy(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     score: SubscriberScore
   ): ConversionStrategy[] {
     const strategies: ConversionStrategy[] = []
@@ -209,7 +209,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static getRecommendation(
-    totalScore: number, 
+    totalScore: number,
     factors: SubscriberScore['factors']
   ): SubscriberScore['recommendation'] {
     if (totalScore >= 0.8 || factors.intent >= 0.7) {
@@ -224,7 +224,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static identifyTriggers(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     factors: SubscriberScore['factors']
   ): string[] {
     const triggers: string[] = []
@@ -242,7 +242,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static createHighPriorityStrategy(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     score: SubscriberScore
   ): ConversionStrategy {
     const personalization: Record<string, string> = {}
@@ -280,7 +280,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static createMediumPriorityStrategy(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     score: SubscriberScore
   ): ConversionStrategy {
     return {
@@ -299,7 +299,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static createNurtureStrategy(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     score: SubscriberScore
   ): ConversionStrategy {
     return {
@@ -318,7 +318,7 @@ export class SubscriberGrowthAlgorithm {
   }
 
   private static createExitIntentStrategy(
-    behavior: UserBehavior, 
+    behavior: UserBehavior,
     score: SubscriberScore
   ): ConversionStrategy {
     return {
@@ -400,7 +400,7 @@ export class SubscriberGrowthAlgorithm {
     // Analyze by strategy type
     conversions.forEach(conversion => {
       const strategyKey = `${conversion.strategy.type}_${conversion.strategy.incentive?.type || 'none'}`
-      
+
       if (!performance.byStrategy[strategyKey]) {
         performance.byStrategy[strategyKey] = { attempts: 0, conversions: 0, rate: 0 }
       }
@@ -409,7 +409,7 @@ export class SubscriberGrowthAlgorithm {
       if (conversion.result === 'converted') {
         performance.byStrategy[strategyKey].conversions++
       }
-      performance.byStrategy[strategyKey].rate = 
+      performance.byStrategy[strategyKey].rate =
         performance.byStrategy[strategyKey].conversions / performance.byStrategy[strategyKey].attempts
     })
 

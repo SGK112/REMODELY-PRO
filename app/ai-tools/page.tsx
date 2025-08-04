@@ -1,361 +1,460 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import React, { useState } from 'react';
+import Link from 'next/link';
 import {
-    Bot,
-    MessageSquare,
-    Camera,
-    Calculator,
-    Palette,
-    Phone,
-    Zap,
-    Settings,
-    TestTube,
-    Activity
-} from 'lucide-react'
+  ArrowLeft,
+  Search,
+  Filter,
+  Grid3X3,
+  List,
+  Star,
+  TrendingUp,
+  Users,
+  Brain,
+  Hammer,
+  Building2,
+  Zap,
+  Home,
+  Layers3,
+  Eye,
+  Calculator,
+  Mic,
+  Target,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Download
+} from 'lucide-react';
 
-export default function AIToolsTestPage() {
-    const { data: session, status } = useSession()
-    const [testResults, setTestResults] = useState<string[]>([])
-    const [loading, setLoading] = useState(false)
-    const [mounted, setMounted] = useState(false)
+const aiTools = [
+  {
+    id: 'countertop-analyzer',
+    name: 'Countertop Material AI',
+    description: 'Instantly identify granite, quartz, marble, and engineered stone materials with 99% accuracy.',
+    icon: Eye,
+    category: 'Kitchen & Bath',
+    pricing: 'Free - $49/month',
+    rating: 4.9,
+    users: '2.3K',
+    href: '/material-detection',
+    tags: ['Popular', 'AI Vision'],
+    features: ['Photo identification', 'Material database', 'Cost estimation', 'Supplier network']
+  },
+  {
+    id: 'voice-translation',
+    name: 'Voice Translation Pro',
+    description: 'Real-time voice translation in 12+ languages for seamless crew communication.',
+    icon: Mic,
+    category: 'Communication',
+    pricing: 'Free - $29/month',
+    rating: 4.8,
+    users: '1.8K',
+    href: '/voice-translation',
+    tags: ['Trending', 'Voice AI'],
+    features: ['12+ languages', 'Construction terms', 'Real-time translation', 'Voice synthesis']
+  },
+  {
+    id: 'cabinet-layout',
+    name: 'Cabinet Design Assistant',
+    description: 'Generate custom cabinet layouts with hardware specifications and cut lists.',
+    icon: Calculator,
+    category: 'Kitchen & Bath',
+    pricing: '$19 - $99/month',
+    rating: 4.7,
+    users: '950',
+    href: '/cabinet-design',
+    tags: ['3D Design'],
+    features: ['Layout design', 'Hardware selection', 'Cut lists', 'Cost estimation']
+  },
+  {
+    id: 'handyman-pricing',
+    name: 'Handyman Service AI',
+    description: 'Instant pricing for repair jobs from photos. Multi-trade analysis and estimates.',
+    icon: Hammer,
+    category: 'Handyman',
+    pricing: '$15 - $79/month',
+    rating: 4.8,
+    users: '1.2K',
+    href: '/handyman',
+    tags: ['Popular', 'Photo AI'],
+    features: ['Photo analysis', 'Multi-trade pricing', 'Time estimates', 'Market rates']
+  },
+  {
+    id: 'framing-calculator',
+    name: 'Framing Calculator Pro',
+    description: 'Calculate lumber requirements and optimize cuts for any framing project.',
+    icon: Building2,
+    category: 'Framing',
+    pricing: '$25 - $99/month',
+    rating: 4.6,
+    users: '780',
+    href: '/framing',
+    tags: ['Optimization'],
+    features: ['Lumber calculations', 'Cut optimization', 'Material lists', 'Waste reduction']
+  },
+  {
+    id: 'roofing-measurement',
+    name: 'Roofing Measurement AI',
+    description: 'Measure roofs from satellite imagery with precision calculations.',
+    icon: Home,
+    category: 'Roofing',
+    pricing: '$39 - $149/month',
+    rating: 4.9,
+    users: '1.5K',
+    href: '/roofing',
+    tags: ['Satellite AI', 'Popular'],
+    features: ['Satellite measurement', 'Material calculations', 'Labor estimates', 'Safety planning']
+  },
+  {
+    id: 'concrete-calculator',
+    name: 'Concrete Volume Calculator',
+    description: 'Calculate exact concrete needs with reinforcement and weather planning.',
+    icon: Layers3,
+    category: 'Concrete',
+    pricing: '$19 - $89/month',
+    rating: 4.5,
+    users: '650',
+    href: '/concrete',
+    tags: ['Planning'],
+    features: ['Volume calculations', 'Reinforcement planning', 'Cost estimation', 'Weather planning']
+  },
+  {
+    id: 'hvac-load-calculator',
+    name: 'HVAC Load Calculator',
+    description: 'Manual J compliant heating and cooling load calculations.',
+    icon: Zap,
+    category: 'HVAC',
+    pricing: '$29 - $129/month',
+    rating: 4.7,
+    users: '890',
+    href: '/hvac',
+    tags: ['Trending', 'Manual J'],
+    features: ['Load calculations', 'System sizing', 'Manual J compliant', 'Energy optimization']
+  },
+  {
+    id: 'ai-customer-service',
+    name: 'AI Customer Service Agent',
+    description: 'Sarah AI handles customer calls 24/7 with natural conversation.',
+    icon: Brain,
+    category: 'Communication',
+    pricing: '$99 - $499/month',
+    rating: 4.9,
+    users: '2.1K',
+    href: '/contact',
+    tags: ['24/7', 'Popular'],
+    features: ['24/7 availability', 'Natural conversation', 'Appointment booking', 'Lead qualification']
+  }
+];
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+const categories = ['All', 'Kitchen & Bath', 'Communication', 'Handyman', 'Framing', 'Roofing', 'Concrete', 'HVAC', 'Project Management'];
 
-    const addResult = (result: string) => {
-        setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${result}`])
-    }
+export default function AIToolsPage() {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState('popular');
 
-    const testAIChat = async () => {
-        setLoading(true)
-        addResult('🤖 Testing AI Chat API...')
-
-        try {
-            const response = await fetch('/api/ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: 'I need help finding a contractor for kitchen renovation in Phoenix',
-                    userLocation: 'Phoenix, AZ',
-                    projectType: 'Kitchen Remodeling'
-                })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                addResult('✅ AI Chat API working!')
-                addResult(`💬 Response: ${data.message?.substring(0, 100)}...`)
-            } else {
-                addResult(`❌ AI Chat API failed: ${data.error}`)
-            }
-        } catch (error) {
-            addResult(`❌ AI Chat API error: ${error}`)
-        }
-
-        setLoading(false)
-    }
-
-    const testSmartQuote = async () => {
-        setLoading(true)
-        addResult('💰 Testing Smart Quote API...')
-
-        try {
-            const response = await fetch('/api/ai-services/smart-quote', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    projectType: 'Kitchen Renovation',
-                    roomSize: '12x15',
-                    materials: ['Quartz Countertops', 'Hardwood Cabinets'],
-                    location: 'Phoenix, AZ',
-                    timeline: '4-6 weeks'
-                })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                addResult('✅ Smart Quote API working!')
-                addResult(`💰 Estimated cost: $${data.estimatedCost || 'N/A'}`)
-            } else {
-                addResult(`❌ Smart Quote API failed: ${data.error}`)
-            }
-        } catch (error) {
-            addResult(`❌ Smart Quote API error: ${error}`)
-        }
-
-        setLoading(false)
-    }
-
-    const testImageRecognition = async () => {
-        setLoading(true)
-        addResult('📷 Testing Image Recognition API...')
-
-        try {
-            const response = await fetch('/api/ai-services/image-recognition', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3',
-                    analysisType: 'kitchen-countertop'
-                })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                addResult('✅ Image Recognition API working!')
-                addResult(`🔍 Analysis: ${data.analysis?.substring(0, 100)}...`)
-            } else {
-                addResult(`❌ Image Recognition API failed: ${data.error}`)
-            }
-        } catch (error) {
-            addResult(`❌ Image Recognition API error: ${error}`)
-        }
-
-        setLoading(false)
-    }
-
-    const testVoiceAPI = async () => {
-        setLoading(true)
-        addResult('🎤 Testing Voice API...')
-
-        try {
-            const response = await fetch('/api/voice/test', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'test-connection',
-                    phoneNumber: '+15551234567'
-                })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                addResult('✅ Voice API working!')
-                addResult(`📞 Status: ${data.status}`)
-            } else {
-                addResult(`❌ Voice API failed: ${data.error}`)
-            }
-        } catch (error) {
-            addResult(`❌ Voice API error: ${error}`)
-        }
-
-        setLoading(false)
-    }
-
-    const testAIDesigner = async () => {
-        setLoading(true)
-        addResult('🎨 Testing AI Designer API...')
-
-        try {
-            const response = await fetch('/api/ai-designer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    roomType: 'kitchen',
-                    style: 'modern',
-                    colorScheme: 'neutral',
-                    budget: 15000
-                })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                addResult('✅ AI Designer API working!')
-                addResult(`🎨 Design suggestions generated`)
-            } else {
-                addResult(`❌ AI Designer API failed: ${data.error}`)
-            }
-        } catch (error) {
-            addResult(`❌ AI Designer API error: ${error}`)
-        }
-
-        setLoading(false)
-    }
-
-    const testAllAPIs = async () => {
-        addResult('🚀 Running comprehensive AI API test suite...')
-        await testAIChat()
-        await testSmartQuote()
-        await testImageRecognition()
-        await testVoiceAPI()
-        await testAIDesigner()
-        addResult('🎉 All API tests completed!')
-    }
-
-    const clearResults = () => {
-        setTestResults([])
-    }
-
-    if (!mounted) {
-        return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-            <div className="text-lg">Loading...</div>
-        </div>
-    }
-
-    return (
-        <div className="min-h-screen bg-gray-100 py-8">
-            <div className="max-w-6xl mx-auto px-4">
-                <h1 className="text-3xl font-bold text-center mb-8">🤖 REMODELY AI Tools Testing Suite</h1>
-
-                {/* Auth Status */}
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Authentication Status</h2>
-                    <div className="flex items-center gap-4">
-                        <span className={`px-3 py-1 rounded-full text-sm ${status === 'authenticated' ? 'bg-green-100 text-green-800' :
-                                status === 'loading' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-red-100 text-red-800'
-                            }`}>
-                            {status}
-                        </span>
-                        <span>{session?.user?.email || 'Not logged in'}</span>
-                        <span className="text-gray-500">({session?.user?.userType || 'N/A'})</span>
-                    </div>
-                </div>
-
-                {/* AI API Tests */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-semibold mb-4">🤖 AI Service Tests</h2>
-                        <div className="space-y-3">
-                            <button
-                                onClick={testAIChat}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
-                            >
-                                <MessageSquare className="w-4 h-4" />
-                                Test AI Chat
-                            </button>
-
-                            <button
-                                onClick={testSmartQuote}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
-                            >
-                                <Calculator className="w-4 h-4" />
-                                Test Smart Quote
-                            </button>
-
-                            <button
-                                onClick={testImageRecognition}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-gray-400"
-                            >
-                                <Camera className="w-4 h-4" />
-                                Test Image Recognition
-                            </button>
-
-                            <button
-                                onClick={testVoiceAPI}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:bg-gray-400"
-                            >
-                                <Phone className="w-4 h-4" />
-                                Test Voice API
-                            </button>
-
-                            <button
-                                onClick={testAIDesigner}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-pink-600 text-white rounded hover:bg-pink-700 disabled:bg-gray-400"
-                            >
-                                <Palette className="w-4 h-4" />
-                                Test AI Designer
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-semibold mb-4">🚀 Quick Actions</h2>
-                        <div className="space-y-3">
-                            <button
-                                onClick={testAllAPIs}
-                                disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-400"
-                            >
-                                <Zap className="w-4 h-4" />
-                                {loading ? 'Running Tests...' : 'Test All APIs'}
-                            </button>
-
-                            <button
-                                onClick={clearResults}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded hover:bg-gray-700"
-                            >
-                                Clear Results
-                            </button>
-
-                            <div className="pt-4 border-t">
-                                <h3 className="font-semibold mb-2">🔗 Direct Access Links</h3>
-                                <div className="space-y-2 text-sm">
-                                    <a href="/voice-consultation" className="block text-blue-600 hover:underline">
-                                        🎤 Voice Consultation Demo
-                                    </a>
-                                    <a href="/dashboard/contractor/tools" className="block text-green-600 hover:underline">
-                                        🔨 Contractor AI Tools
-                                    </a>
-                                    <a href="/api/ai-health" className="block text-purple-600 hover:underline">
-                                        📊 AI Health Check
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Test Results */}
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-xl font-semibold mb-4">🧪 Test Results</h2>
-                    <div className="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm max-h-96 overflow-y-auto">
-                        {testResults.length === 0 ? (
-                            <p className="text-gray-400">No test results yet. Click a test button above to start.</p>
-                        ) : (
-                            <div className="space-y-1">
-                                {testResults.map((result, index) => (
-                                    <div key={index}>{result}</div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* API Documentation */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-                    <h2 className="text-xl font-semibold text-blue-900 mb-4">📚 Available AI APIs</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-blue-800 text-sm">
-                        <div>
-                            <h3 className="font-bold mb-2">/api/ai</h3>
-                            <p>Smart contractor matching and chat AI</p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold mb-2">/api/ai-services/smart-quote</h3>
-                            <p>AI-powered project cost estimation</p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold mb-2">/api/ai-services/image-recognition</h3>
-                            <p>Analyze project photos and materials</p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold mb-2">/api/voice/*</h3>
-                            <p>Voice consultation and Twilio integration</p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold mb-2">/api/ai-designer</h3>
-                            <p>AI interior design suggestions</p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold mb-2">/api/ai-health</h3>
-                            <p>Health check for all AI services</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  const filteredTools = aiTools
+    .filter(tool =>
+      (selectedCategory === 'All' || tool.category === selectedCategory) &&
+      (searchTerm === '' ||
+        tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tool.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
     )
+    .sort((a, b) => {
+      if (sortBy === 'popular') return parseFloat(b.users.replace('K', '')) - parseFloat(a.users.replace('K', ''));
+      if (sortBy === 'rating') return b.rating - a.rating;
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      return 0;
+    });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      {/* Header */}
+      <header className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link href="/" className="text-white/70 hover:text-white transition-colors">
+                <ArrowLeft className="h-6 w-6" />
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold text-white">AI Tools Marketplace</h1>
+                <p className="text-sm text-blue-300">Professional construction tools powered by AI</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Link href="/chat" className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+                <Brain className="h-4 w-4" />
+                <span>Ask Sarah</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            AI-Powered Construction Tools
+          </h2>
+          <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+            Access our complete collection of AI-powered tools designed specifically for construction professionals.
+            From material identification to project management, we've got your trade covered.
+          </p>
+
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center">
+              <Brain className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">15+ AI Tools</h3>
+              <p className="text-white/70 text-sm">Complete suite for all trades</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center">
+              <Users className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">8K+ Users</h3>
+              <p className="text-white/70 text-sm">Trusted by professionals</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center">
+              <TrendingUp className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">31% ROI</h3>
+              <p className="text-white/70 text-sm">Average profit increase</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center">
+              <Clock className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">40% Faster</h3>
+              <p className="text-white/70 text-sm">Project completion time</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/50" />
+                <input
+                  type="text"
+                  placeholder="Search tools, features, or categories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center space-x-4">
+              <Filter className="h-5 w-5 text-white/70" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category} className="bg-slate-800">
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center space-x-4">
+              <span className="text-white/70 text-sm">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+              >
+                <option value="popular" className="bg-slate-800">Most Popular</option>
+                <option value="rating" className="bg-slate-800">Highest Rated</option>
+                <option value="name" className="bg-slate-800">Name A-Z</option>
+              </select>
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex items-center bg-white/10 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-white/70'}`}
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-white/70'}`}
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-white/70">
+            Showing {filteredTools.length} of {aiTools.length} tools
+            {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+            {searchTerm && ` matching "${searchTerm}"`}
+          </p>
+        </div>
+
+        {/* Tools Grid/List */}
+        {viewMode === 'grid' ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredTools.map((tool) => (
+              <div key={tool.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                    <tool.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {tool.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
+                            tag === 'Trending' ? 'bg-orange-500/20 text-orange-400' :
+                              'bg-blue-500/20 text-blue-400'
+                          }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mb-2">{tool.name}</h3>
+                <p className="text-white/70 mb-4">{tool.description}</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="text-white font-medium">{tool.rating}</span>
+                      <span className="text-white/50">({tool.users} users)</span>
+                    </div>
+                    <span className="text-blue-400 font-semibold">{tool.pricing}</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {tool.features.slice(0, 3).map((feature, index) => (
+                      <span key={index} className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded">
+                        {feature}
+                      </span>
+                    ))}
+                    {tool.features.length > 3 && (
+                      <span className="text-xs text-blue-400">+{tool.features.length - 3} more</span>
+                    )}
+                  </div>
+                </div>
+
+                <Link
+                  href={tool.href}
+                  className="block w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white text-center py-3 rounded-lg font-semibold hover:shadow-lg transition-all group-hover:scale-105"
+                >
+                  Try Now
+                </Link>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredTools.map((tool) => (
+              <div key={tool.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                      <tool.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-xl font-bold text-white">{tool.name}</h3>
+                        <div className="flex flex-wrap gap-1">
+                          {tool.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
+                                  tag === 'Trending' ? 'bg-orange-500/20 text-orange-400' :
+                                    'bg-blue-500/20 text-blue-400'
+                                }`}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-white/70 mb-2">{tool.description}</p>
+                      <div className="flex items-center space-x-4 text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <span className="text-white">{tool.rating}</span>
+                        </div>
+                        <span className="text-white/50">{tool.users} users</span>
+                        <span className="text-blue-400 font-semibold">{tool.pricing}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Link
+                    href={tool.href}
+                    className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                  >
+                    Try Now
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {filteredTools.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Search className="h-8 w-8 text-white/50" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No tools found</h3>
+            <p className="text-white/70 mb-6">
+              Try adjusting your search or filter criteria
+            </p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('All');
+              }}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
+        )}
+
+        {/* Call to Action */}
+        <div className="text-center mt-16">
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold text-white mb-4">
+              Ready to Transform Your Business?
+            </h3>
+            <p className="text-white/90 mb-6 text-lg">
+              Join thousands of contractors already using AI to work smarter, faster, and more profitably.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/auth/register" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all">
+                Start Free Trial
+              </Link>
+              <Link href="/contact" className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all">
+                Contact Sales
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

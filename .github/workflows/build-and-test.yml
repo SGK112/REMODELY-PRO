@@ -1,0 +1,91 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    # 🚀 NextJS Cache Action - This is where the magic happens!
+    - name: NextJS Cache
+      uses: jongwooo/next-cache@v1.0.0
+      with:
+        # Cache key based on OS, Node version, and lock file
+        cache-key: ${{ runner.os }}-nextjs-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+        # What to cache
+        cache-paths: |
+          ~/.npm
+          .next/cache
+          node_modules
+        # Restore keys for partial cache hits
+        restore-keys: |
+          ${{ runner.os }}-nextjs-${{ matrix.node-version }}-
+          ${{ runner.os }}-nextjs-
+
+    - name: Install dependencies
+      run: |
+        npm ci --legacy-peer-deps
+        
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      
+    # Create a minimal .env for build
+    - name: Create environment file
+      run: |
+        touch .env
+        echo "DATABASE_URL=file:./dev.db" >> .env
+        echo "NEXTAUTH_SECRET=build-secret" >> .env
+        echo "NEXTAUTH_URL=http://localhost:3000" >> .env
+
+    - name: Build application
+      run: |
+        NODE_OPTIONS="--max-old-space-size=2048" npm run build:render
+        
+    - name: Run tests
+      run: |
+        # Add your test commands here
+        npm run lint --if-present
+        # npm test --if-present
+        
+    - name: Check build artifacts
+      run: |
+        ls -la .next/
+        echo "Build completed successfully!"
+
+  # Optional: Deploy preview for PRs
+  deploy-preview:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Deploy Preview Comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🚀 Preview build completed! Ready for review.'
+          })

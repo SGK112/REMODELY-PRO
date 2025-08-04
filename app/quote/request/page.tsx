@@ -30,8 +30,8 @@ export default function QuoteRequestPage() {
     // Redirect to login if not authenticated
     if (status === 'loading') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         )
     }
@@ -86,12 +86,12 @@ export default function QuoteRequestPage() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-background flex items-center justify-center p-4">
                 <Card className="w-full max-w-md text-center">
                     <CardContent className="pt-6">
-                        <div className="text-green-600 text-6xl mb-4">✓</div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Quote Submitted!</h2>
-                        <p className="text-gray-600 mb-6">
+                        <div className="text-primary text-6xl mb-4">✓</div>
+                        <h2 className="text-2xl font-bold text-foreground mb-2">Quote Submitted!</h2>
+                        <p className="text-muted-foreground mb-6">
                             We've received your quote request. Contractors will start responding within 24 hours.
                         </p>
                         <div className="space-y-3">
@@ -127,18 +127,18 @@ export default function QuoteRequestPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+        <div className="min-h-screen bg-background py-12 px-4">
             <div className="max-w-2xl mx-auto">
                 <div className="mb-6">
                     <Link
                         href="/"
-                        className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4"
+                        className="inline-flex items-center text-primary hover:text-primary/80 mb-4 transition-colors"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Home
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Request a Quote</h1>
-                    <p className="text-gray-600">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Request a Quote</h1>
+                    <p className="text-muted-foreground">
                         Tell us about your project and get connected with verified contractors.
                     </p>
                 </div>

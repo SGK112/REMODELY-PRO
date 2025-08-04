@@ -54,10 +54,10 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
   }, [session])
 
   const runHealthChecks = async () => {
-    const healthEndpoints = endpoints.filter(e => 
+    const healthEndpoints = endpoints.filter(e =>
       e.category === 'auth' || e.method === 'GET'
     )
-    
+
     for (const endpoint of healthEndpoints) {
       await runTest(endpoint.id)
       // Add delay between requests to avoid rate limiting
@@ -76,7 +76,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
     })
 
     const startTime = Date.now()
-    
+
     try {
       const result = await executeAPITest(endpoint)
       const responseTime = Date.now() - startTime
@@ -157,13 +157,13 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
 
   const runAllTests = async () => {
     setBulkTesting(true)
-    
+
     for (const endpoint of filteredEndpoints) {
       await runTest(endpoint.id)
       // Add delay between bulk tests
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
-    
+
     setBulkTesting(false)
   }
 
@@ -177,7 +177,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
     const blob = new Blob([JSON.stringify(resultsData, null, 2)], {
       type: 'application/json'
     })
-    
+
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -209,9 +209,9 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
   }
 
   const categories = ['all', 'payment', 'communication', 'ai', 'data', 'auth', 'integration']
-  
-  const filteredEndpoints = selectedCategory === 'all' 
-    ? endpoints 
+
+  const filteredEndpoints = selectedCategory === 'all'
+    ? endpoints
     : endpoints.filter(e => e.category === selectedCategory)
 
   const summary = generateSummary()
@@ -234,7 +234,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
           <h2 className="text-2xl font-bold text-gray-900">API Testing Panel</h2>
           <p className="text-gray-600">Test and monitor all integrated APIs</p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowSecrets(!showSecrets)}
@@ -243,7 +243,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
             {showSecrets ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
             {showSecrets ? 'Hide' : 'Show'} Secrets
           </button>
-          
+
           <button
             onClick={exportResults}
             className="flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
@@ -251,7 +251,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
             <Download className="w-4 h-4 mr-1" />
             Export Results
           </button>
-          
+
           <button
             onClick={runAllTests}
             disabled={bulkTesting}
@@ -271,21 +271,21 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
             <span className="text-2xl font-bold text-gray-900">{summary.total}</span>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">Successful</span>
             <span className="text-2xl font-bold text-green-600">{summary.successful}</span>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">Failed</span>
             <span className="text-2xl font-bold text-red-600">{summary.failed}</span>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">Success Rate</span>
@@ -301,11 +301,10 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === category
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${selectedCategory === category
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
@@ -318,30 +317,28 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
         {filteredEndpoints.map(endpoint => {
           const result = testResults[endpoint.id]
           const isRunning = runningTests.has(endpoint.id)
-          
+
           return (
             <div key={endpoint.id} className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${
-                    endpoint.method === 'GET' ? 'bg-green-100 text-green-800' :
-                    endpoint.method === 'POST' ? 'bg-blue-100 text-blue-800' :
-                    endpoint.method === 'PUT' ? 'bg-yellow-100 text-yellow-800' :
-                    endpoint.method === 'DELETE' ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span className={`px-2 py-1 text-xs font-medium rounded ${endpoint.method === 'GET' ? 'bg-green-100 text-green-800' :
+                      endpoint.method === 'POST' ? 'bg-blue-100 text-blue-800' :
+                        endpoint.method === 'PUT' ? 'bg-yellow-100 text-yellow-800' :
+                          endpoint.method === 'DELETE' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                    }`}>
                     {endpoint.method}
                   </span>
-                  
+
                   <h3 className="font-semibold text-gray-900">{endpoint.name}</h3>
-                  
-                  <span className={`px-2 py-1 text-xs rounded ${
-                    endpoint.service === 'stripe' ? 'bg-purple-100 text-purple-800' :
-                    endpoint.service === 'twilio' ? 'bg-red-100 text-red-800' :
-                    endpoint.service === 'google' ? 'bg-blue-100 text-blue-800' :
-                    endpoint.service === 'openai' ? 'bg-green-100 text-green-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+
+                  <span className={`px-2 py-1 text-xs rounded ${endpoint.service === 'stripe' ? 'bg-purple-100 text-purple-800' :
+                      endpoint.service === 'twilio' ? 'bg-red-100 text-red-800' :
+                        endpoint.service === 'google' ? 'bg-blue-100 text-blue-800' :
+                          endpoint.service === 'openai' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                    }`}>
                     {endpoint.service}
                   </span>
 
@@ -354,7 +351,7 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
                     </div>
                   )}
                 </div>
-                
+
                 <button
                   onClick={() => runTest(endpoint.id)}
                   disabled={isRunning}
@@ -364,9 +361,9 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
                   {isRunning ? 'Testing...' : 'Test'}
                 </button>
               </div>
-              
+
               <p className="text-gray-600 text-sm mb-3">{endpoint.description}</p>
-              
+
               <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
                 <span>URL: <code className="bg-gray-100 px-1 rounded">{endpoint.url}</code></span>
                 {endpoint.requiredAuth && <span className="text-yellow-600">⚠️ Requires Auth</span>}
@@ -381,14 +378,13 @@ export const APITestingPanel: React.FC<APITestingPanelProps> = ({ className }) =
                       {result.timestamp.toLocaleString()}
                     </span>
                   </div>
-                  
+
                   {result.statusCode && (
                     <div className="mb-2">
-                      <span className={`inline-block px-2 py-1 text-xs rounded ${
-                        result.statusCode >= 200 && result.statusCode < 300 ? 'bg-green-100 text-green-800' :
-                        result.statusCode >= 400 ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span className={`inline-block px-2 py-1 text-xs rounded ${result.statusCode >= 200 && result.statusCode < 300 ? 'bg-green-100 text-green-800' :
+                          result.statusCode >= 400 ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                        }`}>
                         {result.statusCode}
                       </span>
                     </div>

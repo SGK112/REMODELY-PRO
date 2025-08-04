@@ -5,25 +5,25 @@ import { Crown, Phone, MessageSquare, Zap, Clock, Star, ArrowRight, CheckCircle,
 
 export default function VoiceConsultationPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        <div className="min-h-screen bg-background">
             {/* Header */}
-            <div className="bg-white/80 backdrop-blur-lg border-b border-white/20">
+            <div className="bg-card/80 backdrop-blur-lg border-b border-border">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-6">
                         <Link href="/" className="flex items-center">
-                            <Crown className="w-8 h-8 text-blue-600 mr-2" />
-                            <span className="text-2xl font-bold text-slate-800">Remodely.AI</span>
+                            <Crown className="w-8 h-8 text-primary mr-2" />
+                            <span className="text-2xl font-bold text-foreground">Remodely.AI</span>
                         </Link>
                         <div className="flex items-center space-x-4">
                             <Link
                                 href="/auth/signin"
-                                className="text-slate-600 hover:text-slate-800 px-4 py-2 rounded-lg transition-colors"
+                                className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg transition-colors"
                             >
                                 Sign In
                             </Link>
                             <Link
                                 href="/signup"
-                                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+                                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-6 py-2 rounded-lg hover:from-primary/90 hover:to-primary/70 transition-all duration-200"
                             >
                                 Get Started
                             </Link>
@@ -36,14 +36,14 @@ export default function VoiceConsultationPage() {
             <div className="relative py-24">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <div className="inline-flex items-center bg-white/60 backdrop-blur-lg rounded-full px-6 py-3 mb-8 border border-white/20">
-                            <Mic className="w-5 h-5 text-purple-600 mr-2" />
-                            <span className="text-purple-700 font-semibold">Meet Sarah AI</span>
+                        <div className="inline-flex items-center bg-card/60 backdrop-blur-lg rounded-full px-6 py-3 mb-8 border border-border">
+                            <Mic className="w-5 h-5 text-primary mr-2" />
+                            <span className="text-primary font-semibold">Meet Sarah AI</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-6">
+                        <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
                             Get Expert Advice with
-                            <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                            <span className="block bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                                 Voice AI Consultation
                             </span>
                         </h1>
