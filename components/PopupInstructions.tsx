@@ -80,7 +80,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
   useEffect(() => {
     const eligibleTours = tours.filter(tour => {
       const { triggers } = tour
-      
+
       // Check page matching
       if (triggers.page && !triggers.page.some(page => currentPage.includes(page))) {
         return false
@@ -256,7 +256,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
         }
         break
       case 'wait':
-        setTimeout(() => {}, duration || 1000)
+        setTimeout(() => { }, duration || 1000)
         break
     }
   }
@@ -270,7 +270,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
     // Track completion
     if (activeTour.completion?.trackProgress) {
       localStorage.setItem(
-        `tour_completed_${activeTour.id}`, 
+        `tour_completed_${activeTour.id}`,
         JSON.stringify({
           completedAt: new Date().toISOString(),
           steps: Array.from(completedSteps)
@@ -291,7 +291,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
 
     const currentStep = activeTour.steps[currentStepIndex]
     onSkip?.(activeTour.id, currentStep.id)
-    
+
     setIsVisible(false)
     setTimeout(() => {
       setActiveTour(null)
@@ -307,13 +307,13 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         ref={overlayRef}
         className="fixed inset-0 bg-black bg-opacity-50 z-40 pointer-events-none"
-        style={{ 
-          background: currentStep.element 
-            ? 'rgba(0, 0, 0, 0.75)' 
-            : 'rgba(0, 0, 0, 0.5)' 
+        style={{
+          background: currentStep.element
+            ? 'rgba(0, 0, 0, 0.75)'
+            : 'rgba(0, 0, 0, 0.5)'
         }}
       />
 
@@ -323,20 +323,19 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
         style={{
           top: currentStep.position === 'center' ? '50%' : `${tooltipPosition.top}px`,
           left: currentStep.position === 'center' ? '50%' : `${tooltipPosition.left}px`,
-          transform: currentStep.position === 'center' ? 'translate(-50%, -50%)' : 
-            tooltipPosition.arrow === 'left' || tooltipPosition.arrow === 'right' 
-              ? 'translateY(-50%)' 
+          transform: currentStep.position === 'center' ? 'translate(-50%, -50%)' :
+            tooltipPosition.arrow === 'left' || tooltipPosition.arrow === 'right'
+              ? 'translateY(-50%)'
               : 'translateX(-50%)'
         }}
       >
         {/* Arrow */}
-        <div 
-          className={`absolute w-0 h-0 ${
-            tooltipPosition.arrow === 'top' ? 'border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white -top-2 left-1/2 transform -translate-x-1/2' :
-            tooltipPosition.arrow === 'bottom' ? 'border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white -bottom-2 left-1/2 transform -translate-x-1/2' :
-            tooltipPosition.arrow === 'left' ? 'border-t-8 border-b-8 border-r-8 border-t-transparent border-b-transparent border-r-white -left-2 top-1/2 transform -translate-y-1/2' :
-            'border-t-8 border-b-8 border-l-8 border-t-transparent border-b-transparent border-l-white -right-2 top-1/2 transform -translate-y-1/2'
-          }`}
+        <div
+          className={`absolute w-0 h-0 ${tooltipPosition.arrow === 'top' ? 'border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white -top-2 left-1/2 transform -translate-x-1/2' :
+              tooltipPosition.arrow === 'bottom' ? 'border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white -bottom-2 left-1/2 transform -translate-x-1/2' :
+                tooltipPosition.arrow === 'left' ? 'border-t-8 border-b-8 border-r-8 border-t-transparent border-b-transparent border-r-white -left-2 top-1/2 transform -translate-y-1/2' :
+                  'border-t-8 border-b-8 border-l-8 border-t-transparent border-b-transparent border-l-white -right-2 top-1/2 transform -translate-y-1/2'
+            }`}
         />
 
         {/* Header */}
@@ -361,7 +360,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
 
           {/* Progress bar */}
           <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-            <div 
+            <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
@@ -396,7 +395,7 @@ export const PopupInstructions: React.FC<PopupInstructionsProps> = ({
                 Skip Tour
               </button>
             )}
-            
+
             {currentStepIndex < activeTour.steps.length - 1 ? (
               <button
                 onClick={nextStep}

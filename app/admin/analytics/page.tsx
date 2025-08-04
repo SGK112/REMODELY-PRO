@@ -307,41 +307,39 @@ export default function AnalyticsPage() {
               <div className="flex space-x-2">
                 <button
                   onClick={() => setSelectedMetric('users')}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium ${
-                    selectedMetric === 'users' 
-                      ? 'bg-blue-100 text-blue-600' 
+                  className={`px-3 py-1 rounded-lg text-sm font-medium ${selectedMetric === 'users'
+                      ? 'bg-blue-100 text-blue-600'
                       : 'text-gray-600 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   Users
                 </button>
                 <button
                   onClick={() => setSelectedMetric('revenue')}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium ${
-                    selectedMetric === 'revenue' 
-                      ? 'bg-blue-100 text-blue-600' 
+                  className={`px-3 py-1 rounded-lg text-sm font-medium ${selectedMetric === 'revenue'
+                      ? 'bg-blue-100 text-blue-600'
                       : 'text-gray-600 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   Revenue
                 </button>
               </div>
             </div>
-            
+
             {/* Simple chart representation */}
             <div className="h-64 flex items-end justify-between space-x-2">
-              {(selectedMetric === 'users' 
-                ? analyticsData.userActivity.dailyActiveUsers 
+              {(selectedMetric === 'users'
+                ? analyticsData.userActivity.dailyActiveUsers
                 : analyticsData.revenueAnalytics.monthlyRevenue.slice(-7)
               ).map((value, index) => {
-                const maxValue = Math.max(...(selectedMetric === 'users' 
-                  ? analyticsData.userActivity.dailyActiveUsers 
+                const maxValue = Math.max(...(selectedMetric === 'users'
+                  ? analyticsData.userActivity.dailyActiveUsers
                   : analyticsData.revenueAnalytics.monthlyRevenue.slice(-7)))
                 const height = (value / maxValue) * 200
-                
+
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center">
-                    <div 
+                    <div
                       className="bg-blue-600 rounded-t w-full mb-2 hover:bg-blue-700 transition-colors cursor-pointer"
                       style={{ height: `${height}px` }}
                       title={selectedMetric === 'users' ? formatNumber(value) : formatCurrency(value)}
@@ -401,10 +399,10 @@ export default function AnalyticsPage() {
                   <div className="text-right">
                     <p className="font-semibold">{formatCurrency(city.revenue)}</p>
                     <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
-                      <div 
+                      <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ 
-                          width: `${(city.userCount / analyticsData.geographicData.topCities[0].userCount) * 100}%` 
+                        style={{
+                          width: `${(city.userCount / analyticsData.geographicData.topCities[0].userCount) * 100}%`
                         }}
                       />
                     </div>
@@ -459,7 +457,7 @@ export default function AnalyticsPage() {
                     <span className="text-sm">{service}</span>
                     <div className="flex items-center">
                       <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
-                        <div 
+                        <div
                           className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         />

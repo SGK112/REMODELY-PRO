@@ -3,6 +3,7 @@ const nextConfig = {
   // Bulletproof build configuration
   experimental: {
     optimizePackageImports: ['lucide-react', '@googlemaps/js-api-loader'],
+    serverComponentsExternalPackages: ['@prisma/client'],
   },
 
   // Fix hydration issues
@@ -17,23 +18,16 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com',
-        port: '',
-        pathname: '/**',
+        hostname: '**',
       },
     ],
+  },
+
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 
   // Enhanced webpack config
@@ -56,7 +50,9 @@ const nextConfig = {
 
   // Reduce bundle size
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn']
+    } : false,
   },
 
   // Performance optimizations
@@ -102,12 +98,10 @@ const nextConfig = {
 
   // Ensure proper server configuration
   async rewrites() {
-    return [
-      // ...existing rewrites...
-    ];
+    return []
   },
 
-  // Add proper error handling
+  // On-demand entries config (move here)
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,

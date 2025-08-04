@@ -1,14 +1,71 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { SessionProvider } from '@/components/SessionProvider'
-import { Navigation } from '@/components/Navigation'
 import './globals.css'
+import { SessionProvider } from '@/components/providers/SessionProvider'
+import { ThemeProvider } from '@/lib/theme-provider'
+import { Header } from '@/components/navigation/header'
+import { Footer } from '@/components/layout/Footer'
+import { LocationProvider } from '@/components/providers/LocationProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Remodely Pro - Home Remodeling Contractors',
-  description: 'Connect with verified remodeling and construction contractors for your next home improvement project',
+  title: 'Remodely.AI - AI-Powered Home Renovation Platform',
+  description: 'Transform your home with AI-powered contractor matching, voice consultations, and smart project planning. Connect with verified contractors instantly.',
+  keywords: ['home renovation', 'AI contractors', 'voice consultation', 'home improvement', 'remodeling'],
+  authors: [{ name: 'Remodely.AI Team' }],
+  creator: 'Remodely.AI',
+  publisher: 'Remodely.AI',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/favicon.ico',
+        sizes: '16x16',
+        type: 'image/x-icon',
+      }
+    ],
+    apple: [
+      {
+        url: '/favicon.svg',
+        sizes: '180x180',
+        type: 'image/svg+xml',
+      }
+    ]
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://remodely.ai',
+    title: 'Remodely.AI - AI-Powered Home Renovation',
+    description: 'Transform your home with AI-powered contractor matching and voice consultations.',
+    siteName: 'Remodely.AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Remodely.AI - AI-Powered Home Renovation',
+    description: 'Transform your home with AI-powered contractor matching and voice consultations.',
+    creator: '@RemodelyAI',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({
@@ -17,20 +74,26 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Remove any direct Google Maps script tags */}
-        {/* Google Maps will be loaded asynchronously when needed */}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="16x16" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
       </head>
       <body className={inter.className}>
-        <SessionProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navigation />
-            <main className="flex-1">
-              {children}
-            </main>
-          </div>
-        </SessionProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="remodely-theme">
+          <SessionProvider>
+            <LocationProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </LocationProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

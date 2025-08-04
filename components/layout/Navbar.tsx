@@ -26,18 +26,18 @@ export function Navbar() {
             <Link href="/" className="flex-shrink-0 flex items-center space-x-2 sm:space-x-3 py-2">
               {/* Premium Professional Logo Icon */}
               <div className="w-8 h-8 sm:w-10 sm:h-10 relative">
-                {/* Simple Colorful Globe */}
-                <div className="w-full h-full rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
-                  <div className="text-white text-lg font-bold">🌍</div>
+                {/* AI Renovation Logo */}
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                  <div className="text-white text-lg font-bold">🤖</div>
                 </div>
               </div>
               {/* Enhanced Logo Text */}
               <div className="flex flex-col">
                 <span className="text-lg sm:text-xl font-bold text-gradient leading-tight">
-                  NewCountertops
+                  Remodely
                 </span>
                 <span className="text-xs font-semibold -mt-1.5 tracking-wider" style={{ color: 'var(--stone-accent-copper)' }}>
-                  .com
+                  .AI
                 </span>
               </div>
             </Link>
@@ -126,6 +126,13 @@ export function Navbar() {
 
             {/* Primary Action Buttons */}
             <div className="flex items-center space-x-3 ml-2">
+              <Link
+                href="/auth/login"
+                className="text-gray-600 hover:text-blue-600 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-blue-50/50 border border-gray-200 hover:border-blue-200"
+              >
+                Login
+              </Link>
+
               <Link
                 href="/signup"
                 className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 text-white font-semibold py-3 px-6 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden group"
@@ -252,14 +259,23 @@ export function Navbar() {
                 <div className="absolute bottom-0 left-4 sm:left-6 right-4 sm:right-6 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
               </Link>
 
-              <div className="grid grid-cols-1 gap-4 pt-6 border-t border-stone-200/40">
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-stone-200/40">
+                <Link
+                  href="/auth/login"
+                  className="block px-4 py-3 rounded-2xl text-base font-semibold text-center text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all duration-300"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
                 <Link
                   href="/signup"
-                  className="btn-primary block px-6 sm:px-8 py-3 sm:py-4 rounded-2xl text-base font-bold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                  className="btn-primary block px-4 py-3 rounded-2xl text-base font-bold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
                   onClick={() => setIsOpen(false)}
                 >
                   Sign Up Free
                 </Link>
+              </div>
+              <div className="mt-4">
                 <Link
                   href="/quote"
                   className="btn-accent block px-6 sm:px-8 py-3 sm:py-4 rounded-2xl text-base font-bold text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"

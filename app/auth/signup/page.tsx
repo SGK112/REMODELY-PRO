@@ -77,17 +77,17 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link
             href="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 justify-center"
+            className="inline-flex items-center text-primary hover:text-primary/80 mb-4 justify-center transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Home
           </Link>
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {step === 1 ? "Create Account" : "Complete Profile"}
           </CardTitle>
           <CardDescription>
@@ -102,14 +102,14 @@ export default function SignUpPage() {
           <div className="flex items-center justify-center mb-6">
             <div className="flex items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   }`}
               >
                 1
               </div>
-              <div className={`w-12 h-1 ${step >= 2 ? "bg-blue-600" : "bg-gray-200"}`}></div>
+              <div className={`w-12 h-1 ${step >= 2 ? "bg-primary" : "bg-muted"}`}></div>
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 2 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 2 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   }`}
               >
                 2
@@ -127,7 +127,7 @@ export default function SignUpPage() {
             {step === 1 && (
               <>
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="name" className="text-sm font-medium text-foreground">
                     Full Name *
                   </label>
                   <Input
@@ -141,7 +141,7 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">
                     Email Address *
                   </label>
                   <Input

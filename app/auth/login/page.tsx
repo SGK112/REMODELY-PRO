@@ -59,10 +59,10 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold text-gray-900">
+                    <CardTitle className="text-2xl font-bold text-foreground">
                         Welcome Back
                     </CardTitle>
                     <CardDescription>
@@ -79,7 +79,7 @@ function LoginContent() {
                         )}
 
                         <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="email" className="text-sm font-medium text-foreground">
                                 Email Address
                             </label>
                             <Input
@@ -95,7 +95,7 @@ function LoginContent() {
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="password" className="text-sm font-medium text-foreground">
                                 Password
                             </label>
                             <div className="relative">

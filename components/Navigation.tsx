@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/SafeImage'
 import { Menu, X, User, LogOut } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export function Navigation() {
     const { data: session, status } = useSession()
@@ -19,41 +20,26 @@ export function Navigation() {
     }
 
     return (
-        <nav className="bg-white shadow-sm border-b">
+        <nav className="bg-background shadow-sm border-b border-border">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-1">
-                        <img
-                            src="/logo-remodely.svg"
-                            alt="Remodely AI Pro"
-                            className="h-10 w-auto"
-                            onError={(e) => {
-                                console.log('Logo failed to load, using fallback')
-                                e.currentTarget.style.display = 'none'
-                                if (e.currentTarget.nextElementSibling) {
-                                    (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex'
-                                }
-                            }}
-                        />
-                        <div className="hidden items-center space-x-1">
-                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">RA</span>
-                            </div>
-                            <span className="font-semibold text-gray-900">Remodely AI</span>
+                    <Link href="/" className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                            <span className="text-primary-foreground font-bold text-sm">R</span>
                         </div>
+                        <span className="font-bold text-xl text-foreground">Remodely<span className="text-primary">.AI</span></span>
                     </Link>                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-8">
                         <Link
                             href="/contractors"
-                            className="text-gray-700 hover:text-blue-600 transition-colors"
+                            className="text-foreground/80 hover:text-primary transition-colors"
                         >
                             Find Contractors
                         </Link>
                         <Link
                             href="/quote/request"
-                            className="text-gray-700 hover:text-blue-600 transition-colors"
+                            className="text-foreground/80 hover:text-primary transition-colors"
                         >
                             Get Quotes
                         </Link>
@@ -64,25 +50,25 @@ export function Navigation() {
                             <div className="flex items-center space-x-4">
                                 <Link
                                     href="/dashboard"
-                                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                                    className="text-foreground/80 hover:text-primary transition-colors"
                                 >
                                     Dashboard
                                 </Link>
                                 <div className="relative group">
-                                    <button className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                                    <button className="flex items-center space-x-2 text-foreground/80 hover:text-primary">
                                         <User className="h-4 w-4" />
                                         <span>{session.user?.name}</span>
                                     </button>
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                                    <div className="absolute right-0 mt-2 w-48 bg-background rounded-md shadow-lg border border-border py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                                         <Link
                                             href="/dashboard/profile"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            className="block px-4 py-2 text-sm text-foreground/80 hover:bg-muted"
                                         >
                                             Profile
                                         </Link>
                                         <button
                                             onClick={() => signOut({ callbackUrl: '/' })}
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            className="block w-full text-left px-4 py-2 text-sm text-foreground/80 hover:bg-muted"
                                         >
                                             <LogOut className="inline h-4 w-4 mr-2" />
                                             Sign Out
@@ -94,23 +80,26 @@ export function Navigation() {
                             <div className="flex items-center space-x-4">
                                 <Link
                                     href="/auth/login"
-                                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                                    className="text-foreground/80 hover:text-primary transition-colors"
                                 >
                                     Sign In
                                 </Link>
                                 <Link href="/auth/signup">
-                                    <Button className="bg-blue-600 hover:bg-blue-700">
+                                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                         Sign Up
                                     </Button>
                                 </Link>
                             </div>
                         )}
+
+                        {/* Theme Toggle */}
+                        <ThemeToggle />
                     </div>
 
                     {/* Mobile menu button */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden p-2 text-gray-700 hover:text-blue-600"
+                        className="md:hidden p-2 text-foreground/80 hover:text-primary"
                     >
                         {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                     </button>
@@ -118,18 +107,18 @@ export function Navigation() {
 
                 {/* Mobile Navigation */}
                 {isMobileMenuOpen && (
-                    <div className="md:hidden py-4 border-t">
+                    <div className="md:hidden py-4 border-t border-border">
                         <div className="flex flex-col space-y-4">
                             <Link
                                 href="/contractors"
-                                className="text-gray-700 hover:text-blue-600 transition-colors"
+                                className="text-foreground/80 hover:text-primary transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Find Contractors
                             </Link>
                             <Link
                                 href="/quote/request"
-                                className="text-gray-700 hover:text-blue-600 transition-colors"
+                                className="text-foreground/80 hover:text-primary transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Get Quotes
@@ -139,7 +128,7 @@ export function Navigation() {
                                 <>
                                     <Link
                                         href="/dashboard"
-                                        className="text-gray-700 hover:text-blue-600 transition-colors"
+                                        className="text-foreground/80 hover:text-primary transition-colors"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         Dashboard
@@ -149,7 +138,7 @@ export function Navigation() {
                                             signOut({ callbackUrl: '/' })
                                             setIsMobileMenuOpen(false)
                                         }}
-                                        className="text-left text-gray-700 hover:text-blue-600 transition-colors"
+                                        className="text-left text-foreground/80 hover:text-primary transition-colors"
                                     >
                                         Sign Out
                                     </button>
@@ -158,7 +147,7 @@ export function Navigation() {
                                 <>
                                     <Link
                                         href="/auth/login"
-                                        className="text-gray-700 hover:text-blue-600 transition-colors"
+                                        className="text-foreground/80 hover:text-primary transition-colors"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         Sign In
@@ -167,7 +156,7 @@ export function Navigation() {
                                         href="/auth/signup"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
-                                        <Button className="bg-blue-600 hover:bg-blue-700 w-full">
+                                        <Button className="w-full">
                                             Sign Up
                                         </Button>
                                     </Link>
