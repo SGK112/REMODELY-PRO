@@ -197,3 +197,63 @@ sentry.properties
 .env.production.local
 .env.scraping
 .env.scraping.local
+
+# Project-specific temporary files
+demo-*.js
+test-*.js
+debug-*.js
+*-test.js
+*-demo.js
+temp_*.csv
+test_*.csv
+*.mp3
+sarah-voice.*
+
+# Documentation files that are auto-generated
+*_COMPLETE.md
+*_GUIDE.md
+*_ANALYSIS.md
+*_STATUS.md
+*_SUMMARY.md
+SUCCESS_*.md
+FIXES_*.md
+DEPLOYMENT_*.md
+ENVIRONMENT_*.md
+
+# React component fragments
+"use client".tsx
+"import * as React from \"react\".tsx
+"import type { Metadata } from \"next\";.tsx
+components/import*.tsx
+input.tsx
+
+# Shell scripts for testing
+*.sh
+!setup-*.sh
+!system-*.sh
+
+# Java directory (if not needed)
+java/
+
+# Agent configuration files
+agents/
+pure-elevenlabs-*.js
+elevenlabs-*.js
+enhanced-*.js
+premium-*.js
+real-*.js
+simple-*.js
+setup-*.js
+update-*.js
+validate-*.js
+showcase-*.js
+
+# Voice and AI testing files
+*-voice-*.js
+*-ai-*.js
+*-google-*.js
+*-gemini-*.js
+*-elevenlabs-*.js
+*-remodely-*.js
+check-*.js
+voice-*.js
