@@ -58,10 +58,17 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
   compress: true,
+  
+  // Fixed cache configuration
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 
   // Environment variables
   env: {
     CUSTOM_KEY: process.env.NODE_ENV,
+    RENDER_DEPLOY_HOOK: process.env.RENDER_DEPLOY_HOOK,
   },
 
   async redirects() {
