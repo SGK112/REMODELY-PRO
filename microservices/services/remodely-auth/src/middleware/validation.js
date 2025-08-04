@@ -14,10 +14,10 @@ const validateRequest = (schema) => {
           message: err.message
         }))
 
-        logger.warn('Validation failed', { 
+        logger.warn('Validation failed', {
           errors: validationErrors,
           path: req.path,
-          ip: req.ip 
+          ip: req.ip
         })
 
         return res.status(400).json({

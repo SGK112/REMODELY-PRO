@@ -76,7 +76,7 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: existingUser.email === email 
+        message: existingUser.email === email
           ? 'User with this email already exists'
           : 'User with this phone number already exists'
       })

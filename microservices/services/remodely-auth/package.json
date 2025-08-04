@@ -38,7 +38,7 @@
   "keywords": [
     "authentication",
     "authorization",
-    "microservice", 
+    "microservice",
     "remodely",
     "jwt",
     "twilio"

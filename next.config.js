@@ -2,7 +2,7 @@
 const nextConfig = {
   // Bulletproof build configuration
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', '@googlemaps/js-api-loader'],
   },
 
   // Fix hydration issues
@@ -85,7 +85,7 @@ const nextConfig = {
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',

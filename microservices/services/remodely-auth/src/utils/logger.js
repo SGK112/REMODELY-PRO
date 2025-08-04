@@ -7,7 +7,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { 
+  defaultMeta: {
     service: 'remodely-auth',
     version: process.env.npm_package_version || '1.0.0'
   },
