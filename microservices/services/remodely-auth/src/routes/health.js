@@ -47,7 +47,7 @@ router.get('/ready', async (req, res) => {
   try {
     // Check database connection
     await prisma.$queryRaw`SELECT 1`
-    
+
     res.json({
       ready: true,
       service: 'remodely-auth',

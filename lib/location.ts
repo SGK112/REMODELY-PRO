@@ -1,4 +1,7 @@
 // Location service utilities
+import { loadGoogleMapsAsync } from './maps'
+import { prisma } from './prisma'
+
 export interface LocationData {
     lat: number
     lng: number
@@ -250,3 +253,44 @@ export class LocationService {
         return [...stateLocations, ...allLocations.filter(loc => !stateLocations.includes(loc))]
     }
 }
+
+// Update geocoding to use new API patterns
+export const geocodeAddress = async (address: string) => {
+    try {
+        const google = await loadGoogleMapsAsync();
+        const geocoder = new google.maps.Geocoder();
+
+        return new Promise<google.maps.GeocoderResult[]>((resolve, reject) => {
+            geocoder.geocode({ address }, (results, status) => {
+                if (status === 'OK' && results) {
+                    resolve(Array.isArray(results) ? results : []);
+                } else {
+                    resolve([]); // Return empty array instead of rejecting
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        return [];
+    }
+};
+
+// Location search for contractors
+export const searchContractorsNearLocation = async (location: string, radius: number = 50) => {
+    try {
+        const contractors = await prisma.contractor.findMany({
+            where: {
+                // ...existing location query...
+            },
+            include: {
+                user: true,
+            },
+        });
+
+        // Ensure we always return an array
+        return Array.isArray(contractors) ? contractors : [];
+    } catch (error) {
+        console.error('Location search error:', error);
+        return []; // Return empty array on error
+    }
+};

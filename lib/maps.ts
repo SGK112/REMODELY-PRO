@@ -152,9 +152,7 @@ export class GoogleMapsService {
     ): Promise<google.maps.places.PlaceResult[]> {
         try {
             const google = await this.loadGoogleMaps()
-            const service = new google.maps.places.PlacesService(
-                document.createElement('div')
-            )
+            const service = new google.maps.places.PlacesService(document.createElement('div'))
 
             return new Promise((resolve) => {
                 service.textSearch({
@@ -163,7 +161,7 @@ export class GoogleMapsService {
                     radius
                 }, (results, status) => {
                     if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                        resolve(results)
+                        resolve(Array.isArray(results) ? results : [])
                     } else {
                         console.error('Places search failed:', status)
                         resolve([])
@@ -215,6 +213,72 @@ export const formatDuration = (seconds: number): string => {
         return `${hours}h ${minutes}m`
     }
 }
+
+// Enhanced async loading with better error handling
+export const loadGoogleMapsAsync = (): Promise<typeof google> => {
+    return new Promise((resolve, reject) => {
+        // Check if already loaded
+        if (typeof google !== 'undefined' && google.maps) {
+            resolve(google);
+            return;
+        }
+
+        // Check if script already exists
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingScript) {
+            // Wait for existing script to load
+            existingScript.addEventListener('load', () => {
+                if (typeof google !== 'undefined' && google.maps) {
+                    resolve(google);
+                } else {
+                    reject(new Error('Google Maps failed to initialize'));
+                }
+            });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`;
+        script.async = true;
+        script.defer = true;
+
+        script.onload = () => {
+            if (typeof google !== 'undefined' && google.maps) {
+                resolve(google);
+            } else {
+                reject(new Error('Google Maps failed to load'));
+            }
+        };
+
+        script.onerror = () => reject(new Error('Failed to load Google Maps script'));
+        document.head.appendChild(script);
+    });
+};
+
+// Update places search to use legacy API with proper fallback
+export const searchPlacesWithNewAPI = async (query: string, location?: { lat: number; lng: number }) => {
+    try {
+        const google = await loadGoogleMapsAsync();
+        const service = new google.maps.places.PlacesService(document.createElement('div'));
+
+        return new Promise<google.maps.places.PlaceResult[]>((resolve) => {
+            service.textSearch({
+                query,
+                location: location ? new google.maps.LatLng(location.lat, location.lng) : undefined,
+                radius: 50000
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    resolve(Array.isArray(results) ? results : []);
+                } else {
+                    resolve([]);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Places search error:', error);
+        return [];
+    }
+};
 
 // TypeScript interfaces for better type safety
 export interface ContractorLocation {

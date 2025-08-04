@@ -520,8 +520,8 @@ export default function ContractorsPage() {
                                                                 <Star
                                                                     key={i}
                                                                     className={`w-4 h-4 ${i < Math.floor(contractor.rating)
-                                                                            ? 'text-yellow-400 fill-current'
-                                                                            : 'text-gray-300'
+                                                                        ? 'text-yellow-400 fill-current'
+                                                                        : 'text-gray-300'
                                                                         }`}
                                                                 />
                                                             ))}

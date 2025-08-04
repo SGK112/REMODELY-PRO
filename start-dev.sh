@@ -31,6 +31,10 @@ fi
 echo "🗄️ Setting up database..."
 npm run db:generate && npm run db:push
 
+# Create test users
+echo "👥 Setting up test users..."
+node create-test-users.js
+
 # Clear Next.js cache
 echo "🧹 Clearing Next.js cache..."
 rm -rf .next

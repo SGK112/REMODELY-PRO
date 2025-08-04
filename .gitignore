@@ -3,10 +3,12 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Next.js
 .next/
 out/
+next-env.d.ts
 
 # Production
 build/
@@ -18,6 +20,8 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.scraping
+.env.scraping.local
 
 # Database
 *.db
@@ -73,3 +77,73 @@ jspm_packages/
 
 # Prisma
 prisma/migrations/
+prisma/dev.db
+prisma/dev.db-journal
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Cache directories
+.eslintcache
+.nyc_output
+.cache/
+.parcel-cache
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# API keys and secrets
+*.pem
+*.key
+*.crt
+secrets.json
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Local development
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Vercel
+.vercel
+
+# Sentry
+.sentryclirc
+
+# Storybook
+storybook-static/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Custom project files
+demo-data/
+scraping-results/
+test-output/
+debug-logs/

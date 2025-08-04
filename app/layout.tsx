@@ -18,7 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className} suppressHydrationWarning>
+      <head>
+        {/* Remove any direct Google Maps script tags */}
+        {/* Google Maps will be loaded asynchronously when needed */}
+      </head>
+      <body className={inter.className}>
         <SessionProvider>
           <div className="min-h-screen flex flex-col">
             <Navigation />
