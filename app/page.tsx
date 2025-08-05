@@ -253,7 +253,7 @@ export default function HomePage() {
                 See ROI Calculator
                 <ArrowRight className="inline ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/contact" className="group bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              <Link href="/voice-consultation" className="group bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                 <Mic className="inline mr-2 h-5 w-5" />
                 Talk to AI Sarah
               </Link>
