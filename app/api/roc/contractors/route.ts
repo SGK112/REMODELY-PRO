@@ -23,7 +23,6 @@ export async function GET() {
         specialties: true,
         yearsInBusiness: true,
         phone: true,
-        email: true,
         website: true,
         licenseExpiration: true,
         qualifyingParty: true,
@@ -64,6 +63,11 @@ export async function GET() {
       where: { isROCVerified: true },
       _count: {
         city: true
+      },
+      orderBy: {
+        _count: {
+          city: 'desc'
+        }
       },
       take: 50 // Top 50 cities
     })

@@ -4,7 +4,7 @@ import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { Header } from '@/components/navigation/header'
-import { Footer } from '@/components/layout/Footer'
+import { Footer } from '@/components/layout/footer'
 import { LocationProvider } from '@/components/providers/LocationProvider'
 
 const inter = Inter({ subsets: ['latin'] })
