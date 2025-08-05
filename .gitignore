@@ -1,20 +1,21 @@
-# Dependencies
+# Dependencies and Package Managers
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
 
-# Next.js
+# Next.js Build Output
 .next/
 out/
-next-env.d.ts
-
-# Production
 build/
 dist/
+next-env.d.ts
 
-# Environment variables
+# Environment Variables
 .env
 .env.local
 .env.development.local
@@ -23,59 +24,10 @@ dist/
 .env.scraping
 .env.scraping.local
 
-# Database
+# Database Files
 *.db
 *.sqlite
 *.sqlite3
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# Prisma
 prisma/migrations/
 prisma/dev.db
 prisma/dev.db-journal
@@ -83,133 +35,93 @@ prisma/dev.db-journal
 # TypeScript
 *.tsbuildinfo
 tsconfig.tsbuildinfo
+.tsbuildinfo
 
-# Cache directories
-.eslintcache
-.nyc_output
+# Logs and Runtime Data
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Cache Directories
 .cache/
 .parcel-cache
+.npm
+.eslintcache
+.nyc_output
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
-# Temporary files
-*.tmp
-*.temp
-temp/
-tmp/
-
-# API keys and secrets
-*.pem
-*.key
-*.crt
-secrets.json
-
-# Test coverage
+# Test Coverage
 coverage/
 *.lcov
 .nyc_output/
-
-# Local development
-.vscode/settings.json
-.idea/
-*.swp
-*.swo
-
-# Backup files
-*.backup
-*.bak
-*~
-
-# MacOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Vercel
-.vercel
-
-# Sentry
-.sentryclirc
-
-# Storybook
-storybook-static/
-
-# Playwright
 test-results/
 playwright-report/
 playwright/.cache/
 
-# Custom project files
-demo-data/
-scraping-results/
-test-output/
-debug-logs/
-
-# Additional Next.js
-.next/
-out/
-build/
-dist/
-
-# TypeScript build cache
-*.tsbuildinfo
-.tsbuildinfo
-
-# Package managers
-yarn.lock
-package-lock.json
-pnpm-lock.yaml
-
-# Testing
-__tests__/
-*.test.js
-*.test.ts
-*.spec.js
-*.spec.ts
-jest.config.js
-cypress/
-cypress.config.js
-
-# IDE and editor files
+# IDE and Editor Files
 .vscode/
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.swp
+*.swo
 
-# Deployment
+# Operating System
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Deployment Platforms
 .vercel/
 .netlify/
 .firebase/
 
-# Analytics and monitoring
-.sentryclirc
-sentry.properties
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+*.backup
+*.bak
+*~
 
-# Local environment
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.scraping
-.env.scraping.local
+# Secrets and Certificates
+*.pem
+*.key
+*.crt
+secrets.json
 
-# Project-specific temporary files
+# Media Files (generated)
+*.mp3
+*.wav
+sarah-voice.*
+
+# Development and Testing Scripts
 demo-*.js
 test-*.js
 debug-*.js
 *-test.js
 *-demo.js
-temp_*.csv
-test_*.csv
-*.mp3
-sarah-voice.*
+check-*.js
+voice-*.js
+*-voice-*.js
+*-ai-*.js
+*-google-*.js
+*-gemini-*.js
+*-elevenlabs-*.js
+*-remodely-*.js
 
-# Documentation files that are auto-generated
+# Auto-generated Documentation
 *_COMPLETE.md
 *_GUIDE.md
 *_ANALYSIS.md
@@ -220,23 +132,38 @@ FIXES_*.md
 DEPLOYMENT_*.md
 ENVIRONMENT_*.md
 
-# React component fragments
+# Build and Development Artifacts
+.sentryclirc
+sentry.properties
+storybook-static/
+jspm_packages/
+.yarn-integrity
+*.tgz
+.node_repl_history
+
+# Project-specific Files
+demo-data/
+scraping-results/
+test-output/
+debug-logs/
+temp_*.csv
+test_*.csv
+agents/
+
+# React Component Fragments
 "use client".tsx
 "import * as React from \"react\".tsx
 "import type { Metadata } from \"next\";.tsx
 components/import*.tsx
 input.tsx
 
-# Shell scripts for testing
+# Shell Scripts (except essential ones)
 *.sh
 !setup-*.sh
 !system-*.sh
+!deploy-*.sh
 
-# Java directory (if not needed)
-java/
-
-# Agent configuration files
-agents/
+# AI Service Testing Files
 pure-elevenlabs-*.js
 elevenlabs-*.js
 enhanced-*.js
@@ -248,12 +175,5 @@ update-*.js
 validate-*.js
 showcase-*.js
 
-# Voice and AI testing files
-*-voice-*.js
-*-ai-*.js
-*-google-*.js
-*-gemini-*.js
-*-elevenlabs-*.js
-*-remodely-*.js
-check-*.js
-voice-*.js
+# Unused Directories
+java/

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Check, Shield, Star, CreditCard, Lock, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -34,7 +34,7 @@ const planDetails = {
   }
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const plan = searchParams?.get('plan') as keyof typeof planDetails || 'pro'
   const [loading, setLoading] = useState(false)
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     // Simulate payment processing
     setTimeout(() => {
       setLoading(false)
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-sm border p-6 sticky top-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div>
@@ -371,7 +371,7 @@ export default function CheckoutPage() {
                     </>
                   )}
                 </button>
-                
+
                 <p className="text-center text-xs text-gray-500 mt-4">
                   By completing this purchase, you agree to our Terms of Service and Privacy Policy.
                   You can cancel your subscription at any time.
@@ -382,5 +382,20 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   )
 }
