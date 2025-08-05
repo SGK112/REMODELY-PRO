@@ -10,12 +10,12 @@ import { LocationProvider } from '@/components/providers/LocationProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Remodely.AI - AI-Powered Home Renovation Platform',
-  description: 'Transform your home with AI-powered contractor matching, voice consultations, and smart project planning. Connect with verified contractors instantly.',
-  keywords: ['home renovation', 'AI contractors', 'voice consultation', 'home improvement', 'remodeling'],
-  authors: [{ name: 'Remodely.AI Team' }],
-  creator: 'Remodely.AI',
-  publisher: 'Remodely.AI',
+  title: 'REMODELY.ai - AI Brains for your House',
+  description: 'AI Brains for your House - Use REMODELY.ai to design, plan, manage, and execute all your remodeling and construction projects with intelligent AI-powered tools.',
+  keywords: ['AI house renovation', 'smart home remodeling', 'construction AI', 'intelligent home design', 'AI brains house', 'remodeling AI', 'smart construction'],
+  authors: [{ name: 'REMODELY.ai Team' }],
+  creator: 'REMODELY.ai',
+  publisher: 'REMODELY.ai',
   formatDetection: {
     email: false,
     address: false,

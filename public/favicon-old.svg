@@ -1,0 +1,33 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Professional gradients for AI-powered favicon -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EAB308;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main R icon with modern design -->
+  <rect width="32" height="32" rx="6" fill="url(#primaryGradient)" stroke="#4F46E5" stroke-width="0.5"/>
+  
+  <!-- Letter R -->
+  <g fill="white" stroke="white" stroke-width="0.3">
+    <path d="M8 8 L8 24 M8 8 L14 8 Q16 8 16 11 Q16 14 14 14 L8 14 M14 14 L16 24" 
+          stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="1.5"/>
+  </g>
+  
+  <!-- AI Badge - positioned more prominently -->
+  <circle cx="24" cy="8" r="6" fill="url(#aiGradient)" stroke="white" stroke-width="0.5"/>
+  <text x="24" y="11" text-anchor="middle" font-family="system-ui" font-size="7" font-weight="700" fill="white">AI</text>
+  
+  <!-- Subtle brain/neural network dots -->
+  <g opacity="0.6">
+    <circle cx="10" cy="12" r="0.5" fill="white"/>
+    <circle cx="14" cy="10" r="0.5" fill="white"/>
+    <circle cx="12" cy="16" r="0.5" fill="white"/>
+  </g>
+</svg>
