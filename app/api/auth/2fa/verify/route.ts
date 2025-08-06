@@ -22,12 +22,12 @@ export async function POST(request: NextRequest) {
             where: { id: session.user.id }
         })
 
-        if (!user || !user.twoFactorSecret) {
+        if (!user || !(user as any).twoFactorSecret) {
             return NextResponse.json({ error: 'No 2FA setup found' }, { status: 404 })
         }
 
         // Verify the token
-        const isValid = TwoFactorAuth.verifyToken(user.twoFactorSecret, token)
+        const isValid = TwoFactorAuth.verifyToken((user as any).twoFactorSecret, token)
 
         if (!isValid) {
             return NextResponse.json({ error: 'Invalid token' }, { status: 400 })
