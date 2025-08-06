@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
                 const updatedCodes = TwoFactorAuth.removeBackupCode(backupCodes, credentials.backupCode)
                 await prisma.user.update({
                   where: { id: user.id },
-                  data: { backupCodes: JSON.stringify(updatedCodes) }
+                  data: { backupCodes: JSON.stringify(updatedCodes) } as any
                 })
               }
             }
