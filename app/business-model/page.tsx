@@ -1,281 +1,280 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Check, Star, Zap, Users, DollarSign, TrendingUp } from 'lucide-react'
+import { DollarSign, TrendingUp, Users, Building, Brain, Zap } from 'lucide-react'
+import Link from 'next/link'
 
 export default function BusinessModelPage() {
-  const pricingPlans = [
-    {
-      name: 'Free',
-      price: '$0',
-      period: 'forever',
-      description: 'Perfect for homeowners exploring renovation ideas',
-      features: [
-        'Basic AI consultation with Sarah',
-        '5 AI tool uses per month',
-        'Basic contractor matching',
-        'Project planning templates',
-        'Community forum access'
-      ],
-      limitations: [
-        'Limited AI interactions',
-        'Basic support only',
-        'Standard contractor network'
-      ],
-      cta: 'Get Started Free',
-      popular: false
-    },
-    {
-      name: 'Pro',
-      price: '$29',
-      period: 'per month',
-      description: 'For serious renovators and DIY enthusiasts',
-      features: [
-        'Unlimited AI consultations',
-        'All AI tools included',
-        'Priority contractor matching',
-        'Advanced project planning',
-        '3D visualization tools',
-        'Material cost tracking',
-        'Progress photos & reports',
-        'Email & chat support'
-      ],
-      limitations: [],
-      cta: 'Start Pro Trial',
-      popular: true
-    },
-    {
-      name: 'Enterprise',
-      price: '$199',
-      period: 'per month',
-      description: 'For contractors, builders, and real estate professionals',
-      features: [
-        'Everything in Pro',
-        'White-label platform',
-        'Custom AI training',
-        'Lead generation tools',
-        'Advanced analytics',
-        'Multi-project management',
-        'Team collaboration',
-        'API access',
-        'Dedicated account manager',
-        'Custom integrations'
-      ],
-      limitations: [],
-      cta: 'Contact Sales',
-      popular: false
-    }
-  ]
-
-  const businessMetrics = [
-    {
-      icon: Users,
-      title: 'Active Users',
-      value: '50K+',
-      description: 'Homeowners and contractors'
-    },
-    {
-      icon: DollarSign,
-      title: 'Projects Completed',
-      value: '$12M+',
-      description: 'Total renovation value'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Success Rate',
-      value: '94%',
-      description: 'Projects completed on time'
-    },
-    {
-      icon: Star,
-      title: 'Satisfaction',
-      value: '4.8/5',
-      description: 'Average customer rating'
-    }
-  ]
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Remodely.AI Business Model
-          </h1>
-          <p className="text-xl text-blue-200 max-w-3xl mx-auto mb-8">
-            Transforming home renovation with AI-powered consultation, smart contractor matching, 
-            and comprehensive project management tools.
-          </p>
-        </div>
-
-        {/* Business Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
-          {businessMetrics.map((metric, index) => (
-            <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 text-center">
-              <CardContent className="p-6">
-                <metric.icon className="mx-auto h-8 w-8 text-blue-400 mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">{metric.value}</div>
-                <div className="text-blue-200 font-medium mb-1">{metric.title}</div>
-                <div className="text-blue-300 text-sm">{metric.description}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Value Proposition */}
-        <Card className="mb-16 bg-white/10 backdrop-blur-sm border-white/20">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-white mb-4">Our Value Proposition</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-blue-400" />
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+            {/* Hero Section */}
+            <div className="bg-white border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                            REMODELY.AI Business Model
+                        </h1>
+                        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                            AI-powered marketplace disrupting the $472B home improvement industry with intelligent contractor matching and pay-as-you-go pricing.
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                            <Link
+                                href="/auth/signup"
+                                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                            >
+                                Join the Platform
+                            </Link>
+                            <Link
+                                href="/plans"
+                                className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                            >
+                                View Pricing
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">AI-Powered Efficiency</h3>
-                <p className="text-blue-200">
-                  Reduce project planning time by 70% with our intelligent AI assistants that understand 
-                  construction, building codes, and local regulations.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">Smart Matching</h3>
-                <p className="text-blue-200">
-                  Connect with pre-vetted contractors using our advanced matching algorithm that considers 
-                  location, specialty, reviews, and availability.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="h-8 w-8 text-green-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">End-to-End Solution</h3>
-                <p className="text-blue-200">
-                  From initial consultation to project completion, manage everything in one platform 
-                  with integrated payments, progress tracking, and quality assurance.
-                </p>
-              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Pricing Plans */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Choose Your Plan</h2>
-          <p className="text-blue-200 text-lg">Start free, upgrade when you need more power</p>
-        </div>
+            {/* Market Opportunity */}
+            <div className="py-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Market Opportunity</h2>
+                        <p className="text-xl text-gray-600">Massive, underserved market ready for AI disruption</p>
+                    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {pricingPlans.map((plan, index) => (
-            <Card 
-              key={index} 
-              className={`bg-white/10 backdrop-blur-sm border-white/20 relative ${
-                plan.popular ? 'ring-2 ring-blue-400' : ''
-              }`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                  Most Popular
-                </Badge>
-              )}
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  <span className="text-blue-200">/{plan.period}</span>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <div className="bg-white rounded-lg p-8 shadow-lg">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <DollarSign className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">$472B</h3>
+                                <p className="text-gray-600">Annual home improvement spending</p>
+                                <p className="text-sm text-gray-500 mt-2">$200B residential + $272B commercial</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-8 shadow-lg">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Users className="w-8 h-8 text-green-600" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">140M+</h3>
+                                <p className="text-gray-600">US households planning renovations</p>
+                                <p className="text-sm text-gray-500 mt-2">600K+ specialized contractors</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-8 shadow-lg">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <TrendingUp className="w-8 h-8 text-purple-600" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">15%</h3>
+                                <p className="text-gray-600">Annual market growth rate</p>
+                                <p className="text-sm text-gray-500 mt-2">Accelerated by AI adoption</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <CardDescription className="text-blue-200 mt-2">
-                  {plan.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <h4 className="text-white font-semibold mb-3">Features:</h4>
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-blue-200 text-sm">
-                        <Check className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <Button 
-                  className={`w-full ${
-                    plan.popular 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
-                      : 'bg-white/10 hover:bg-white/20 border border-white/30'
-                  } text-white`}
-                >
-                  {plan.cta}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Revenue Streams */}
-        <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-          <CardHeader>
-            <CardTitle className="text-2xl text-white text-center">Revenue Streams</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center">
-                <h4 className="text-white font-semibold mb-2">Subscription Plans</h4>
-                <p className="text-blue-200 text-sm">
-                  Monthly and annual subscriptions for AI tools and premium features
-                </p>
-              </div>
-              <div className="text-center">
-                <h4 className="text-white font-semibold mb-2">Transaction Fees</h4>
-                <p className="text-blue-200 text-sm">
-                  Small percentage on successful contractor bookings and payments
-                </p>
-              </div>
-              <div className="text-center">
-                <h4 className="text-white font-semibold mb-2">Enterprise Licensing</h4>
-                <p className="text-blue-200 text-sm">
-                  White-label platform licensing for contractors and real estate firms
-                </p>
-              </div>
-              <div className="text-center">
-                <h4 className="text-white font-semibold mb-2">Data Insights</h4>
-                <p className="text-blue-200 text-sm">
-                  Market intelligence and trend reports for industry professionals
-                </p>
-              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* CTA */}
-        <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-white mb-4">Ready to Transform Your Business?</h3>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4"
-            >
-              Start Free Trial
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white/10 px-8 py-4"
-            >
-              Schedule Demo
-            </Button>
-          </div>
+            {/* Revenue Streams */}
+            <div className="py-16 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Revenue Streams</h2>
+                        <p className="text-xl text-gray-600">Multiple monetization channels for sustainable growth</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-gray-50 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Subscription Plans</h3>
+                            <ul className="space-y-2 text-sm text-gray-600">
+                                <li>• Homeowner Pro: $29/month</li>
+                                <li>• Contractor Professional: $99/month</li>
+                                <li>• Enterprise: $199/month</li>
+                            </ul>
+                            <p className="text-green-600 font-semibold mt-3">Recurring Revenue</p>
+                        </div>
+
+                        <div className="bg-gray-50 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Transaction Fees</h3>
+                            <ul className="space-y-2 text-sm text-gray-600">
+                                <li>• Residential: 3-5% commission</li>
+                                <li>• Commercial: 1-3% commission</li>
+                                <li>• Payment processing: 2.9% + $0.30</li>
+                            </ul>
+                            <p className="text-green-600 font-semibold mt-3">Transaction-based</p>
+                        </div>
+
+                        <div className="bg-gray-50 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Lead Generation</h3>
+                            <ul className="space-y-2 text-sm text-gray-600">
+                                <li>• Qualified leads: $25-50 each</li>
+                                <li>• Premium matching: $15 per match</li>
+                                <li>• Featured listings: $29.99/month</li>
+                            </ul>
+                            <p className="text-green-600 font-semibold mt-3">Performance-based</p>
+                        </div>
+
+                        <div className="bg-gray-50 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Premium Services</h3>
+                            <ul className="space-y-2 text-sm text-gray-600">
+                                <li>• Background checks: $9.99</li>
+                                <li>• Priority support: $19.99/month</li>
+                                <li>• API licensing: $199/month</li>
+                            </ul>
+                            <p className="text-green-600 font-semibold mt-3">Value-added</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Competitive Advantage */}
+            <div className="py-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Competitive Advantage</h2>
+                        <p className="text-xl text-gray-600">AI-powered platform beating traditional marketplaces</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-6">vs. Houzz (Market Leader)</h3>
+                            <div className="space-y-4">
+                                <div className="flex items-start space-x-3">
+                                    <Brain className="w-5 h-5 text-blue-600 mt-1" />
+                                    <div>
+                                        <p className="font-medium text-gray-900">AI-Powered Matching</p>
+                                        <p className="text-sm text-gray-600">Intelligent project-contractor compatibility vs basic search</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <DollarSign className="w-5 h-5 text-green-600 mt-1" />
+                                    <div>
+                                        <p className="font-medium text-gray-900">Pay-as-You-Go Pricing</p>
+                                        <p className="text-sm text-gray-600">Performance-based fees vs expensive monthly subscriptions</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <Zap className="w-5 h-5 text-purple-600 mt-1" />
+                                    <div>
+                                        <p className="font-medium text-gray-900">Voice AI Assistant</p>
+                                        <p className="text-sm text-gray-600">SARAH voice consultations vs limited chat support</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-6">Market Position</h3>
+                            <div className="bg-blue-50 rounded-lg p-6">
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Houzz Market Share</span>
+                                        <span className="font-semibold">65M+ users</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Annual Revenue</span>
+                                        <span className="font-semibold">$400M+</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Our Opportunity</span>
+                                        <span className="font-semibold text-blue-600">Capture #2 position</span>
+                                    </div>
+                                    <div className="border-t pt-3 mt-3">
+                                        <p className="text-sm text-gray-600">
+                                            No strong second player exists. AI differentiation and fair pricing create massive opportunity.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Growth Strategy */}
+            <div className="py-16 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Growth Strategy</h2>
+                        <p className="text-xl text-gray-600">Scalable approach to market dominance</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <div className="text-center">
+                            <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                                <span className="text-blue-600 font-bold text-xl">1</span>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Phase 1: Foundation</h3>
+                            <ul className="text-left space-y-2 text-gray-600">
+                                <li>• 500+ contractors across major metros</li>
+                                <li>• 1,000+ homeowner accounts</li>
+                                <li>• AI matching system deployed</li>
+                                <li>• Voice assistant SARAH launched</li>
+                            </ul>
+                            <p className="text-sm text-blue-600 font-semibold mt-3">Months 1-6</p>
+                        </div>
+
+                        <div className="text-center">
+                            <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                                <span className="text-green-600 font-bold text-xl">2</span>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Phase 2: Scale</h3>
+                            <ul className="text-left space-y-2 text-gray-600">
+                                <li>• 2,500+ contractors in 50+ markets</li>
+                                <li>• 10,000+ homeowner accounts</li>
+                                <li>• $1M+ contractor earnings facilitated</li>
+                                <li>• Break-even operations</li>
+                            </ul>
+                            <p className="text-sm text-green-600 font-semibold mt-3">Months 6-12</p>
+                        </div>
+
+                        <div className="text-center">
+                            <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                                <span className="text-purple-600 font-bold text-xl">3</span>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Phase 3: Dominate</h3>
+                            <ul className="text-left space-y-2 text-gray-600">
+                                <li>• 10,000+ contractors nationwide</li>
+                                <li>• 100,000+ homeowner accounts</li>
+                                <li>• $10M+ marketplace transactions</li>
+                                <li>• Series A funding for expansion</li>
+                            </ul>
+                            <p className="text-sm text-purple-600 font-semibold mt-3">Months 12-24</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl font-bold text-white mb-4">
+                        Join the AI Revolution in Home Improvement
+                    </h2>
+                    <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                        Whether you're a homeowner planning your dream renovation or a contractor looking to grow your business,
+                        REMODELY.AI provides the intelligent tools you need to succeed.
+                    </p>
+                    <div className="flex justify-center space-x-4">
+                        <Link
+                            href="/auth/signup?tab=customer"
+                            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                        >
+                            Start as Homeowner
+                        </Link>
+                        <Link
+                            href="/auth/signup?tab=contractor"
+                            className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
+                        >
+                            Join as Contractor
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
