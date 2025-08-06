@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
             where: { id: user.id },
             data: {
                 twoFactorEnabled: true
-            }
+            } as any
         })
 
         return NextResponse.json({
