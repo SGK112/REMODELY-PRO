@@ -1,313 +1,439 @@
-'use client'
+"use client"
 
-// Force dynamic rendering for authentication
-export const dynamic = 'force-dynamic'
-
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+import { useState } from "react"
+import { useSession, signOut } from "next-auth/react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { TwoFactorAuthSettings } from "@/components/auth/TwoFactorAuthSettings"
+import { PasswordChange } from "@/components/auth/PasswordChange"
 import {
-  Users,
-  Calendar,
+  Home,
+  Settings,
+  Shield,
+  User,
   DollarSign,
-  TrendingUp,
-  MessageSquare,
   Phone,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Eye,
-  Building,
-  Zap,
-  Crown,
-  Calculator,
+  MessageSquare,
+  Calendar,
   FileText,
-  CreditCard
-} from 'lucide-react'
-import SMSNotificationPanel from '@/components/ui/SMSNotificationPanel'
-
-interface Quote {
-  id: string
-  projectType: string
-  customer: {
-    firstName: string
-    lastName: string
-  }
-  location: string
-  budget: string
-  status: string
-  createdAt: string
-  squareFootage?: number
-  materials?: string[]
-  description?: string
-}
+  Star,
+  LogOut,
+  Wrench,
+  TrendingUp,
+  Users,
+  Award
+} from "lucide-react"
 
 export default function ContractorDashboard() {
   const { data: session } = useSession()
-  const [quotes, setQuotes] = useState<Quote[]>([])
-  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState("overview")
 
-  // Mock stats data
-  const stats = {
-    totalQuotes: 24,
-    activeProjects: 3,
-    monthlyRevenue: 12500,
-    responseRate: 95
-  }
-
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        const response = await fetch('/api/quotes?userType=contractor')
-        if (response.ok) {
-          const data = await response.json()
-          setQuotes(data)
-        }
-      } catch (error) {
-        console.error('Error fetching quotes:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchQuotes()
-  }, [])
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'accepted':
-        return 'bg-green-100 text-green-800'
-      case 'rejected':
-        return 'bg-red-100 text-red-800'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">Please sign in to access the professional dashboard.</p>
-        </div>
-      </div>
-    )
-  }
+  const contractor = session?.user?.contractor
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">REMODELY.AI Professional Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back, {session.user?.name || 'Professional'} - Grow your business with AI-powered leads</p>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <MessageSquare className="h-6 w-6 text-blue-600" />
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-lg font-bold">R</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Quotes</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalQuotes}</p>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Contractor Dashboard</h1>
+                <p className="text-gray-600">Welcome back, {session?.user?.name}!</p>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Users className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.activeProjects}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <DollarSign className="h-6 w-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-semibold text-gray-900">${stats.monthlyRevenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Response Rate</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.responseRate}%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Professional Tools Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl shadow-lg p-8 text-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Zap className="h-12 w-12 mr-4" />
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">Professional Contractor Tools</h2>
-                  <p className="text-orange-100 text-lg">
-                    Manage projects, create estimates, send invoices, and grow your business with our complete toolkit
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/dashboard/contractor/tools"
-                className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:bg-orange-50 transition-colors flex items-center"
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                {contractor?.businessName || 'Professional'}
+              </Badge>
+              <Button
+                variant="outline"
+                onClick={() => signOut({ callbackUrl: '/' })}
               >
-                <Crown className="mr-2" size={20} />
-                Launch Tools
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                <Calculator className="h-8 w-8 mb-2" />
-                <h3 className="font-semibold">Smart Estimating</h3>
-                <p className="text-sm text-orange-100">AI-powered pricing & estimates</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                <FileText className="h-8 w-8 mb-2" />
-                <h3 className="font-semibold">Project Management</h3>
-                <p className="text-sm text-orange-100">Track projects & timelines</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                <CreditCard className="h-8 w-8 mb-2" />
-                <h3 className="font-semibold">Invoicing & Payments</h3>
-                <p className="text-sm text-orange-100">Professional billing system</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-4">
-                <TrendingUp className="h-8 w-8 mb-2" />
-                <h3 className="font-semibold">Business Analytics</h3>
-                <p className="text-sm text-orange-100">Performance insights & reports</p>
-              </div>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Link
-            href="/dashboard/contractor/manage"
-            className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-          >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Building className="h-8 w-8 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Manage Profile</h3>
-                <p className="text-gray-600">Update images, content & business details</p>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <Home className="h-4 w-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="flex items-center space-x-2">
+              <FileText className="h-4 w-4" />
+              <span>Projects</span>
+            </TabsTrigger>
+            <TabsTrigger value="leads" className="flex items-center space-x-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Leads</span>
+            </TabsTrigger>
+            <TabsTrigger value="clients" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>Clients</span>
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="flex items-center space-x-2">
+              <Star className="h-4 w-4" />
+              <span>Reviews</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center space-x-2">
+              <Shield className="h-4 w-4" />
+              <span>Security</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">7</div>
+                  <p className="text-xs text-muted-foreground">+2 from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">$28,750</div>
+                  <p className="text-xs text-muted-foreground">+15% from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">New Leads</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">12</div>
+                  <p className="text-xs text-muted-foreground">5 pending response</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Rating</CardTitle>
+                  <Star className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">4.8</div>
+                  <p className="text-xs text-muted-foreground">Based on 24 reviews</p>
+                </CardContent>
+              </Card>
             </div>
-          </Link>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Calendar className="h-8 w-8 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Schedule</h3>
-                <p className="text-gray-600">Manage your availability</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <MessageSquare className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Messages</h3>
-                <p className="text-gray-600">Customer communications</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Quote Requests */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Quote Requests</h2>
-              </div>
-              <div className="p-6">
-                {loading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-gray-600 mt-2">Loading quotes...</p>
-                  </div>
-                ) : quotes.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Projects</CardTitle>
+                  <CardDescription>Your latest contractor work</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <div className="space-y-4">
-                    {quotes.map((quote) => (
-                      <div key={quote.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{quote.projectType}</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {quote.customer.firstName} {quote.customer.lastName} • {quote.location}
-                            </p>
-                            {quote.description && (
-                              <p className="text-sm text-gray-700 mt-2">{quote.description}</p>
-                            )}
-                            <div className="flex items-center mt-2 space-x-4 text-sm text-gray-500">
-                              <span>Budget: {quote.budget}</span>
-                              {quote.squareFootage && <span>{quote.squareFootage} sq ft</span>}
-                              <span>{new Date(quote.createdAt).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                          <div className="ml-4 flex items-center space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(quote.status)}`}>
-                              {quote.status}
-                            </span>
-                            <button className="p-1 text-gray-400 hover:text-gray-600">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Wrench className="h-4 w-4 text-blue-600" />
                       </div>
-                    ))}
+                      <div className="flex-1">
+                        <p className="font-medium">Kitchen Renovation - Johnson Family</p>
+                        <p className="text-sm text-gray-600">In Progress • Started March 15</p>
+                      </div>
+                      <Badge variant="secondary">Active</Badge>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <Wrench className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Bathroom Remodel - Smith Residence</p>
+                        <p className="text-sm text-gray-600">Completed • March 1</p>
+                      </div>
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">Completed</Badge>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <Wrench className="h-4 w-4 text-yellow-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Deck Installation - Brown Home</p>
+                        <p className="text-sm text-gray-600">Quoted • March 20</p>
+                      </div>
+                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No quote requests yet</p>
-                    <p className="text-sm text-gray-500 mt-1">New requests will appear here</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+                </CardContent>
+              </Card>
 
-          {/* Notification Test Panel */}
-          <div className="lg:col-span-1">
-            <SMSNotificationPanel />
-          </div>
-        </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common contractor tools</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <FileText className="h-6 w-6" />
+                      <span>Create Quote</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Calendar className="h-6 w-6" />
+                      <span>Schedule</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Users className="h-6 w-6" />
+                      <span>View Leads</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Award className="h-6 w-6" />
+                      <span>Get Certified</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Your latest business activity</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm">New lead from kitchen renovation project</p>
+                      <p className="text-xs text-gray-600">2 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm">Payment received from Johnson Family project</p>
+                      <p className="text-xs text-gray-600">1 day ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm">New review posted: 5 stars</p>
+                      <p className="text-xs text-gray-600">2 days ago</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="projects">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Projects</CardTitle>
+                <CardDescription>Manage your ongoing and completed projects</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No active projects</h3>
+                  <p className="text-gray-600 mb-4">Start tracking your contractor projects</p>
+                  <Button>Add New Project</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="leads">
+            <Card>
+              <CardHeader>
+                <CardTitle>Lead Management</CardTitle>
+                <CardDescription>Track and respond to potential clients</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No leads yet</h3>
+                  <p className="text-gray-600 mb-4">New leads will appear here</p>
+                  <Button>Update Profile to Get Leads</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="clients">
+            <Card>
+              <CardHeader>
+                <CardTitle>Client Management</CardTitle>
+                <CardDescription>Manage your customer relationships</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No clients yet</h3>
+                  <p className="text-gray-600">Your client list will appear here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <Card>
+              <CardHeader>
+                <CardTitle>Reviews & Ratings</CardTitle>
+                <CardDescription>Manage your customer feedback</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+                  <p className="text-gray-600 mb-4">Complete projects to receive reviews</p>
+                  <Button>Request Review</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="profile">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Business Information</CardTitle>
+                  <CardDescription>Update your business profile</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Business Name</label>
+                      <p className="text-gray-900">{contractor?.businessName || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Contact Email</label>
+                      <p className="text-gray-900">{session?.user?.email || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Phone</label>
+                      <p className="text-gray-900">{contractor?.phone || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">License Number</label>
+                      <p className="text-gray-900">{contractor?.licenseNumber || 'Not provided'}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium">Service Areas</label>
+                      <p className="text-gray-900">
+                        {contractor?.serviceAreas?.length
+                          ? contractor.serviceAreas.join(', ')
+                          : 'Not specified'
+                        }
+                      </p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium">Specializations</label>
+                      <p className="text-gray-900">
+                        {contractor?.specializations?.length
+                          ? contractor.specializations.join(', ')
+                          : 'Not specified'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="outline">Edit Profile</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Certifications & Insurance</CardTitle>
+                  <CardDescription>Professional credentials and coverage</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Insurance Status</label>
+                      <div className="flex items-center space-x-2 mt-1">
+                        {contractor?.insuranceVerified ? (
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            Verified
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            Pending
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">License Status</label>
+                      <div className="flex items-center space-x-2 mt-1">
+                        {contractor?.licenseVerified ? (
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            Verified
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            Pending
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Button variant="outline">Update Credentials</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <div className="space-y-6">
+              <TwoFactorAuthSettings />
+
+              <PasswordChange />
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Security</CardTitle>
+                  <CardDescription>Additional security settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Business Verification</p>
+                      <p className="text-sm text-gray-600">Verify your business credentials</p>
+                    </div>
+                    <Button variant="outline" size="sm">Verify</Button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Login History</p>
+                      <p className="text-sm text-gray-600">View your recent login activity</p>
+                    </div>
+                    <Button variant="outline" size="sm">View History</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

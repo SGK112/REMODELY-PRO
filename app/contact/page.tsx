@@ -155,7 +155,11 @@ export default function ContactPage() {
                   <Phone className="h-6 w-6 text-blue-600 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <p className="text-gray-600">
+                      <a href="tel:+16028337194" className="hover:text-blue-600 transition-colors">
+                        +1 (602) 833-7194
+                      </a>
+                    </p>
                     <p className="text-sm text-gray-500">Mon-Fri, 9am-6pm EST</p>
                   </div>
                 </div>

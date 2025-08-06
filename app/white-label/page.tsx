@@ -262,13 +262,13 @@ export default function WhiteLabelPage() {
           
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <a
-              href="tel:+1-555-REMODEL"
+              href="tel:+16028337194"
               className="bg-white text-blue-900 p-6 rounded-2xl hover:bg-blue-50 transition-colors flex items-center space-x-4"
             >
               <Phone className="w-8 h-8" />
               <div className="text-left">
                 <p className="font-semibold">Call Us</p>
-                <p className="text-blue-700">+1 (555) REMODEL</p>
+                <p className="text-blue-700">+1 (602) 833-7194</p>
               </div>
             </a>
             

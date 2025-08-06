@@ -1,105 +1,107 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Menu, X, User, LogOut, Settings, ChevronDown, Home, Wrench, ShoppingBag, CreditCard, Palette, Brain, Mic, MessageSquare, Phone, Search, Zap, Users, Star } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Menu, X, User, LogOut, Settings, ChevronDown, Home, Wrench, ShoppingBag, CreditCard, Palette, Brain, Mic, MessageSquare, Phone, Search, Zap, Users, Star, Play } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 
 export function Header() {
+    // Navigation state
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-    const [isAiDropdownOpen, setIsAiDropdownOpen] = useState(false)
+
     const { data: session, status } = useSession()
+
+    // Refs for outside click detection
+    const mobileMenuRef = useRef<HTMLDivElement>(null)
+    const userDropdownRef = useRef<HTMLDivElement>(null)
 
     const isAuthenticated = status === 'authenticated'
     const userType = session?.user?.userType
 
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false)
+            }
+            if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
+    // Handle navigation link clicks
+    const handleLinkClick = () => {
+        console.log('Navigation link clicked - closing dropdowns')
+        setIsMenuOpen(false)
+        setIsDropdownOpen(false)
+    }
+
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/80 shadow-sm">
-            <div className="container max-w-7xl mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
-                {/* Logo */}
-                <div className="mr-8 flex">
-                    <Link href="/" className="flex items-center space-x-3 group">
-                        {/* REMODELY 2.0 Logo */}
-                        <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 p-2 shadow-lg group-hover:shadow-xl transition-all duration-200">
-                            <div className="flex h-full w-full items-center justify-center rounded-lg bg-slate-800/90 text-sm font-bold text-white">
-                                R
+        <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm">
+            <div className="container max-w-7xl mx-auto flex h-14 sm:h-16 items-center px-3 sm:px-6 lg:px-8">
+                {/* Mobile-Optimized Logo */}
+                <div className="mr-4 sm:mr-8 flex">
+                    <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group">
+                        {/* REMODELY Logo */}
+                        <div className="relative">
+                            <div className="h-10 sm:h-14 w-auto flex items-center justify-center">
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                    {/* AI Brain Icon - Mobile Optimized */}
+                                    <div className="relative">
+                                        {/* Glow effect background */}
+                                        <div className="absolute inset-0 w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg sm:rounded-xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        {/* Main icon */}
+                                        <div className="relative w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+                                            <Brain className="h-5 sm:h-7 w-5 sm:w-7 text-white group-hover:animate-pulse" />
+                                        </div>
+                                    </div>
+
+                                    {/* Text with enhanced styling - Mobile Responsive */}
+                                    <div className="flex flex-col">
+                                        <div className="flex items-baseline space-x-1">
+                                            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-purple-700 transition-all duration-300">REMODELY</span>
+                                            <span className="text-sm sm:text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent group-hover:from-cyan-600 group-hover:to-blue-600 transition-all duration-300">.ai</span>
+                                        </div>
+                                        <span className="text-xs text-gray-500 -mt-1 group-hover:text-gray-600 transition-colors duration-300 hidden sm:block">AI Brains for your House</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="hidden sm:block">
-                            <div className="font-bold text-xl text-white">
-                                REMODELY<span className="text-blue-400">.AI</span>
-                            </div>
-                            <div className="text-xs text-blue-300 -mt-1">Marketplace</div>
                         </div>
                     </Link>
                 </div>
 
-                {/* Desktop Navigation */}
+                {/* Desktop Navigation - Simplified for mobile focus */}
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
                     <nav className="hidden lg:flex items-center space-x-1">
                         <Link
                             href="/"
-                            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-blue-300 hover:bg-blue-900/50 transition-all duration-200"
+                            className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                         >
                             <Home className="h-4 w-4" />
-                            <span>Home</span>
+                            <span className="hidden xl:inline">Home</span>
                         </Link>
 
                         <Link
-                            href="/contractors"
-                            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-blue-300 hover:bg-blue-900/50 transition-all duration-200"
+                            href="/apps"
+                            className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                         >
-                            <Search className="h-4 w-4" />
-                            <span>Find Contractors</span>
-                        </Link>
-
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsAiDropdownOpen(!isAiDropdownOpen)}
-                                className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-blue-300 hover:bg-blue-900/50 transition-all duration-200"
-                            >
-                                <Brain className="h-4 w-4" />
-                                <span>AI Tools</span>
-                                <ChevronDown className="h-3 w-3" />
-                            </button>
-
-                            {isAiDropdownOpen && (
-                                <div className="absolute top-full mt-1 w-56 rounded-xl border border-gray-600 bg-slate-800 shadow-lg py-2 z-50">
-                                    <Link href="/ai-chat" className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300">
-                                        <MessageSquare className="h-4 w-4" />
-                                        <span>AI Assistant Chat</span>
-                                    </Link>
-                                    <Link href="/marketplace/dashboard" className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300">
-                                        <ShoppingBag className="h-4 w-4" />
-                                        <span>Smart Tools</span>
-                                    </Link>
-                                    <Link href="/ai-transform" className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300">
-                                        <Palette className="h-4 w-4" />
-                                        <span>AI Transform</span>
-                                    </Link>
-                                    <Link href="/voice-consultation" className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300">
-                                        <Mic className="h-4 w-4" />
-                                        <span>Voice SARAH</span>
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-
-                        <Link
-                            href="/plans"
-                            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-blue-300 hover:bg-blue-900/50 transition-all duration-200"
-                        >
-                            <Star className="h-4 w-4" />
-                            <span>Plans</span>
+                            <Brain className="h-4 w-4" />
+                            <span className="hidden xl:inline">AI Apps</span>
                         </Link>
 
                         <Link
-                            href="/contact"
-                            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                            href="/consultation"
+                            className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                         >
                             <Phone className="h-4 w-4" />
-                            <span>Contact</span>
+                            <span className="hidden xl:inline">Talk to AI</span>
                         </Link>
                     </nav>
 
@@ -107,49 +109,49 @@ export function Header() {
                     <div className="flex items-center space-x-3">
                         {/* Authentication */}
                         {isAuthenticated ? (
-                            <div className="relative">
+                            <div className="relative" ref={userDropdownRef}>
                                 <button
-                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="flex items-center space-x-2 rounded-lg p-2 text-sm hover:bg-blue-900/50 transition-all duration-200"
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="flex items-center space-x-2 rounded-lg p-2 text-sm hover:bg-blue-50 transition-all duration-200"
                                 >
                                     <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow-md">
                                         {session?.user?.name?.charAt(0) || 'U'}
                                     </div>
-                                    <span className="hidden md:inline-block font-medium text-white">
+                                    <span className="hidden md:inline-block font-medium text-gray-700">
                                         {session?.user?.name || 'User'}
                                     </span>
-                                    <ChevronDown className="h-3 w-3 text-gray-300" />
+                                    <ChevronDown className="h-3 w-3 text-gray-500" />
                                 </button>
 
-                                {isMenuOpen && (
-                                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gray-600 bg-slate-800 shadow-lg py-2 z-50">
-                                        <div className="px-4 py-2 border-b border-gray-600">
-                                            <p className="text-sm font-medium text-white">{session?.user?.name}</p>
-                                            <p className="text-xs text-gray-300">{session?.user?.email}</p>
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-56 rounded-xl border bg-white shadow-lg py-2 z-50">
+                                        <div className="px-4 py-2 border-b">
+                                            <p className="text-sm font-medium text-gray-900">{session?.user?.name}</p>
+                                            <p className="text-xs text-gray-500">{session?.user?.email}</p>
                                         </div>
                                         <Link
                                             href="/dashboard"
-                                            className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                            onClick={() => setIsMenuOpen(false)}
+                                            className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                                            onClick={handleLinkClick}
                                         >
                                             <User className="h-4 w-4" />
                                             <span>Dashboard</span>
                                         </Link>
                                         <Link
                                             href="/dashboard/settings"
-                                            className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                            onClick={() => setIsMenuOpen(false)}
+                                            className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                                            onClick={handleLinkClick}
                                         >
                                             <Settings className="h-4 w-4" />
                                             <span>Settings</span>
                                         </Link>
-                                        <div className="my-1 h-px bg-gray-600" />
+                                        <div className="my-1 h-px bg-gray-200" />
                                         <button
                                             onClick={() => {
-                                                setIsMenuOpen(false)
+                                                handleLinkClick()
                                                 signOut()
                                             }}
-                                            className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-red-400 hover:bg-red-900/50"
+                                            className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                         >
                                             <LogOut className="h-4 w-4" />
                                             <span>Sign out</span>
@@ -161,7 +163,7 @@ export function Header() {
                             <div className="flex items-center space-x-3">
                                 <Link
                                     href="/auth/signin"
-                                    className="text-sm font-medium text-white hover:text-blue-300 transition-colors"
+                                    className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                                 >
                                     Sign In
                                 </Link>
@@ -176,110 +178,74 @@ export function Header() {
 
                         {/* Mobile menu button */}
                         <button
-                            className="inline-flex items-center justify-center rounded-lg p-2 lg:hidden hover:bg-blue-900/50 transition-colors"
+                            className="inline-flex items-center justify-center rounded-lg p-2 lg:hidden hover:bg-blue-50 transition-colors"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
                             {isMenuOpen ? (
-                                <X className="h-6 w-6 text-white" />
+                                <X className="h-6 w-6 text-gray-700" />
                             ) : (
-                                <Menu className="h-6 w-6 text-white" />
+                                <Menu className="h-6 w-6 text-gray-700" />
                             )}
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Navigation */}
+            {/* Mobile Navigation - Optimized */}
             {isMenuOpen && (
-                <div className="border-t border-gray-600 bg-slate-800 lg:hidden">
+                <div className="border-t bg-white lg:hidden" ref={mobileMenuRef}>
                     <nav className="container space-y-1 p-4">
                         <Link
                             href="/"
-                            className="flex items-center space-x-2 rounded-lg px-3 py-3 text-base font-medium text-white hover:bg-blue-900/50 hover:text-blue-300"
-                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center space-x-3 rounded-lg px-4 py-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 active:bg-blue-100"
+                            onClick={handleLinkClick}
                         >
-                            <Home className="h-5 w-5" />
+                            <Home className="h-6 w-6" />
                             <span>Home</span>
                         </Link>
-                        <Link
-                            href="/contractors"
-                            className="flex items-center space-x-2 rounded-lg px-3 py-3 text-base font-medium text-white hover:bg-blue-900/50 hover:text-blue-300"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <Search className="h-5 w-5" />
-                            <span>Find Contractors</span>
-                        </Link>
-
-                        <div className="py-2">
-                            <p className="px-3 text-xs font-semibold text-gray-300 uppercase tracking-wide">AI Tools</p>
-                            <div className="mt-2 space-y-1">
-                                <Link
-                                    href="/ai-chat"
-                                    className="flex items-center space-x-2 rounded-lg px-6 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <MessageSquare className="h-4 w-4" />
-                                    <span>AI Assistant Chat</span>
-                                </Link>
-                                <Link
-                                    href="/marketplace/dashboard"
-                                    className="flex items-center space-x-2 rounded-lg px-6 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <ShoppingBag className="h-4 w-4" />
-                                    <span>Smart Tools</span>
-                                </Link>
-                                <Link
-                                    href="/ai-transform"
-                                    className="flex items-center space-x-2 rounded-lg px-6 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <Palette className="h-4 w-4" />
-                                    <span>AI Transform</span>
-                                </Link>
-                                <Link
-                                    href="/voice-consultation"
-                                    className="flex items-center space-x-2 rounded-lg px-6 py-2 text-sm text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <Mic className="h-4 w-4" />
-                                    <span>Voice SARAH</span>
-                                </Link>
-                            </div>
-                        </div>
 
                         <Link
-                            href="/plans"
-                            className="flex items-center space-x-2 rounded-lg px-3 py-3 text-base font-medium text-white hover:bg-blue-900/50 hover:text-blue-300"
-                            onClick={() => setIsMenuOpen(false)}
+                            href="/apps"
+                            className="flex items-center space-x-3 rounded-lg px-4 py-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 active:bg-blue-100"
+                            onClick={handleLinkClick}
                         >
-                            <Star className="h-5 w-5" />
-                            <span>Plans</span>
+                            <Brain className="h-6 w-6" />
+                            <span>AI Apps</span>
                         </Link>
+
                         <Link
-                            href="/contact"
-                            className="flex items-center space-x-2 rounded-lg px-3 py-3 text-base font-medium text-white hover:bg-blue-900/50 hover:text-blue-300"
-                            onClick={() => setIsMenuOpen(false)}
+                            href="/consultation"
+                            className="flex items-center space-x-3 rounded-lg px-4 py-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 active:bg-blue-100"
+                            onClick={handleLinkClick}
                         >
-                            <Phone className="h-5 w-5" />
-                            <span>Contact</span>
+                            <Phone className="h-6 w-6" />
+                            <span>Talk to Sarah AI</span>
+                        </Link>
+
+                        <Link
+                            href="/demo"
+                            className="flex items-center space-x-3 rounded-lg px-4 py-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 active:bg-blue-100"
+                            onClick={handleLinkClick}
+                        >
+                            <Play className="h-6 w-6" />
+                            <span>Watch Demo</span>
                         </Link>
 
                         {!isAuthenticated && (
-                            <div className="space-y-3 pt-4 border-t border-gray-600">
+                            <div className="space-y-3 pt-6 border-t">
                                 <Link
                                     href="/auth/signin"
-                                    className="block text-center rounded-lg px-3 py-3 text-base font-medium text-white hover:bg-blue-900/50 hover:text-blue-300"
-                                    onClick={() => setIsMenuOpen(false)}
+                                    className="block text-center rounded-lg px-4 py-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 border-2 border-gray-200"
+                                    onClick={handleLinkClick}
                                 >
                                     Sign In
                                 </Link>
                                 <Link
                                     href="/auth/signup"
-                                    className="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg text-base font-medium mx-3 shadow-md"
-                                    onClick={() => setIsMenuOpen(false)}
+                                    className="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-4 rounded-lg text-lg font-medium mx-3 shadow-md active:scale-95 transition-transform"
+                                    onClick={handleLinkClick}
                                 >
-                                    Get Started
+                                    Get Started Free
                                 </Link>
                             </div>
                         )}

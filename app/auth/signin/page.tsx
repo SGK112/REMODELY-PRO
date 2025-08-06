@@ -10,7 +10,14 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Home, Hammer, Loader2 } from "lucide-react"
+import { Home, Hammer, Loader2, Shield, Eye, EyeOff } from "lucide-react"
+
+interface SignInFormData {
+  email: string
+  password: string
+  twoFactorCode: string
+  backupCode: string
+}
 
 function SignInContent() {
   const router = useRouter()
@@ -18,6 +25,15 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [activeTab, setActiveTab] = useState("customer")
+  const [requires2FA, setRequires2FA] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [use2FABackup, setUse2FABackup] = useState(false)
+  const [formData, setFormData] = useState<SignInFormData>({
+    email: "",
+    password: "",
+    twoFactorCode: "",
+    backupCode: ""
+  })
 
   const callbackUrl = searchParams?.get("callbackUrl") || "/"
 
@@ -29,211 +45,268 @@ function SignInContent() {
     }
   }, [searchParams])
 
+  const handleInputChange = (field: keyof SignInFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, userType: string) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    if (!formData.email || !formData.password) {
+      setError("Please fill in all required fields")
+      setIsLoading(false)
+      return
+    }
 
-    if (!email || !password) {
-      setError("Please fill in all fields")
+    // If 2FA is required but no code provided
+    if (requires2FA && !formData.twoFactorCode && !formData.backupCode) {
+      setError("Please enter your 2FA code or backup code")
       setIsLoading(false)
       return
     }
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
+      const credentials: any = {
+        email: formData.email,
+        password: formData.password,
         userType,
-        redirect: false,
-      })
+        redirect: false
+      }
+
+      // Add 2FA credentials if available
+      if (formData.twoFactorCode) {
+        credentials.twoFactorCode = formData.twoFactorCode
+      }
+      if (formData.backupCode) {
+        credentials.backupCode = formData.backupCode
+      }
+
+      const result = await signIn("credentials", credentials)
 
       if (result?.error) {
-        setError(result.error)
-      } else if (result?.ok) {
-        // Get updated session
-        const session = await getSession()
-
-        // Redirect based on user type
-        if (session?.user?.userType === "CONTRACTOR") {
-          router.push("/dashboard/contractor")
-        } else if (session?.user?.userType === "CUSTOMER") {
-          router.push("/dashboard/customer")
+        if (result.error === "2FA_REQUIRED") {
+          setRequires2FA(true)
+          setError("Two-factor authentication required")
         } else {
-          router.push(callbackUrl)
+          setError(result.error)
         }
-        router.refresh()
+      } else {
+        // Check if sign in was successful
+        const session = await getSession()
+        if (session) {
+          // Redirect based on user type
+          const redirectUrl = userType === "contractor" 
+            ? "/dashboard/contractor"
+            : userType === "admin"
+            ? "/dashboard/admin" 
+            : "/dashboard/customer"
+          
+          router.push(callbackUrl !== "/" ? callbackUrl : redirectUrl)
+        } else {
+          setError("Sign in failed. Please try again.")
+        }
       }
     } catch (error) {
       console.error("Sign in error:", error)
-      setError("An unexpected error occurred")
+      setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">
-            {activeTab === "customer"
-              ? "Sign in to get quotes from verified contractors"
-              : "Sign in to manage your contractor profile"
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="customer" className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
-                Homeowner
-              </TabsTrigger>
-              <TabsTrigger value="contractor" className="flex items-center gap-2">
-                <Hammer className="h-4 w-4" />
-                Contractor
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="customer" className="space-y-4">
-              <div className="text-center py-2">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Get quotes for your stone & surface projects
-                </p>
-              </div>
-              <form onSubmit={(e) => handleSubmit(e, "CUSTOMER")} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="customer-email">Email</Label>
-                  <Input
-                    id="customer-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                    disabled={isLoading}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="customer-password">Password</Label>
-                  <Input
-                    id="customer-password"
-                    name="password"
-                    type="password"
-                    required
-                    placeholder="Enter your password"
-                    disabled={isLoading}
-                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  />
-                </div>
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign In & Get Quotes'
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="contractor" className="space-y-4">
-              <div className="text-center py-2">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Access your contractor dashboard
-                </p>
-              </div>
-              <form onSubmit={(e) => handleSubmit(e, "CONTRACTOR")} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contractor-email">Email</Label>
-                  <Input
-                    id="contractor-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                    disabled={isLoading}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contractor-password">Password</Label>
-                  <Input
-                    id="contractor-password"
-                    name="password"
-                    type="password"
-                    required
-                    placeholder="Enter your password"
-                    disabled={isLoading}
-                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  />
-                </div>
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
-                  {isLoading ? "Signing In..." : "Access Dashboard"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{" "}
-              <Link
-                href={`/auth/signup?tab=${activeTab}`}
-                className="text-blue-600 hover:underline"
+  const SignInForm = ({ userType, icon: Icon, title }: { 
+    userType: string
+    icon: any
+    title: string 
+  }) => (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="space-y-1">
+        <div className="flex items-center space-x-2">
+          <Icon className="h-5 w-5" />
+          <CardTitle className="text-2xl">{title} Sign In</CardTitle>
+        </div>
+        <CardDescription>
+          Enter your email and password to access your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={(e) => handleSubmit(e, userType)} className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor={`email-${userType}`}>Email</Label>
+            <Input
+              id={`email-${userType}`}
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              placeholder="Enter your email"
+              required
+              disabled={requires2FA}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor={`password-${userType}`}>Password</Label>
+            <div className="relative">
+              <Input
+                id={`password-${userType}`}
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                placeholder="Enter your password"
+                required
+                disabled={requires2FA}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={requires2FA}
               >
-                Sign up here
-              </Link>
-            </p>
-            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+
+          {requires2FA && (
+            <div className="space-y-4 p-4 bg-blue-50 rounded-lg border">
+              <div className="flex items-center space-x-2">
+                <Shield className="h-4 w-4 text-blue-600" />
+                <Label className="text-blue-800 font-medium">Two-Factor Authentication</Label>
+              </div>
+              
+              {!use2FABackup ? (
+                <div className="space-y-2">
+                  <Label htmlFor={`2fa-${userType}`}>Authentication Code</Label>
+                  <Input
+                    id={`2fa-${userType}`}
+                    type="text"
+                    value={formData.twoFactorCode}
+                    onChange={(e) => handleInputChange("twoFactorCode", e.target.value)}
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                    className="text-center text-lg font-mono"
+                  />
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    onClick={() => setUse2FABackup(true)}
+                    className="text-xs"
+                  >
+                    Use backup code instead
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor={`backup-${userType}`}>Backup Code</Label>
+                  <Input
+                    id={`backup-${userType}`}
+                    type="text"
+                    value={formData.backupCode}
+                    onChange={(e) => handleInputChange("backupCode", e.target.value)}
+                    placeholder="Enter backup code"
+                    className="text-center font-mono"
+                  />
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    onClick={() => setUse2FABackup(false)}
+                    className="text-xs"
+                  >
+                    Use authenticator code instead
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign In
+          </Button>
+          
+          <div className="text-center space-y-2">
+            <Link 
+              href="/auth/forgot-password" 
+              className="text-sm text-blue-600 hover:underline"
+            >
               Forgot your password?
             </Link>
-          </div>
-
-          {/* Quick Browse Option */}
-          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-            <p className="text-xs text-gray-500 mb-2">Or continue without signing in</p>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/contractors">
-                Browse Contractors
+            <div className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link 
+                href={`/auth/signup?tab=${userType}`} 
+                className="text-blue-600 hover:underline"
+              >
+                Sign up
               </Link>
-            </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </form>
+      </CardContent>
+    </Card>
+  )
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-2 text-2xl font-bold text-blue-600 hover:text-blue-700">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-sm font-bold">R</span>
+            </div>
+            <span>REMODELY.ai</span>
+          </Link>
+          <p className="text-gray-600 mt-2">AI Brains for your House</p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="customer" className="flex items-center space-x-2">
+              <Home className="h-4 w-4" />
+              <span>Homeowner</span>
+            </TabsTrigger>
+            <TabsTrigger value="contractor" className="flex items-center space-x-2">
+              <Hammer className="h-4 w-4" />
+              <span>Contractor</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="customer">
+            <SignInForm 
+              userType="customer" 
+              icon={Home} 
+              title="Homeowner" 
+            />
+          </TabsContent>
+          
+          <TabsContent value="contractor">
+            <SignInForm 
+              userType="contractor" 
+              icon={Hammer} 
+              title="Contractor" 
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   )
 }
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </CardContent>
-        </Card>
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
       <SignInContent />
     </Suspense>
   )

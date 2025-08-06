@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import AIToolUsageTracker from '@/components/ai/AIToolUsageTracker';
 import {
   ArrowLeft,
   Search,
@@ -37,9 +38,10 @@ const aiTools = [
     pricing: 'Free - $49/month',
     rating: 4.9,
     users: '2.3K',
-    href: '/material-detection',
+    href: '/ai-transform',
     tags: ['Popular', 'AI Vision'],
-    features: ['Photo identification', 'Material database', 'Cost estimation', 'Supplier network']
+    features: ['Photo identification', 'Material database', 'Cost estimation', 'Supplier network'],
+    userType: 'Both' as const
   },
   {
     id: 'voice-translation',
@@ -50,9 +52,10 @@ const aiTools = [
     pricing: 'Free - $29/month',
     rating: 4.8,
     users: '1.8K',
-    href: '/voice-translation',
-    tags: ['Trending', 'Voice AI'],
-    features: ['12+ languages', 'Construction terms', 'Real-time translation', 'Voice synthesis']
+    href: '/voice-translator',
+    tags: ['New', 'Voice AI'],
+    features: ['12+ languages', 'Real-time translation', 'Crew communication', 'Mobile app'],
+    userType: 'Contractors' as const
   },
   {
     id: 'cabinet-layout',
@@ -63,7 +66,7 @@ const aiTools = [
     pricing: '$19 - $99/month',
     rating: 4.7,
     users: '950',
-    href: '/cabinet-design',
+    href: '/ai-transform',
     tags: ['3D Design'],
     features: ['Layout design', 'Hardware selection', 'Cut lists', 'Cost estimation']
   },
@@ -141,16 +144,18 @@ const aiTools = [
     pricing: '$99 - $499/month',
     rating: 4.9,
     users: '2.1K',
-    href: '/contact',
+    href: '/voice-consultation',
     tags: ['24/7', 'Popular'],
     features: ['24/7 availability', 'Natural conversation', 'Appointment booking', 'Lead qualification']
   }
 ];
 
 const categories = ['All', 'Kitchen & Bath', 'Communication', 'Handyman', 'Framing', 'Roofing', 'Concrete', 'HVAC', 'Project Management'];
+const userTypes = ['All', 'Homeowners', 'Contractors', 'Both'];
 
 export default function AIToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedUserType, setSelectedUserType] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('popular');
@@ -158,6 +163,7 @@ export default function AIToolsPage() {
   const filteredTools = aiTools
     .filter(tool =>
       (selectedCategory === 'All' || tool.category === selectedCategory) &&
+      (selectedUserType === 'All' || tool.userType === selectedUserType || tool.userType === 'Both') &&
       (searchTerm === '' ||
         tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -198,6 +204,11 @@ export default function AIToolsPage() {
       </header>
 
       <div className="container mx-auto px-6 py-12">
+        {/* Usage Tracker */}
+        <div className="mb-8">
+          <AIToolUsageTracker className="max-w-md mx-auto" />
+        </div>
+
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">
@@ -265,6 +276,22 @@ export default function AIToolsPage() {
               </select>
             </div>
 
+            {/* User Type Filter */}
+            <div className="flex items-center space-x-4">
+              <Users className="h-5 w-5 text-white/70" />
+              <select
+                value={selectedUserType}
+                onChange={(e) => setSelectedUserType(e.target.value)}
+                className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+              >
+                {userTypes.map(userType => (
+                  <option key={userType} value={userType} className="bg-slate-800">
+                    {userType}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Sort */}
             <div className="flex items-center space-x-4">
               <span className="text-white/70 text-sm">Sort by:</span>
@@ -310,105 +337,103 @@ export default function AIToolsPage() {
         {viewMode === 'grid' ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredTools.map((tool) => (
-              <div key={tool.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
-                    <tool.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {tool.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
+              <Link key={tool.id} href={tool.href} className="block">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group cursor-pointer">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                      <tool.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {tool.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
                             tag === 'Trending' ? 'bg-orange-500/20 text-orange-400' :
                               'bg-blue-500/20 text-blue-400'
-                          }`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-2">{tool.name}</h3>
-                <p className="text-white/70 mb-4">{tool.description}</p>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-white font-medium">{tool.rating}</span>
-                      <span className="text-white/50">({tool.users} users)</span>
+                            }`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
-                    <span className="text-blue-400 font-semibold">{tool.pricing}</span>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {tool.features.slice(0, 3).map((feature, index) => (
-                      <span key={index} className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded">
-                        {feature}
-                      </span>
-                    ))}
-                    {tool.features.length > 3 && (
-                      <span className="text-xs text-blue-400">+{tool.features.length - 3} more</span>
-                    )}
+                  <h3 className="text-xl font-bold text-white mb-2">{tool.name}</h3>
+                  <p className="text-white/70 mb-4">{tool.description}</p>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-white font-medium">{tool.rating}</span>
+                        <span className="text-white/50">({tool.users} users)</span>
+                      </div>
+                      <span className="text-blue-400 font-semibold">{tool.pricing}</span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {tool.features.slice(0, 3).map((feature, index) => (
+                        <span key={index} className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded">
+                          {feature}
+                        </span>
+                      ))}
+                      {tool.features.length > 3 && (
+                        <span className="text-xs text-blue-400">+{tool.features.length - 3} more</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white text-center py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    Try Now
                   </div>
                 </div>
-
-                <Link
-                  href={tool.href}
-                  className="block w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white text-center py-3 rounded-lg font-semibold hover:shadow-lg transition-all group-hover:scale-105"
-                >
-                  Try Now
-                </Link>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
           <div className="space-y-4">
             {filteredTools.map((tool) => (
-              <div key={tool.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
-                      <tool.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-bold text-white">{tool.name}</h3>
-                        <div className="flex flex-wrap gap-1">
-                          {tool.tags.map((tag, index) => (
-                            <span
-                              key={index}
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
+              <Link key={tool.id} href={tool.href} className="block">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                        <tool.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-xl font-bold text-white">{tool.name}</h3>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.tags.map((tag, index) => (
+                              <span
+                                key={index}
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${tag === 'Popular' ? 'bg-green-500/20 text-green-400' :
                                   tag === 'Trending' ? 'bg-orange-500/20 text-orange-400' :
                                     'bg-blue-500/20 text-blue-400'
-                                }`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                                  }`}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                      <p className="text-white/70 mb-2">{tool.description}</p>
-                      <div className="flex items-center space-x-4 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-white">{tool.rating}</span>
+                        <p className="text-white/70 mb-2">{tool.description}</p>
+                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                            <span className="text-white">{tool.rating}</span>
+                          </div>
+                          <span className="text-white/50">{tool.users} users</span>
+                          <span className="text-blue-400 font-semibold">{tool.pricing}</span>
                         </div>
-                        <span className="text-white/50">{tool.users} users</span>
-                        <span className="text-blue-400 font-semibold">{tool.pricing}</span>
                       </div>
                     </div>
+                    <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                      Try Now
+                    </div>
                   </div>
-                  <Link
-                    href={tool.href}
-                    className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
-                  >
-                    Try Now
-                  </Link>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

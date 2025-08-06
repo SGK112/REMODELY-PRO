@@ -63,10 +63,10 @@ export function Navbar() {
                             Find Contractors
                         </Link>
                         <Link
-                            href="/marketplace"
+                            href="/ai-tools"
                             className="text-slate-300 hover:text-blue-400 hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-all rounded-lg border border-transparent hover:border-slate-600"
                         >
-                            Marketplace
+                            AI Tools
                         </Link>
 
                         {/* Solutions Dropdown - would need state management for full dropdown */}
@@ -145,12 +145,12 @@ export function Navbar() {
                         </Link>
 
                         <Link
-                            href="/marketplace"
+                            href="/ai-tools"
                             className="flex items-center px-4 py-3.5 text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-700 rounded-lg border border-transparent hover:border-slate-600 transition-all"
                             onClick={() => setIsOpen(false)}
                         >
                             <Users className="w-5 h-5 mr-3 text-blue-400" />
-                            Marketplace
+                            AI Tools
                         </Link>
 
                         <Link

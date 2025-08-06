@@ -9,6 +9,7 @@ declare module "next-auth" {
       userType: UserType
       contractor?: any
       customer?: any
+      twoFactorEnabled?: boolean
     } & DefaultSession["user"]
   }
 
@@ -16,6 +17,7 @@ declare module "next-auth" {
     userType: UserType
     contractor?: any
     customer?: any
+    twoFactorEnabled?: boolean
   }
 }
 
@@ -24,5 +26,6 @@ declare module "next-auth/jwt" {
     userType: UserType
     contractor?: any
     customer?: any
+    twoFactorEnabled?: boolean
   }
 }
