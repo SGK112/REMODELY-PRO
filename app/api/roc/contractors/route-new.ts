@@ -22,11 +22,11 @@ export async function GET() {
       })
     }
 
-    // For build time, return empty data to prevent database calls
+    // For build time, return empty data
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL.startsWith('postgresql')) {
       return NextResponse.json({ 
         contractors: [], 
-        message: 'Build mode - no database access',
+        message: 'Build mode - no data',
         stats: {
           totalCount: 0,
           withContactCount: 0,
@@ -72,69 +72,58 @@ export async function GET() {
 
     const withContactCount = await prisma.contractor.count({
       where: {
-        AND: [
-          { isROCVerified: true },
-          { phone: { not: null } }
+        isROCVerified: true,
+        OR: [
+          { phone: { not: null } },
+          { website: { not: null } }
         ]
       }
     })
 
-    // Get license class distribution
-    const licenseClasses = await prisma.contractor.groupBy({
-      by: ['licenseClass'],
-      where: { isROCVerified: true },
-      _count: {
-        licenseClass: true
+    const licensedCount = await prisma.contractor.count({
+      where: {
+        isROCVerified: true,
+        licenseStatus: 'ACTIVE'
       }
     })
 
-    // Get city distribution
-    const cities = await prisma.contractor.groupBy({
-      by: ['city'],
-      where: { isROCVerified: true },
-      _count: {
-        city: true
-      },
-      orderBy: {
-        _count: {
-          city: 'desc'
-        }
-      },
-      take: 50 // Top 50 cities
+    const activeCount = await prisma.contractor.count({
+      where: {
+        isROCVerified: true,
+        licenseStatus: 'ACTIVE',
+        OR: [
+          { phone: { not: null } },
+          { website: { not: null } }
+        ]
+      }
     })
 
-    const byClass = licenseClasses.reduce((acc, item) => {
-      if (item.licenseClass) {
-        acc[item.licenseClass] = item._count.licenseClass
-      }
-      return acc
-    }, {} as Record<string, number>)
-
-    const byCities = cities.reduce((acc, item) => {
-      if (item.city) {
-        acc[item.city] = item._count.city
-      }
-      return acc
-    }, {} as Record<string, number>)
-
-    // Parse specialties JSON strings
+    // Process specialties and group contractors
     const processedContractors = contractors.map(contractor => ({
       ...contractor,
-      specialties: contractor.specialties ? JSON.parse(contractor.specialties) : []
+      specialties: typeof contractor.specialties === 'string' 
+        ? JSON.parse(contractor.specialties) 
+        : contractor.specialties || []
     }))
 
-    const stats = {
-      total: totalCount,
-      withContact: withContactCount,
-      byClass,
-      byCities
-    }
-
-    return NextResponse.json({
+    const response = {
       success: true,
       contractors: processedContractors,
-      stats
-    })
+      stats: {
+        totalCount,
+        withContactCount,
+        licensedCount,
+        activeCount
+      },
+      pagination: {
+        page: 1,
+        limit: 1000,
+        total: totalCount
+      }
+    }
+
+    return NextResponse.json(response)
+
   } catch (error) {
     console.error('Error fetching ROC contractors:', error)
     return NextResponse.json(
