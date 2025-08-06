@@ -45,7 +45,7 @@ export default function CustomerDashboard() {
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                            {session?.user?.twoFactorEnabled && (
+                            {(session?.user as any)?.twoFactorEnabled && (
                                 <Badge variant="secondary" className="bg-green-100 text-green-800">
                                     <Shield className="h-3 w-3 mr-1" />
                                     2FA Enabled
