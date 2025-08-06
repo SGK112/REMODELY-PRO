@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
         token.userType = user.userType
         token.contractor = user.contractor
         token.customer = user.customer
-        token.twoFactorEnabled = user.twoFactorEnabled
+        token.twoFactorEnabled = (user as any).twoFactorEnabled
       }
 
       if (trigger === "update" && session) {
