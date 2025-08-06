@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Bot, User, Sparkles, Home, Wrench, Palette, Calculator, Image, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
+import AIToolUsageTracker from '@/components/ai/AIToolUsageTracker'
 
 interface Message {
     id: string
@@ -77,25 +78,41 @@ export default function AIChat() {
             {/* Header */}
             <div className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
                 <div className="max-w-4xl mx-auto px-4 py-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                            <Bot className="w-6 h-6 text-white" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <Link href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
+                                <Home className="w-5 h-5" />
+                            </Link>
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                                <Bot className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-900">REMODELY AI Chat</h1>
+                                <p className="text-sm text-gray-500">Your Smart Renovation Assistant</p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900">REMODELY AI</h1>
-                            <p className="text-sm text-gray-500">Your Smart Renovation Assistant</p>
-                        </div>
-                        <div className="ml-auto">
+                        <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2 text-sm text-green-600">
                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                                 <span>Online</span>
                             </div>
+                            <Link
+                                href="/ai-tools"
+                                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                            >
+                                All AI Tools →
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-80px)]">
+            <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-120px)]">
+                {/* Usage Tracker */}
+                <div className="p-4 border-b bg-white/50">
+                    <AIToolUsageTracker compact={true} />
+                </div>
+
                 {/* Quick Actions */}
                 <div className="p-4 border-b bg-white/50">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -121,8 +138,8 @@ export default function AIChat() {
                                 }`}
                         >
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.role === 'user'
-                                    ? 'bg-blue-600'
-                                    : 'bg-gradient-to-br from-purple-600 to-blue-600'
+                                ? 'bg-blue-600'
+                                : 'bg-gradient-to-br from-purple-600 to-blue-600'
                                 }`}>
                                 {message.role === 'user' ? (
                                     <User className="w-4 h-4 text-white" />
@@ -133,8 +150,8 @@ export default function AIChat() {
                             <div className={`max-w-2xl ${message.role === 'user' ? 'ml-auto' : ''
                                 }`}>
                                 <div className={`rounded-2xl px-4 py-3 ${message.role === 'user'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white border border-gray-200 text-gray-900'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white border border-gray-200 text-gray-900'
                                     }`}>
                                     <p className="text-sm leading-relaxed">{message.content}</p>
                                 </div>

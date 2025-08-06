@@ -94,7 +94,11 @@ export function Footer() {
                                 <Phone size={18} />
                             </div>
                             <div>
-                                <div className="font-semibold">1-800-REMODEL</div>
+                                <div className="font-semibold">
+                                    <a href="tel:+16028337194" className="hover:text-blue-400 transition-colors">
+                                        +1 (602) 833-7194
+                                    </a>
+                                </div>
                                 <div className="text-sm text-gray-400">24/7 Support</div>
                             </div>
                         </div>

@@ -52,8 +52,14 @@ model User {
   resetToken    String?
   resetTokenExpiry DateTime?
   
+  // 2FA fields
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+  backupCodes      String? // JSON array of backup codes
+  
   accounts      Account[]
   sessions      Session[]
+  twoFactorTokens TwoFactorToken[]
   
   // Role-specific profiles
   contractor    Contractor?
@@ -70,6 +76,15 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model TwoFactorToken {
+  id     String @id @default(cuid())
+  userId String
+  token  String @unique
+  expires DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Customer {

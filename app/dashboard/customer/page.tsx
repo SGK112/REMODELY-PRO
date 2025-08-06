@@ -1,326 +1,344 @@
-'use client'
+"use client"
 
-// Force dynamic rendering for authentication
-export const dynamic = 'force-dynamic'
-
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useState } from "react"
+import { useSession, signOut } from "next-auth/react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { TwoFactorAuthSettings } from "@/components/auth/TwoFactorAuthSettings"
+import { PasswordChange } from "@/components/auth/PasswordChange"
 import {
-  Search,
-  MessageCircle,
+  Home,
+  Settings,
+  Shield,
+  User,
+  CreditCard,
+  Phone,
+  MessageSquare,
   Calendar,
-  Star,
-  Plus,
   FileText,
-  Clock,
-  CheckCircle,
-  DollarSign,
-  User
-} from 'lucide-react'
-
-interface Quote {
-  id: string
-  contractor: {
-    id: string
-    businessName: string
-    user: {
-      name: string
-      image?: string
-    }
-  }
-  projectType: string
-  status: string
-  estimatedCost?: number
-  createdAt: string
-}
+  Star,
+  LogOut,
+  Bell
+} from "lucide-react"
 
 export default function CustomerDashboard() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [quotes, setQuotes] = useState<Quote[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: session } = useSession()
+  const [activeTab, setActiveTab] = useState("overview")
 
-  useEffect(() => {
-    if (status === 'loading') return
-
-    if (!session) {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (session.user.userType !== 'CUSTOMER') {
-      router.push('/dashboard/contractor')
-      return
-    }
-
-    fetchQuotes()
-  }, [session, status, router])
-
-  const fetchQuotes = async () => {
-    try {
-      const response = await fetch('/api/quotes?userType=customer')
-      const data = await response.json()
-      setQuotes(data.quotes || [])
-    } catch (error) {
-      console.error('Error fetching quotes:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (status === 'loading' || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    )
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'PENDING': return 'bg-yellow-100 text-yellow-800'
-      case 'ACCEPTED': return 'bg-green-100 text-green-800'
-      case 'DECLINED': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const pendingQuotes = quotes.filter(q => q.status === 'PENDING')
-  const activeQuotes = quotes.filter(q => q.status === 'ACCEPTED')
+  const customer = session?.user?.customer
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {session?.user?.name}!
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Manage your home remodeling projects and connect with AI-matched contractors
-            </p>
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-lg font-bold">R</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
+                <p className="text-gray-600">Welcome back, {session?.user?.name}!</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              {(session?.user as any)?.twoFactorEnabled && (
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <Shield className="h-3 w-3 mr-1" />
+                  2FA Enabled
+                </Badge>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Link
-            href="/contractors"
-            className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-          >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Search className="h-8 w-8 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Find Contractors</h3>
-                <p className="text-gray-600">Browse AI-matched local contractors for your project</p>
-              </div>
-            </div>
-          </Link>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <Home className="h-4 w-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="projects" className="flex items-center space-x-2">
+              <FileText className="h-4 w-4" />
+              <span>Projects</span>
+            </TabsTrigger>
+            <TabsTrigger value="contractors" className="flex items-center space-x-2">
+              <Star className="h-4 w-4" />
+              <span>Contractors</span>
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center space-x-2">
+              <MessageSquare className="h-4 w-4" />
+              <span>Messages</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center space-x-2">
+              <Shield className="h-4 w-4" />
+              <span>Security</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <Link
-            href="/quote"
-            className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-          >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Plus className="h-8 w-8 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Get Smart Quote</h3>
-                <p className="text-gray-600">AI-powered quote matching for your project</p>
-              </div>
-            </div>
-          </Link>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">3</div>
+                  <p className="text-xs text-muted-foreground">+1 from last month</p>
+                </CardContent>
+              </Card>
 
-          <Link
-            href="/dashboard/customer/manage"
-            className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-          >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <User className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Manage Profile</h3>
-                <p className="text-gray-600">Update your profile image & information</p>
-              </div>
-            </div>
-          </Link>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">$12,450</div>
+                  <p className="text-xs text-muted-foreground">+20% from last month</p>
+                </CardContent>
+              </Card>
 
-          <Link
-            href="/saved-contractors"
-            className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-          >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Star className="h-8 w-8 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Saved Contractors</h3>
-                <p className="text-gray-600">View your favorite contractors</p>
-              </div>
-            </div>
-          </Link>
-        </div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Saved Contractors</CardTitle>
+                  <Star className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">8</div>
+                  <p className="text-xs text-muted-foreground">2 new this week</p>
+                </CardContent>
+              </Card>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Quotes</p>
-                <p className="text-3xl font-bold text-gray-900">{quotes.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-blue-600" />
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Messages</CardTitle>
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">5</div>
+                  <p className="text-xs text-muted-foreground">2 unread</p>
+                </CardContent>
+              </Card>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-3xl font-bold text-yellow-600">{pendingQuotes.length}</p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-600" />
-            </div>
-          </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Projects</CardTitle>
+                  <CardDescription>Your latest renovation projects</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Home className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Kitchen Renovation</p>
+                        <p className="text-sm text-gray-600">In Progress • Started March 15</p>
+                      </div>
+                      <Badge variant="secondary">Active</Badge>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <Home className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">Bathroom Upgrade</p>
+                        <p className="text-sm text-gray-600">Completed • March 1</p>
+                      </div>
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">Completed</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-3xl font-bold text-green-600">{activeQuotes.length}</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common tasks and tools</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Phone className="h-6 w-6" />
+                      <span>AI Consultation</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <FileText className="h-6 w-6" />
+                      <span>Get Quote</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Star className="h-6 w-6" />
+                      <span>Find Contractors</span>
+                    </Button>
+                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
+                      <Calendar className="h-6 w-6" />
+                      <span>Schedule Visit</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
+          </TabsContent>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg. Quote</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  ${quotes.filter(q => q.estimatedCost).reduce((sum, q) => sum + (q.estimatedCost || 0), 0) / Math.max(quotes.filter(q => q.estimatedCost).length, 1) || 0}
-                </p>
-              </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
-            </div>
-          </div>
-        </div>
+          <TabsContent value="projects">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Projects</CardTitle>
+                <CardDescription>Manage your renovation and construction projects</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+                  <p className="text-gray-600 mb-4">Start your first renovation project today</p>
+                  <Button>Create New Project</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Recent Quotes */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Quotes</h2>
-          </div>
+          <TabsContent value="contractors">
+            <Card>
+              <CardHeader>
+                <CardTitle>Saved Contractors</CardTitle>
+                <CardDescription>Your favorite and trusted contractors</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No saved contractors</h3>
+                  <p className="text-gray-600 mb-4">Save contractors you'd like to work with</p>
+                  <Button>Browse Contractors</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-          {quotes.length === 0 ? (
-            <div className="p-12 text-center">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No quotes yet</h3>
-              <p className="text-gray-600 mb-6">Start by requesting quotes from contractors</p>
-              <Link
-                href="/quote"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Request Your First Quote
-              </Link>
+          <TabsContent value="messages">
+            <Card>
+              <CardHeader>
+                <CardTitle>Messages</CardTitle>
+                <CardDescription>Communication with contractors and support</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No messages</h3>
+                  <p className="text-gray-600">Your conversations will appear here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="profile">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Update your personal information</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Full Name</label>
+                      <p className="text-gray-900">{session?.user?.name || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Email</label>
+                      <p className="text-gray-900">{session?.user?.email || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Phone</label>
+                      <p className="text-gray-900">{customer?.phone || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Location</label>
+                      <p className="text-gray-900">
+                        {customer?.city && customer?.state
+                          ? `${customer.city}, ${customer.state}`
+                          : 'Not provided'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="outline">Edit Profile</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Preferences</CardTitle>
+                  <CardDescription>Your renovation preferences and settings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Property Type</label>
+                      <p className="text-gray-900">{customer?.propertyType || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Budget Range</label>
+                      <p className="text-gray-900">{customer?.preferredBudget || 'Not specified'}</p>
+                    </div>
+                    <Button variant="outline">Update Preferences</Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          ) : (
-            <div className="overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contractor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Project Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Estimate
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="relative px-6 py-3">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {quotes.slice(0, 5).map((quote) => (
-                    <tr key={quote.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              {quote.contractor.user.image ? (
-                                <img
-                                  className="h-10 w-10 rounded-full"
-                                  src={quote.contractor.user.image}
-                                  alt=""
-                                />
-                              ) : (
-                                <span className="text-sm font-medium text-gray-700">
-                                  {quote.contractor.user.name?.charAt(0)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {quote.contractor.businessName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {quote.contractor.user.name}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {quote.projectType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(quote.status)}`}>
-                          {quote.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {quote.estimatedCost ? `$${quote.estimatedCost.toLocaleString()}` : 'Pending'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(quote.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <Link
-                          href={`/quotes/${quote.id}`}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <div className="space-y-6">
+              <TwoFactorAuthSettings />
+
+              <PasswordChange />
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Security</CardTitle>
+                  <CardDescription>Additional security settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Email Notifications</p>
+                      <p className="text-sm text-gray-600">Receive security alerts via email</p>
+                    </div>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Login History</p>
+                      <p className="text-sm text-gray-600">View your recent login activity</p>
+                    </div>
+                    <Button variant="outline" size="sm">View History</Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
