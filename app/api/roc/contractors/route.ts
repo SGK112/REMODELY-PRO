@@ -5,6 +5,14 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
+    // Check if database is properly configured
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        contractors: [], 
+        message: 'Database not configured' 
+      })
+    }
+
     // Fetch ROC contractors with pagination
     const contractors = await prisma.contractor.findMany({
       where: {
