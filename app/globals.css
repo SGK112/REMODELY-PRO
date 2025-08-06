@@ -3,46 +3,47 @@
 @tailwind utilities;
 
 :root {
-  /* Light theme colors */
+  /* Professional color scheme */
   --background: 248 250 252;
-  /* slate-50 */
+  /* slate-50 - Clean, professional background */
   --foreground: 15 23 42;
-  /* slate-900 */
+  /* slate-900 - High contrast text */
   --card: 255 255 255;
-  /* white */
+  /* white - Clean card backgrounds */
   --card-foreground: 15 23 42;
   /* slate-900 */
   --popover: 255 255 255;
   /* white */
   --popover-foreground: 15 23 42;
   /* slate-900 */
-  --primary: 59 130 246;
-  /* blue-500 */
+  --primary: 37 99 235;
+  /* blue-600 - Professional blue */
   --primary-foreground: 255 255 255;
   /* white */
   --secondary: 241 245 249;
-  /* slate-100 */
-  --secondary-foreground: 15 23 42;
-  /* slate-900 */
-  --muted: 241 245 249;
-  /* slate-100 */
+  /* slate-100 - Subtle secondary */
+  --secondary-foreground: 51 65 85;
+  /* slate-700 */
+  --muted: 248 250 252;
+  /* slate-50 - Muted backgrounds */
   --muted-foreground: 100 116 139;
-  /* slate-500 */
-  --accent: 241 245 249;
-  /* slate-100 */
-  --accent-foreground: 15 23 42;
-  /* slate-900 */
+  /* slate-500 - Muted text */
+  --accent: 219 234 254;
+  /* blue-100 - Professional accent */
+  --accent-foreground: 30 58 138;
+  /* blue-800 */
   --destructive: 239 68 68;
   /* red-500 */
   --destructive-foreground: 255 255 255;
   /* white */
   --border: 226 232 240;
-  /* slate-200 */
+  /* slate-200 - Subtle borders */
   --input: 226 232 240;
-  /* slate-200 */
-  --ring: 59 130 246;
-  /* blue-500 */
-  --radius: 0.5rem;
+  /* slate-200 - Form inputs */
+  --ring: 37 99 235;
+  /* blue-600 - Focus rings */
+  --radius: 0.75rem;
+  /* Slightly more rounded for modern look */
 }
 
 [data-theme="dark"] {

@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { TwoFactorAuth } from "@/lib/two-factor-auth"
@@ -10,18 +11,27 @@ type UserType = "CUSTOMER" | "CONTRACTOR" | "ADMIN";
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        userType: { label: "User Type", type: "text" },
-        twoFactorCode: { label: "2FA Code", type: "text" },
-        backupCode: { label: "Backup Code", type: "text" }
+        userType: { label: "User Type", type: "text" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required")
+          return null
         }
 
         try {
@@ -33,51 +43,14 @@ export const authOptions: NextAuthOptions = {
             }
           })
 
-          if (!user) {
-            throw new Error("No user found with this email")
-          }
-
-          if (!user.password) {
-            throw new Error("User password is missing")
+          if (!user || !user.password) {
+            return null
           }
 
           const isValidPassword = await TwoFactorAuth.verifyPassword(credentials.password, user.password)
 
           if (!isValidPassword) {
-            throw new Error("Invalid password")
-          }
-
-          // Check if 2FA is enabled
-          if ((user as any).twoFactorEnabled && (user as any).twoFactorSecret) {
-            if (!credentials.twoFactorCode && !credentials.backupCode) {
-              throw new Error("2FA_REQUIRED")
-            }
-
-            let isValid2FA = false;
-
-            // Check TOTP code
-            if (credentials.twoFactorCode) {
-              isValid2FA = TwoFactorAuth.verifyToken((user as any).twoFactorSecret, credentials.twoFactorCode)
-            }
-
-            // Check backup code if TOTP failed
-            if (!isValid2FA && credentials.backupCode && (user as any).backupCodes) {
-              const backupCodes = JSON.parse((user as any).backupCodes)
-              isValid2FA = TwoFactorAuth.verifyBackupCode(backupCodes, credentials.backupCode)
-
-              if (isValid2FA) {
-                // Remove used backup code
-                const updatedCodes = TwoFactorAuth.removeBackupCode(backupCodes, credentials.backupCode)
-                await prisma.user.update({
-                  where: { id: user.id },
-                  data: { backupCodes: JSON.stringify(updatedCodes) } as any
-                })
-              }
-            }
-
-            if (!isValid2FA) {
-              throw new Error("Invalid 2FA code")
-            }
+            return null
           }
 
           return {
@@ -86,14 +59,10 @@ export const authOptions: NextAuthOptions = {
             name: user.name || '',
             userType: user.userType,
             contractor: user.contractor,
-            customer: user.customer,
-            twoFactorEnabled: (user as any).twoFactorEnabled
+            customer: user.customer
           }
         } catch (error) {
           console.error("Auth error:", error)
-          if (error instanceof Error && error.message === "2FA_REQUIRED") {
-            throw new Error("2FA_REQUIRED")
-          }
           return null
         }
       }
@@ -101,19 +70,74 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async signIn({ user, account, profile }) {
+      // Handle Google OAuth sign-in
+      if (account?.provider === "google") {
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
+          });
+
+          if (!existingUser) {
+            // Create new user with Google OAuth
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name || "",
+                userType: "CUSTOMER", // Default to customer for Google sign-ins
+                emailVerified: new Date()
+              }
+            });
+
+            // Create customer profile
+            await prisma.customer.create({
+              data: {
+                userId: newUser.id,
+                firstName: user.name?.split(' ')[0] || "",
+                lastName: user.name?.split(' ')[1] || "",
+                phone: ""
+              }
+            });
+          }
+          
+          return true;
+        } catch (error) {
+          console.error("Google sign-in error:", error);
+          return false;
+        }
+      }
+      
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         token.userType = user.userType
         token.contractor = user.contractor
         token.customer = user.customer
-        token.twoFactorEnabled = (user as any).twoFactorEnabled
       }
 
-      if (trigger === "update" && session) {
-        token = { ...token, ...session }
+      // Fetch fresh user data for Google OAuth users
+      if (account?.provider === "google" && token.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            include: {
+              contractor: true,
+              customer: true
+            }
+          });
+          
+          if (dbUser) {
+            token.userType = dbUser.userType;
+            token.contractor = dbUser.contractor;
+            token.customer = dbUser.customer;
+          }
+        } catch (error) {
+          console.error("JWT callback error:", error);
+        }
       }
 
       return token
@@ -124,7 +148,6 @@ export const authOptions: NextAuthOptions = {
         session.user.userType = token.userType as UserType
         session.user.contractor = token.contractor
         session.user.customer = token.customer
-        (session.user as any).twoFactorEnabled = token.twoFactorEnabled
       }
       return session
     }

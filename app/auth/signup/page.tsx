@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
+import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff, Loader2, ArrowLeft, Home, Hammer, Check, X } from "lucide-react"
+import { Eye, EyeOff, Loader2, Home, Hammer, Chrome } from "lucide-react"
 
 interface SignUpFormData {
   name: string
@@ -20,35 +21,18 @@ interface SignUpFormData {
   phone: string
   userType: string
   agreeToTerms: boolean
-  subscribeNewsletter: boolean
 }
 
-interface PasswordRequirement {
-  regex: RegExp
-  text: string
-  met: boolean
-}
-
-export default function SignUpPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p>Loading signup form...</p>
-        </div>
-      </div>
-    }>
-      <SignUpForm />
-    </Suspense>
-  )
-}
-
-function SignUpForm() {
+function SignUpContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [step, setStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const [activeTab, setActiveTab] = useState("customer")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState<SignUpFormData>({
     name: "",
     email: "",
@@ -56,114 +40,80 @@ function SignUpForm() {
     confirmPassword: "",
     phone: "",
     userType: "CUSTOMER",
-    agreeToTerms: false,
-    subscribeNewsletter: false,
+    agreeToTerms: false
   })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-
-  // Password requirements
-  const passwordRequirements: PasswordRequirement[] = [
-    { regex: /.{8,}/, text: "At least 8 characters", met: false },
-    { regex: /[A-Z]/, text: "One uppercase letter", met: false },
-    { regex: /[a-z]/, text: "One lowercase letter", met: false },
-    { regex: /\d/, text: "One number", met: false },
-    { regex: /[!@#$%^&*(),.?":{}|<>]/, text: "One special character", met: false },
-  ]
-
-  // Check password requirements
-  const checkPasswordRequirements = (password: string) => {
-    return passwordRequirements.map(req => ({
-      ...req,
-      met: req.regex.test(password)
-    }))
-  }
-
-  const currentPasswordRequirements = checkPasswordRequirements(formData.password)
-  const allPasswordRequirementsMet = currentPasswordRequirements.every(req => req.met)
 
   // Set initial tab based on URL parameter
   useEffect(() => {
     const tabParam = searchParams?.get("tab")
-    if (tabParam === "contractor" || tabParam === "customer") {
-      setActiveTab(tabParam)
-      setFormData(prev => ({ 
-        ...prev, 
-        userType: tabParam.toUpperCase() 
-      }))
+    if (tabParam === "contractor") {
+      setActiveTab("contractor")
+      setFormData(prev => ({ ...prev, userType: "CONTRACTOR" }))
+    } else {
+      setActiveTab("customer")
+      setFormData(prev => ({ ...prev, userType: "CUSTOMER" }))
     }
   }, [searchParams])
 
-  // Update userType when tab changes
-  useEffect(() => {
-    setFormData(prev => ({ 
-      ...prev, 
-      userType: activeTab.toUpperCase() 
-    }))
-  }, [activeTab])
-
   const handleInputChange = (field: keyof SignUpFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    setError("")
+    setError("") // Clear error when user types
   }
 
-  const validateStep1 = () => {
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true)
+    setError("")
+    
+    try {
+      await signIn("google", { 
+        callbackUrl: "/dashboard/customer"
+      })
+    } catch (error) {
+      console.error("Google sign up error:", error)
+      setError("Google sign up failed. Please try again.")
+    } finally {
+      setIsGoogleLoading(false)
+    }
+  }
+
+  const validateForm = () => {
     if (!formData.name.trim()) {
-      setError("Full name is required")
+      setError("Name is required")
       return false
     }
     if (!formData.email.trim()) {
       setError("Email is required")
       return false
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError("Please enter a valid email address")
+    if (!formData.password) {
+      setError("Password is required")
       return false
     }
-    if (!allPasswordRequirementsMet) {
-      setError("Password does not meet all requirements")
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long")
       return false
     }
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
       return false
     }
-    return true
-  }
-
-  const validateStep2 = () => {
-    if (formData.phone && !/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
-      setError("Please enter a valid phone number")
-      return false
-    }
     if (!formData.agreeToTerms) {
-      setError("You must agree to the Terms of Service and Privacy Policy")
+      setError("You must agree to the terms and conditions")
       return false
     }
     return true
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (step === 1) {
-      if (validateStep1()) {
-        setStep(2)
-        setError("")
-      }
-      return
-    }
-
-    // Step 2 - Submit registration
-    if (!validateStep2()) {
-      return
-    }
-
     setIsLoading(true)
     setError("")
+    setSuccess("")
+
+    if (!validateForm()) {
+      setIsLoading(false)
+      return
+    }
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -172,31 +122,43 @@ function SignUpForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.toLowerCase().trim(),
+          name: formData.name,
+          email: formData.email,
           password: formData.password,
-          phone: formData.phone.trim() || null,
+          phone: formData.phone,
           userType: formData.userType,
-          subscribeNewsletter: formData.subscribeNewsletter,
         }),
       })
 
       const data = await response.json()
 
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed")
+      if (response.ok) {
+        setSuccess("Account created successfully! Redirecting to sign in...")
+        
+        // Automatically sign in the user
+        setTimeout(async () => {
+          const result = await signIn("credentials", {
+            email: formData.email,
+            password: formData.password,
+            userType: formData.userType.toLowerCase(),
+            redirect: false
+          })
+
+          if (result?.ok) {
+            const redirectUrl = formData.userType === "CONTRACTOR" 
+              ? "/dashboard/contractor"
+              : "/dashboard/customer"
+            router.push(redirectUrl)
+          } else {
+            router.push(`/auth/signin?tab=${formData.userType.toLowerCase()}`)
+          }
+        }, 1500)
+      } else {
+        setError(data.error || "Something went wrong. Please try again.")
       }
-
-      setSuccess("Account created successfully! Please check your email to verify your account.")
-      
-      // Redirect to sign in page after 3 seconds
-      setTimeout(() => {
-        router.push(`/auth/signin?tab=${activeTab}`)
-      }, 3000)
-
     } catch (error) {
-      console.error("Registration error:", error)
-      setError(error instanceof Error ? error.message : "Registration failed. Please try again.")
+      console.error("Sign up error:", error)
+      setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -207,232 +169,223 @@ function SignUpForm() {
     icon: any
     title: string 
   }) => (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Icon className="h-5 w-5" />
-            <CardTitle className="text-2xl">{title} Sign Up</CardTitle>
-          </div>
-          {step === 2 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setStep(1)}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          )}
+    <Card className="w-full max-w-md mx-auto border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+      <CardHeader className="space-y-1 pb-4">
+        <div className="flex items-center space-x-2">
+          <Icon className="h-5 w-5 text-blue-600" />
+          <CardTitle className="text-2xl text-gray-800">Create {title} Account</CardTitle>
         </div>
-        <CardDescription>
-          {step === 1 
-            ? "Create your account to get started" 
-            : "Complete your profile"
-          }
+        <CardDescription className="text-gray-600">
+          Join thousands of satisfied {title.toLowerCase()}s on our platform
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {success ? (
-          <Alert className="border-green-200 bg-green-50">
-            <Check className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              {success}
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <X className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            
-            {step === 1 && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor={`name-${userType}`}>Full Name</Label>
-                  <Input
-                    id={`name-${userType}`}
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor={`email-${userType}`}>Email Address</Label>
-                  <Input
-                    id={`email-${userType}`}
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor={`password-${userType}`}>Password</Label>
-                  <div className="relative">
-                    <Input
-                      id={`password-${userType}`}
-                      type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                      placeholder="Create a strong password"
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  
-                  {/* Password Requirements */}
-                  {formData.password && (
-                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Password Requirements:</p>
-                      <div className="space-y-1">
-                        {currentPasswordRequirements.map((req, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            {req.met ? (
-                              <Check className="h-3 w-3 text-green-600" />
-                            ) : (
-                              <X className="h-3 w-3 text-red-500" />
-                            )}
-                            <span className={`text-xs ${req.met ? 'text-green-600' : 'text-red-500'}`}>
-                              {req.text}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor={`confirm-password-${userType}`}>Confirm Password</Label>
-                  <div className="relative">
-                    <Input
-                      id={`confirm-password-${userType}`}
-                      type={showConfirmPassword ? "text" : "password"}
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                      placeholder="Confirm your password"
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
+      <CardContent className="space-y-4">
+        {/* Google Sign Up Button */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-11 border-gray-300 hover:bg-gray-50"
+          onClick={handleGoogleSignUp}
+          disabled={isGoogleLoading || isLoading}
+        >
+          {isGoogleLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Chrome className="mr-2 h-4 w-4" />
+          )}
+          Continue with Google
+        </Button>
 
-            {step === 2 && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor={`phone-${userType}`}>Phone Number (Optional)</Label>
-                  <Input
-                    id={`phone-${userType}`}
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="Enter your phone number"
-                  />
-                </div>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-gray-500">Or create account with email</span>
+          </div>
+        </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-2">
-                    <Checkbox
-                      id={`terms-${userType}`}
-                      checked={formData.agreeToTerms}
-                      onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked)}
-                    />
-                    <Label htmlFor={`terms-${userType}`} className="text-sm leading-4">
-                      I agree to the{" "}
-                      <Link href="/terms" className="text-blue-600 hover:underline">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-blue-600 hover:underline">
-                        Privacy Policy
-                      </Link>
-                    </Label>
-                  </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <Alert variant="destructive" className="border-red-200 bg-red-50">
+              <AlertDescription className="text-red-700">{error}</AlertDescription>
+            </Alert>
+          )}
 
-                  <div className="flex items-start space-x-2">
-                    <Checkbox
-                      id={`newsletter-${userType}`}
-                      checked={formData.subscribeNewsletter}
-                      onCheckedChange={(checked) => handleInputChange("subscribeNewsletter", checked)}
-                    />
-                    <Label htmlFor={`newsletter-${userType}`} className="text-sm">
-                      Subscribe to our newsletter for updates and tips
-                    </Label>
-                  </div>
-                </div>
-              </>
-            )}
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || (step === 1 && !allPasswordRequirementsMet)}
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {step === 1 ? "Continue" : "Create Account"}
-            </Button>
-            
-            <div className="text-center text-sm text-gray-600">
+          {success && (
+            <Alert className="border-green-200 bg-green-50">
+              <AlertDescription className="text-green-700">{success}</AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
+            <Input
+              id="name"
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              placeholder="Enter your full name"
+              required
+              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-gray-700 font-medium">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => handleInputChange("phone", e.target.value)}
+              placeholder="Enter your phone number"
+              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                placeholder="Create a password"
+                required
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                placeholder="Confirm your password"
+                required
+                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="agreeToTerms"
+              checked={formData.agreeToTerms}
+              onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
+            />
+            <Label htmlFor="agreeToTerms" className="text-sm text-gray-600">
+              I agree to the{" "}
+              <Link href="/terms" className="text-blue-600 hover:underline">
+                Terms of Service
+              </Link>
+              {" "}and{" "}
+              <Link href="/privacy" className="text-blue-600 hover:underline">
+                Privacy Policy
+              </Link>
+            </Label>
+          </div>
+          
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium"
+            disabled={isLoading || isGoogleLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Create Account
+          </Button>
+          
+          <div className="text-center">
+            <div className="text-sm text-gray-600">
               Already have an account?{" "}
               <Link 
                 href={`/auth/signin?tab=${userType}`} 
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
               >
-                Sign in
+                Sign in here
               </Link>
             </div>
-          </form>
-        )}
+          </div>
+        </form>
       </CardContent>
     </Card>
   )
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4 relative">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="h-full w-full bg-[radial-gradient(circle_at_1px_1px,rgba(100,116,139,0.15)_1px,transparent_0)] bg-[length:40px_40px]"></div>
+      </div>
+      
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-2xl font-bold text-blue-600 hover:text-blue-700">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">R</span>
+          <Link href="/" className="inline-flex items-center space-x-3 text-3xl font-bold text-slate-800 hover:text-blue-600 transition-colors">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white text-lg font-bold">R</span>
             </div>
-            <span>REMODELY.ai</span>
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              REMODELY.ai
+            </span>
           </Link>
-          <p className="text-gray-600 mt-2">AI Brains for your House</p>
+          <p className="text-slate-600 mt-2 font-medium">Professional Construction Intelligence</p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="customer" className="flex items-center space-x-2">
+        <Tabs value={activeTab} onValueChange={(value) => {
+          setActiveTab(value)
+          setFormData(prev => ({ 
+            ...prev, 
+            userType: value === "contractor" ? "CONTRACTOR" : "CUSTOMER" 
+          }))
+        }} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/70 backdrop-blur-sm">
+            <TabsTrigger 
+              value="customer" 
+              className="flex items-center space-x-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
               <Home className="h-4 w-4" />
               <span>Homeowner</span>
             </TabsTrigger>
-            <TabsTrigger value="contractor" className="flex items-center space-x-2">
+            <TabsTrigger 
+              value="contractor" 
+              className="flex items-center space-x-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
               <Hammer className="h-4 w-4" />
               <span>Contractor</span>
             </TabsTrigger>
@@ -456,5 +409,17 @@ function SignUpForm() {
         </Tabs>
       </div>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   )
 }
