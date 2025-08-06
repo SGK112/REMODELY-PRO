@@ -12,7 +12,7 @@
     "dev:fresh": "pkill -f 'next dev' || true && rm -rf .next && npm run dev",
     "dev:turbo": "next dev --turbo -p 3001",
     "validate:config": "node scripts/validate-config.js",
-    "build": "npm install --legacy-peer-deps && next build",
+    "build": "node scripts/prepare-production-schema.js && npm install --legacy-peer-deps && next build",
     "build:dev": "npm run validate:config && npm install --legacy-peer-deps && next build",
     "build:analyze": "ANALYZE=true next build",
     "build:optimized": "./scripts/optimize-build.sh",

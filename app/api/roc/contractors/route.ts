@@ -9,7 +9,13 @@ export async function GET() {
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ 
         contractors: [], 
-        message: 'Database not configured' 
+        message: 'Database not configured',
+        stats: {
+          totalCount: 0,
+          withContactCount: 0,
+          licensedCount: 0,
+          activeCount: 0
+        }
       })
     }
 
