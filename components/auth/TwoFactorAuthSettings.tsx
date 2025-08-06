@@ -32,7 +32,7 @@ export function TwoFactorAuthSettings() {
 
     useEffect(() => {
         // Check if 2FA is already enabled
-        setIsEnabled(session?.user?.twoFactorEnabled || false)
+        setIsEnabled((session?.user as any)?.twoFactorEnabled || false)
     }, [session])
 
     const startSetup = async () => {

@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Check if 2FA is enabled
-          if (user.twoFactorEnabled && user.twoFactorSecret) {
+          if ((user as any).twoFactorEnabled && (user as any).twoFactorSecret) {
             if (!credentials.twoFactorCode && !credentials.backupCode) {
               throw new Error("2FA_REQUIRED")
             }
@@ -57,12 +57,12 @@ export const authOptions: NextAuthOptions = {
 
             // Check TOTP code
             if (credentials.twoFactorCode) {
-              isValid2FA = TwoFactorAuth.verifyToken(user.twoFactorSecret, credentials.twoFactorCode)
+              isValid2FA = TwoFactorAuth.verifyToken((user as any).twoFactorSecret, credentials.twoFactorCode)
             }
 
             // Check backup code if TOTP failed
-            if (!isValid2FA && credentials.backupCode && user.backupCodes) {
-              const backupCodes = JSON.parse(user.backupCodes)
+            if (!isValid2FA && credentials.backupCode && (user as any).backupCodes) {
+              const backupCodes = JSON.parse((user as any).backupCodes)
               isValid2FA = TwoFactorAuth.verifyBackupCode(backupCodes, credentials.backupCode)
 
               if (isValid2FA) {
@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
             userType: user.userType,
             contractor: user.contractor,
             customer: user.customer,
-            twoFactorEnabled: user.twoFactorEnabled
+            twoFactorEnabled: (user as any).twoFactorEnabled
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -124,7 +124,7 @@ export const authOptions: NextAuthOptions = {
         session.user.userType = token.userType as UserType
         session.user.contractor = token.contractor
         session.user.customer = token.customer
-        session.user.twoFactorEnabled = token.twoFactorEnabled
+        (session.user as any).twoFactorEnabled = token.twoFactorEnabled
       }
       return session
     }
