@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,21 @@ interface PasswordRequirement {
 }
 
 export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Loading signup form...</p>
+        </div>
+      </div>
+    }>
+      <SignUpForm />
+    </Suspense>
+  )
+}
+
+function SignUpForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
