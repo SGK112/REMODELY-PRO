@@ -106,20 +106,12 @@ secrets.json
 *.wav
 sarah-voice.*
 
-# Development and Testing Scripts
-demo-*.js
-test-*.js
-debug-*.js
-*-test.js
-*-demo.js
-check-*.js
-voice-*.js
-*-voice-*.js
-*-ai-*.js
-*-google-*.js
-*-gemini-*.js
-*-elevenlabs-*.js
-*-remodely-*.js
+# Development and Testing Scripts (specific patterns)
+demo-freemium-*.js
+test-voice-*.js
+debug-database-*.js
+temp-test-*.js
+experimental-*.js
 
 # Auto-generated Documentation
 *_COMPLETE.md
@@ -157,11 +149,10 @@ agents/
 components/import*.tsx
 input.tsx
 
-# Shell Scripts (except essential ones)
-*.sh
-!setup-*.sh
-!system-*.sh
-!deploy-*.sh
+# Shell Scripts (keep essential ones)
+temp-*.sh
+debug-*.sh
+test-*.sh
 
 # AI Service Testing Files
 pure-elevenlabs-*.js
@@ -177,3 +168,43 @@ showcase-*.js
 
 # Unused Directories
 java/
+
+# Modern Development Tools
+.turbo/
+.swc/
+.webpack/
+
+# AI and Machine Learning
+*.model
+*.pkl
+*.h5
+*.onnx
+models/
+training_data/
+
+# Docker
+.dockerignore
+Dockerfile.dev
+docker-compose.override.yml
+.docker/
+
+# Security
+.env.example.real
+config/secrets/
+certificates/
+keys/
+
+# Performance and Analytics
+lighthouse-reports/
+bundle-analyzer/
+performance-reports/
+
+# Backup Files
+*.backup
+*.bak
+*~
+.#*
+
+# Lock Files (keep package-lock.json in main package.json only)
+packages/*/package-lock.json
+apps/*/package-lock.json
