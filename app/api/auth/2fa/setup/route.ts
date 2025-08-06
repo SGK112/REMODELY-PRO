@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             data: {
                 twoFactorSecret: secret,
                 backupCodes: JSON.stringify(backupCodes)
-            }
+            } as any
         })
 
         return NextResponse.json({
@@ -85,7 +85,7 @@ export async function DELETE(request: NextRequest) {
                 twoFactorEnabled: false,
                 twoFactorSecret: null,
                 backupCodes: null
-            }
+            } as any
         })
 
         return NextResponse.json({ success: true })
