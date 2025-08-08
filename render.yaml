@@ -7,10 +7,22 @@ services:
     buildCommand: |
       npm ci --legacy-peer-deps
       npx prisma generate
-      npm run build:render
+      npm run build
     startCommand: npm start
     autoDeploy: false
     healthCheckPath: /api/health
+    buildFilter:
+      paths:
+        - app/**
+        - components/**
+        - lib/**
+        - public/**
+        - package.json
+        - package-lock.json
+        - next.config.js
+        - tsconfig.json
+        - tsconfig.build.json
+        - prisma/**
     envVars:
       - key: PORT
         value: 10000
