@@ -15,6 +15,7 @@
     "build": "node scripts/prepare-production-schema.js && npm install --legacy-peer-deps && next build",
     "build:dev": "npm run validate:config && npm install --legacy-peer-deps && next build",
     "build:analyze": "ANALYZE=true next build",
+    "analyze": "ANALYZE=true npm run build",
     "build:optimized": "./scripts/optimize-build.sh",
     "build:production": "npm run db:generate && NODE_OPTIONS='--max-old-space-size=4096' npm install --legacy-peer-deps && next build",
     "start": "next start -p ${PORT:-10000}",
@@ -99,6 +100,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.6",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "better-sqlite3": "^12.2.0",
