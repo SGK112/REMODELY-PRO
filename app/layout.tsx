@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
-import { ThemeProvider } from '@/lib/theme-provider'
 import { Header } from '@/components/navigation/header'
 import { Footer } from '@/components/layout/Footer'
 import { LocationProvider } from '@/components/providers/LocationProvider'
@@ -81,19 +80,17 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/favicon.svg" />
       </head>
       <body className={inter.className}>
-        <ThemeProvider defaultTheme="dark" storageKey="remodely-theme">
-          <SessionProvider>
-            <LocationProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-1">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-            </LocationProvider>
-          </SessionProvider>
-        </ThemeProvider>
+        <SessionProvider>
+          <LocationProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </LocationProvider>
+        </SessionProvider>
       </body>
     </html>
   )

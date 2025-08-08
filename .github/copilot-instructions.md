@@ -25,11 +25,6 @@ test-*.js             # 40+ test files for all systems
 ```s. The platform features **role-based authentication**, **automated contractor acquisition**, **AI-powered matching**, and **voice consultation capabilities**.
 
 ### Key Data Flow
-- **Quote System**: Customer requests → AI matching → Contractor responses → Bookings → Payments (Stripe)
-- **Scraper Pipeline**: 9 scraper types → Automated data collection → ROC license verification → Database storage
-- **AI Services**: ElevenLabs voice synthesis + Google Cloud agents + multi-AI routing
-- **Authentication**: NextAuth.js with custom credentials + phone verification (Twilio)
-- **Location Services**: Google Maps + Apple Maps integration + `AdvancedLocationService` singleton
 
 ## Critical Systems
 
@@ -47,10 +42,6 @@ node test-smart-matching.js              # Matching algorithm tests
 ```
 
 **AI Service Stack**:
-- **Voice**: ElevenLabs synthesis + Twilio voice calls + Google Cloud Speech
-- **Matching**: Multi-AI routing (lib/multi-ai-service.ts) + smart algorithms
-- **Agents**: Google Conversational Agents for customer consultation
-- **Vision**: Google Vision API for project image analysis
 
 ### Contractor Scraping Architecture
 Automated contractor acquisition system with **9 scraper types**:
@@ -64,11 +55,6 @@ node scripts/roc-converter.js            # Arizona ROC license integration
 ```
 
 **Scraper Categories** (`lib/scrapers/`):
-- **ROC Integration**: Arizona Registrar of Contractors with license verification
-- **Manufacturer Networks**: `manufacturers.ts` - Caesarstone, Cambria, Silestone, etc.
-- **Business Directories**: `directories.ts` - Yelp, Google, Yellow Pages, etc.
-- **Industry Sources**: `industry.ts` - Professional networks, Houzz, Angie's List
-- **Public Sources**: `public-sources.ts` - Government databases, permit records
 
 ### Database Schema Pattern
 Hub-and-spoke around `User` model with **role-specific profiles**:
@@ -82,9 +68,6 @@ User (userType: CUSTOMER|CONTRACTOR|ADMIN)
 ```
 
 **Critical Schema Details**:
-- **ROC Integration**: `rocLicenseNumber`, `licenseClass`, `isROCVerified` fields for Arizona contractor verification
-- **Location Data**: `latitude`/`longitude` + `AdvancedLocationService` for distance calculations
-- **JSON Fields**: `specialties`, `serviceArea`, `preferences` stored as JSON strings (SQLite)
 
 ## Development Workflows
 
@@ -121,9 +104,6 @@ npm run roc:clear             # Clear ROC data
 ```
 
 **Test Credentials (created by setup)**:
-- Customer: `customer@test.com / password123`
-- Contractor: `contractor@test.com / password123`  
-- Admin: `admin@test.com / password123`
 
 ### Testing Patterns
 Use project's **extensive test suite** (40+ test files):
@@ -152,27 +132,11 @@ node test-apple-maps.js                   # Apple Maps integration
 ## Code Patterns & Integration Points
 
 ### Authentication Architecture
-- **Custom credentials provider** in `lib/auth.ts`
-- **Phone verification** via Twilio (`lib/twilio.ts`)
-- **Role-based middleware** in `middleware.ts` protecting `/dashboard`, `/admin`, `/api/*`
-- **Protected API routes** return 401 for unauthenticated requests
 
 ### API Route Architecture
-- **RESTful patterns**: `/api/user`, `/api/quotes`, `/api/contractors`
-- **AI endpoints**: `/api/ai`, `/api/voice`, `/api/google-agent`
-- **Admin functions**: `/api/admin`, `/api/scrape` (protected by role)
-- **Health monitoring**: `/api/health` (public endpoint for deployment checks)
 
 ### Service Layer Pattern
 All business logic in `lib/` with consistent patterns:
-- **Database**: `lib/prisma.ts` (singleton pattern)
-- **Validation**: `lib/validation.ts` (Zod schemas)
-- **Location**: `lib/advancedLocationService.ts` (singleton) + `lib/maps.ts` + `lib/apple-maps.ts`
-- **Images**: `lib/imageService.ts` + `lib/enhancedImageService.ts`
-- **Communication**: `lib/twilio.ts` + `lib/email.ts`
-- **AI Services**: `lib/multi-ai-service.ts` + `lib/ai-voice-assistant.ts` + `lib/aiAgentService.ts`
-- **Voice**: `lib/humanVoiceService.ts` + `lib/enhanced-twilio.ts` + `lib/elevenLabsService.ts`
-- **Matching**: `lib/smartMatching.ts` + `lib/matching.ts`
 
 ### Environment Configuration
 **Three environment tiers**:
@@ -225,14 +189,6 @@ node check-database.js             # Database connectivity
 
 ## Development Guidelines
 
-- **Always use absolute imports** (`@/lib/`, `@/components/`)
-- **Test scraping changes** with single-scraper tests before bulk operations
-- **Follow role-based patterns** - never bypass User → profile relationships
-- **Use validation schemas** from `lib/validation.ts` for all forms
-- **Environment variables** are strictly typed - check `.env.example`
-- **Location services** always use `AdvancedLocationService.getInstance()` singleton pattern
-- **JSON fields** in SQLite: parse specialties/serviceArea with try/catch for string or array inputs
-- **Component patterns**: Use `ImageService.getContractorProfileImage()` for fallback images
 
 ### Critical Code Patterns
 
@@ -257,3 +213,81 @@ const getSpecialties = (specialties: string | string[]) => {
 **Authentication Middleware Pattern**: Routes are protected via `middleware.ts` - public paths explicitly listed, all others require auth.
 
 The project prioritizes **automated data acquisition** and **production reliability** - maintain these patterns when adding features.
+
+# Remodely.AI Copilot Instructions
+
+
+
+## Architecture & Data Flow
+- **Next.js 14 App Router** monolith, transitioning to microservices (see `microservices/README.md`)
+- **Role-based dashboards**: `app/dashboard/[customer|contractor|admin]/`
+- **RESTful APIs**: `app/api/[user|quotes|contractors|scrape]/`, plus AI endpoints (`app/api/ai`, `app/api/voice`, etc.)
+- **Business logic**: All core logic in `lib/` (singleton patterns, Zod validation, service orchestration)
+- **Automated contractor acquisition**: 27+ scrapers in `lib/scrapers/`, with ROC license verification
+- **AI/Voice**: ElevenLabs, Twilio, Google Cloud AI, multi-AI routing (`lib/multi-ai-service.ts`)
+- **Location**: Google Maps, Apple Maps, singleton `AdvancedLocationService`
+- **Database**: Prisma, hub-and-spoke schema around `User` (see below)
+
+## Key Patterns & Conventions
+- **Absolute imports**: Always use `@/lib/`, `@/components/`
+- **Role-based access**: Never bypass User → profile relationships; use `middleware.ts` for route protection
+- **Validation**: All forms use Zod schemas from `lib/validation.ts`
+- **Environment**: Strictly typed variables; see `.env.example` for required keys
+- **Location services**: Always use `AdvancedLocationService.getInstance()`
+- **JSON fields**: Parse with try/catch for string/array inputs (see specialty parsing example below)
+- **Component images**: Use `ImageService.getContractorProfileImage()` for fallbacks
+
+## Essential Workflows
+- **Setup**: `./setup-dev.sh` (creates test users, validates env)
+- **Database**: `npm run db:generate && npm run db:push && npm run db:seed` (run in sequence)
+- **Development**: `npm run dev` (hot reload), `npm run dev:port` (port 3001)
+- **Testing**: Node scripts in `test-*.js` (40+ files); see README for test suite details
+- **Scraping**: `node test-scraping.js`, `node test-single-scraper.js [scraper]`, `npm run seed:production`
+- **Deployment**: `npm run build:render` (Render.com), `npm run build:clean` (cache clear)
+- **Monitoring**: `./system-status-check.sh`, `node check-contractors.js`, `node check-database.js`
+
+## Database Schema (Prisma)
+User (userType: CUSTOMER|CONTRACTOR|ADMIN)
+├── Contractor? (business profile + scraped data + ROC verification)
+├── Customer? (personal profile + AI preferences)
+├── Quote[] (bidirectional communication + AI matching scores)
+├── Booking[] + Payment[] + Review[]
+└── VoiceConsultation[] + AIInteraction[] + Message[]
+
+## Integration Points
+- **Authentication**: Custom credentials (`lib/auth.ts`), Twilio phone verification (`lib/twilio.ts`)
+- **AI/Voice**: ElevenLabs, Google Cloud, Twilio, multi-AI routing (`lib/multi-ai-service.ts`)
+- **Location**: Google Maps, Apple Maps, singleton pattern
+- **Scraping**: Arizona ROC, manufacturer networks, business directories, public sources
+
+## Critical Code Examples
+**Location Distance Calculation**
+```typescript
+const locationService = AdvancedLocationService.getInstance()
+const distance = locationService.calculateDistance(userPos, contractorPos)
+```
+**Specialty Parsing**
+```typescript
+const getSpecialties = (specialties: string | string[]) => {
+  if (Array.isArray(specialties)) return specialties
+  if (typeof specialties === 'string') {
+    try { return JSON.parse(specialties) }
+    catch { return specialties.split(',').map(s => s.trim()) }
+  }
+  return []
+}
+```
+**Authentication Middleware**
+Routes protected via `middleware.ts`; public paths listed, all others require auth.
+
+## Microservices Transition (2025+)
+- See `microservices/README.md` and service templates for migration details
+- Each service (auth, users, quotes, contractors, voice, matching, scrapers, location, web, admin) is independently deployable
+- Service-to-service communication via HTTP APIs; see example in `microservices/services/README.md`
+
+## Troubleshooting & Support
+- If stuck, run `npm run validate:config`, check `CONFIGURATION_CHECKLIST.md`, clear `.next` cache, restart dev server
+- For unclear patterns, review `README.md` and service-level docs in `microservices/services/*/README.md`
+
+---
+**Feedback requested:** If any section is unclear or missing, please specify so it can be improved for future AI agents.
