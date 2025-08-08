@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
     '/cookies',
     // Service pages
     '/concrete',
-    '/framing', 
+    '/framing',
     '/handyman',
     '/hvac',
     '/roofing',
@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
     // Pro tools
     '/pro',
     '/pro/crypto',
-    '/pro/financial', 
+    '/pro/financial',
     '/pro/payments',
     '/pro/quickbooks',
     '/white-label',
@@ -99,10 +99,14 @@ export async function middleware(request: NextRequest) {
     '/static'
   ]
 
+  // Image file extensions that should always be accessible
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.ico']
+  const isImageFile = imageExtensions.some(ext => pathname.toLowerCase().endsWith(ext))
+
   // Check if current path is a static asset
   const isStaticAsset = staticAssetPaths.some(path =>
     pathname.startsWith(path)
-  )
+  ) || isImageFile
 
   // Allow static assets
   if (isStaticAsset) {

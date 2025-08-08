@@ -5,7 +5,7 @@ import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Star, Shield, Award,
 
 export function Footer() {
     return (
-        <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <footer className="relative z-10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     {/* Company Info */}
