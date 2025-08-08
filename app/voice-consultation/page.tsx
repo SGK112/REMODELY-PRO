@@ -10,6 +10,8 @@ export type AgentProfile = {
   name: string;
   description: string;
   voiceId: string; // This would be the actual voice ID from ElevenLabs
+  agentId?: string; // Optional ElevenLabs agent ID
+  systemPrompt?: string; // Optional system prompt for the agent
 };
 
 // Pre-defined agent profiles
