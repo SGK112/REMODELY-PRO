@@ -60,23 +60,27 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4 animate-fade-in">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-2xl font-bold text-blue-600 hover:text-blue-700">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+        <div className="text-center mb-8 animate-fade-in">
+          <Link href="/" className="inline-flex items-center space-x-2 text-2xl font-bold text-green-700 hover:text-orange-500 transition-colors duration-200">
+            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center border-2 border-green-400 animate-bounce">
               <span className="text-white text-sm font-bold">R</span>
             </div>
-            <span>REMODELY.ai</span>
+            <span className="text-green-600">RemodelyPro</span>
           </Link>
-          <p className="text-gray-600 mt-2">AI Brains for your House</p>
+          <p className="text-green-400 mt-2">Professional Construction Intelligence</p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Verified Contractors</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">AI-Powered Matching</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Secure & Private</span>
+          </div>
         </div>
-
-        <Card className="w-full">
-          <CardHeader className="space-y-1">
+        <Card className="w-full border-2 border-green-400 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl transition-all duration-300 hover:shadow-green-400">
+          <CardHeader className="space-y-1 animate-fade-in">
             <div className="flex items-center space-x-2">
               <Link href="/auth/signin">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="transition-all duration-200">
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
               </Link>
@@ -90,14 +94,13 @@ export default function ForgotPasswordPage() {
           </CardHeader>
           <CardContent>
             {success ? (
-              <div className="text-center space-y-4">
-                <Alert className="border-green-200 bg-green-50">
+              <div className="text-center space-y-4 animate-fade-in">
+                <Alert className="border-green-200 bg-green-50 animate-fade-in">
                   <Check className="h-4 w-4 text-green-600" />
                   <AlertDescription className="text-green-800">
                     Password reset email sent! Check your inbox and spam folder.
                   </AlertDescription>
                 </Alert>
-                
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">
                     Didn't receive the email? Check your spam folder or try again.
@@ -109,56 +112,15 @@ export default function ForgotPasswordPage() {
                       setSuccess(false)
                       setEmail("")
                     }}
+                    className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-green-400"
                   >
                     Try Different Email
                   </Button>
                 </div>
-
                 <div className="text-center">
                   <Link 
                     href="/auth/signin" 
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Back to Sign In
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    We'll send you a secure link to reset your password.
-                  </p>
-                </div>
-                
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Send Reset Link
-                </Button>
-                
-                <div className="text-center space-y-2">
-                  <Link 
-                    href="/auth/signin" 
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm text-green-600 hover:text-orange-500 hover:underline transition-colors duration-200"
                   >
                     Back to Sign In
                   </Link>
@@ -166,7 +128,54 @@ export default function ForgotPasswordPage() {
                     Don't have an account?{" "}
                     <Link 
                       href="/auth/signup" 
-                      className="text-blue-600 hover:underline"
+                      className="text-green-600 hover:text-orange-500 hover:underline transition-colors duration-200"
+                    >
+                      Sign up
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
+                {error && (
+                  <Alert variant="destructive" className="border-red-200 bg-red-50 animate-shake">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400 animate-fade-in" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="pl-10 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105"
+                      required
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    We'll send you a secure link to reset your password.
+                  </p>
+                </div>
+                <Button type="submit" className="w-full bg-green-600 hover:bg-orange-500 text-white font-medium transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-green-400" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Send Reset Link
+                </Button>
+                <div className="text-center space-y-2">
+                  <Link 
+                    href="/auth/signin" 
+                    className="text-sm text-green-600 hover:text-orange-500 hover:underline transition-colors duration-200"
+                  >
+                    Back to Sign In
+                  </Link>
+                  <div className="text-sm text-gray-600">
+                    Don't have an account?{" "}
+                    <Link 
+                      href="/auth/signup" 
+                      className="text-green-600 hover:text-orange-500 hover:underline transition-colors duration-200"
                     >
                       Sign up
                     </Link>

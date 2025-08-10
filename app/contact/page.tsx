@@ -30,18 +30,23 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950 text-white animate-fade-in">
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact REMODELY.AI</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <div className="text-center mb-12 animate-fade-in">
+          <h1 className="text-4xl font-bold text-green-400 mb-4">Contact RemodelyPro</h1>
+          <p className="text-xl text-green-200 max-w-2xl mx-auto">
             Get in touch with our team for questions about our platform, pricing, or partnership opportunities.
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Verified Contractors</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">AI-Powered Matching</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Secure & Private</span>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Form */}
-          <Card>
+          <Card className="border-2 border-green-400 rounded-2xl shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
             <CardHeader>
               <CardTitle>Send us a Message</CardTitle>
               <CardDescription>

@@ -169,14 +169,14 @@ function SignUpContent() {
     icon: any
     title: string 
   }) => (
-    <Card className="w-full max-w-md mx-auto border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
-      <CardHeader className="space-y-1 pb-4">
+    <Card className="w-full max-w-md mx-auto border-2 border-green-400 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl transition-all duration-300 hover:shadow-green-400">
+      <CardHeader className="space-y-1 pb-4 animate-fade-in">
         <div className="flex items-center space-x-2">
-          <Icon className="h-5 w-5 text-blue-600" />
+          <Icon className="h-5 w-5 text-green-600 animate-bounce" />
           <CardTitle className="text-2xl text-gray-800">Create {title} Account</CardTitle>
         </div>
         <CardDescription className="text-gray-600">
-          Join thousands of satisfied {title.toLowerCase()}s on our platform
+          Join thousands of satisfied {title.toLowerCase()}s on RemodelyPro
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -184,7 +184,7 @@ function SignUpContent() {
         <Button
           type="button"
           variant="outline"
-          className="w-full h-11 border-gray-300 hover:bg-gray-50"
+          className="w-full h-11 border-green-400 hover:bg-green-50 text-green-700 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-green-400"
           onClick={handleGoogleSignUp}
           disabled={isGoogleLoading || isLoading}
         >
@@ -198,26 +198,26 @@ function SignUpContent() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-300" />
+            <span className="w-full border-t border-green-400" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-gray-500">Or create account with email</span>
+            <span className="bg-white px-2 text-green-700">Or create account with email</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <Alert variant="destructive" className="border-red-200 bg-red-50">
+            <Alert variant="destructive" className="border-red-200 bg-red-50 animate-shake">
               <AlertDescription className="text-red-700">{error}</AlertDescription>
             </Alert>
           )}
 
           {success && (
-            <Alert className="border-green-200 bg-green-50">
+            <Alert className="border-green-200 bg-green-50 animate-fade-in">
               <AlertDescription className="text-green-700">{success}</AlertDescription>
             </Alert>
           )}
-          
+          {/* Add focus and transition effects to inputs */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
             <Input
@@ -227,10 +227,9 @@ function SignUpContent() {
               onChange={(e) => handleInputChange("name", e.target.value)}
               placeholder="Enter your full name"
               required
-              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="h-11 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
             <Input
@@ -240,10 +239,9 @@ function SignUpContent() {
               onChange={(e) => handleInputChange("email", e.target.value)}
               placeholder="Enter your email"
               required
-              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="h-11 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="phone" className="text-gray-700 font-medium">Phone Number</Label>
             <Input
@@ -252,10 +250,9 @@ function SignUpContent() {
               value={formData.phone}
               onChange={(e) => handleInputChange("phone", e.target.value)}
               placeholder="Enter your phone number"
-              className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="h-11 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105"
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
             <div className="relative">
@@ -266,7 +263,7 @@ function SignUpContent() {
                 onChange={(e) => handleInputChange("password", e.target.value)}
                 placeholder="Create a password"
                 required
-                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10"
+                className="h-11 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105 pr-10"
               />
               <Button
                 type="button"
@@ -275,11 +272,10 @@ function SignUpContent() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+                {showPassword ? <EyeOff className="h-4 w-4 text-gray-400 animate-fade-in" /> : <Eye className="h-4 w-4 text-gray-400 animate-fade-in" />}
               </Button>
             </div>
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirm Password</Label>
             <div className="relative">
@@ -290,7 +286,7 @@ function SignUpContent() {
                 onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                 placeholder="Confirm your password"
                 required
-                className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10"
+                className="h-11 border-green-300 focus:border-green-500 focus:ring-green-400 transition-all duration-200 hover:scale-105 pr-10"
               />
               <Button
                 type="button"
@@ -299,44 +295,42 @@ function SignUpContent() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400 animate-fade-in" /> : <Eye className="h-4 w-4 text-gray-400 animate-fade-in" />}
               </Button>
             </div>
           </div>
-
           <div className="flex items-center space-x-2">
             <Checkbox
               id="agreeToTerms"
               checked={formData.agreeToTerms}
               onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
+              className="transition-all duration-200 focus:ring-green-400"
             />
             <Label htmlFor="agreeToTerms" className="text-sm text-gray-600">
               I agree to the{" "}
-              <Link href="/terms" className="text-blue-600 hover:underline">
+              <Link href="/terms" className="text-green-600 hover:underline">
                 Terms of Service
               </Link>
               {" "}and{" "}
-              <Link href="/privacy" className="text-blue-600 hover:underline">
+              <Link href="/privacy" className="text-green-600 hover:underline">
                 Privacy Policy
               </Link>
             </Label>
           </div>
-          
           <Button 
             type="submit" 
-            className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium"
+            className="w-full h-11 bg-green-600 hover:bg-orange-500 text-white font-medium transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-green-400"
             disabled={isLoading || isGoogleLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Account
           </Button>
-          
           <div className="text-center">
             <div className="text-sm text-gray-600">
               Already have an account?{" "}
               <Link 
                 href={`/auth/signin?tab=${userType}`} 
-                className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
+                className="text-green-600 hover:text-orange-500 hover:underline font-medium transition-colors duration-200"
               >
                 Sign in here
               </Link>
@@ -348,49 +342,46 @@ function SignUpContent() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4 relative">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="h-full w-full bg-[radial-gradient(circle_at_1px_1px,rgba(100,116,139,0.15)_1px,transparent_0)] bg-[length:40px_40px]"></div>
-      </div>
-      
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4 relative animate-fade-in">
+      {/* Trust signals and branding */}
       <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 text-3xl font-bold text-slate-800 hover:text-blue-600 transition-colors">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+        <div className="text-center mb-8 animate-fade-in">
+          <Link href="/" className="inline-flex items-center space-x-3 text-3xl font-bold text-green-700 hover:text-orange-500 transition-colors duration-200">
+            <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center shadow-lg border-2 border-green-400 animate-bounce">
               <span className="text-white text-lg font-bold">R</span>
             </div>
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              REMODELY.ai
-            </span>
+            <span className="text-green-600">RemodelyPro</span>
           </Link>
-          <p className="text-slate-600 mt-2 font-medium">Professional Construction Intelligence</p>
+          <p className="text-green-400 mt-2 font-medium">Professional Construction Intelligence</p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Verified Contractors</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">AI-Powered Matching</span>
+            <span className="text-xs text-gray-400 border border-green-400 rounded px-2 py-1 animate-fade-in">Secure & Private</span>
+          </div>
         </div>
-
         <Tabs value={activeTab} onValueChange={(value) => {
           setActiveTab(value)
           setFormData(prev => ({ 
             ...prev, 
             userType: value === "contractor" ? "CONTRACTOR" : "CUSTOMER" 
           }))
-        }} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/70 backdrop-blur-sm">
+        }} className="w-full animate-fade-in">
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/70 backdrop-blur-sm border-2 border-green-400 rounded-xl transition-all duration-200">
             <TabsTrigger 
               value="customer" 
-              className="flex items-center space-x-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              className="flex items-center space-x-2 data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all duration-200"
             >
-              <Home className="h-4 w-4" />
+              <Home className="h-4 w-4 animate-fade-in" />
               <span>Homeowner</span>
             </TabsTrigger>
             <TabsTrigger 
               value="contractor" 
-              className="flex items-center space-x-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              className="flex items-center space-x-2 data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all duration-200"
             >
-              <Hammer className="h-4 w-4" />
+              <Hammer className="h-4 w-4 animate-fade-in" />
               <span>Contractor</span>
             </TabsTrigger>
           </TabsList>
-          
           <TabsContent value="customer">
             <SignUpForm 
               userType="customer" 
@@ -398,7 +389,6 @@ function SignUpContent() {
               title="Homeowner" 
             />
           </TabsContent>
-          
           <TabsContent value="contractor">
             <SignUpForm 
               userType="contractor" 
