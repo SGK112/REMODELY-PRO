@@ -11,8 +11,8 @@ pnpm-lock.yaml
 # Next.js Build Output
 .next/
 out/
-build/
 dist/
+build/
 next-env.d.ts
 
 # TypeScript incremental build cache
@@ -24,9 +24,21 @@ next-env.d.ts
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local
-.env.scraping
-.env.scraping.local
+.env.production
+.env.example
+.env*
+
+# AI/Voice Artifacts
+*.mp3
+*.wav
+*.ogg
+voice-cache/
+voice-outputs/
+
+# API Keys and Secrets
+*.secret
+*.token
+*.api
 
 # Database Files
 *.db
@@ -104,11 +116,6 @@ tmp/
 *.key
 *.crt
 secrets.json
-
-# Media Files (generated)
-*.mp3
-*.wav
-sarah-voice.*
 
 # Development and Testing Scripts (specific patterns)
 demo-freemium-*.js
