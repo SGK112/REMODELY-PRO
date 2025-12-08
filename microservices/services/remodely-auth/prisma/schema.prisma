@@ -36,7 +36,10 @@ model User {
   // Audit fields
   createdAt                  DateTime  @default(now())
   updatedAt                  DateTime  @updatedAt
-  
+
+  // Relations
+  shopifyStores              ShopifyStore[]
+
   @@map("users")
 }
 
@@ -44,6 +47,37 @@ enum UserType {
   CUSTOMER
   CONTRACTOR
   ADMIN
+}
+
+// Shopify Store Connection - allows any user to connect their Shopify store
+model ShopifyStore {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Store details
+  storeDomain     String    @unique  // e.g., "my-store.myshopify.com"
+  storeName       String?
+  accessToken     String               // Encrypted Shopify access token
+  scope           String?              // OAuth scopes granted
+
+  // Store metadata
+  productCount    Int       @default(0)
+  orderCount      Int       @default(0)
+  currency        String    @default("USD")
+
+  // Connection status
+  isActive        Boolean   @default(true)
+  connectedAt     DateTime  @default(now())
+  lastSyncAt      DateTime?
+
+  // Audit fields
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("shopify_stores")
+  @@index([userId])
+  @@index([storeDomain])
 }
 
 // Indexes for performance
