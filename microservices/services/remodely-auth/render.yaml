@@ -32,10 +32,12 @@ services:
       - key: SERVICE_API_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: "https://remodely.pro,https://admin.remodely.pro,remodely://"
+        value: "https://remodely.pro,https://admin.remodely.pro,https://remodely.ai,remodely://"
       - key: SHOPIFY_API_KEY
         sync: false
       - key: SHOPIFY_API_SECRET
+        sync: false
+      - key: GMAIL_APP_PASSWORD
         sync: false
       - key: APP_URL
         value: "https://remodely-auth.onrender.com"

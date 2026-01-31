@@ -52,6 +52,16 @@ app.use((req, res, next) => {
   next()
 })
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Remodely.AI Backend',
+    version: '1.0.0',
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  })
+})
+
 // Health check (before auth middleware)
 app.use('/health', healthRoutes)
 
