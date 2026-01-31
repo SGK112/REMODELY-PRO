@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit')
 const authRoutes = require('./routes/auth')
 const healthRoutes = require('./routes/health')
 const shopifyRoutes = require('./routes/shopify')
+const graderRoutes = require('./routes/grader')
 const logger = require('./utils/logger')
 const errorHandler = require('./middleware/errorHandler')
 
@@ -57,6 +58,7 @@ app.use('/health', healthRoutes)
 // API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/shopify', shopifyRoutes)
+app.use('/api/grader', graderRoutes)
 
 // 404 handler
 app.use('*', (req, res) => {
